@@ -1,19 +1,26 @@
 // gameData.js - Данные (сцены, диалоги, выборы) для Визуальной Новеллы "Камертон 2026"
 
 export const gameData = {
-    'intro': {
-        location: 'Обучение',
-        background: 'url(images/workcamp.jpg)',
-        story: [
-            { speaker: 'Система', text: 'Привет! Ты — бета-тестер уникальной RPG "Камертон 2026". Твоя задача — принимать решения в ключевых ситуациях, чтобы создать идеальную смену.' },
-            { speaker: 'Система', text: 'Жизнь — это увлекательная игра, где ты находишь себя. Начни свой путь!' },
-            { action: 'show_choices', text: 'Готовы к игре?' }
-        ],
-        choices: [
-            { text: 'Начать бета-тест (Новая Игра)', nextScene: 'tutorial_start' },
-            { text: 'Пропустить обучение и начать Ситуацию 1', nextScene: 'scene1' }
-        ]
-    },
+    'loading_screen': {
+        location: 'Загрузка',
+        
+        isLoading: true, // Флаг для script.js, чтобы запустить загрузку
+        
+    },
+    'welcome_message': {
+        location: 'Приветствие',
+        background: 'url(images/night.jpg)', // Фон для приветствия
+        story: [
+            { speaker: 'Система', text: 'Привет!' },
+            { speaker: 'Система', text: 'Давай знакомиться!' },
+            { speaker: 'Система', text: 'Ты — бета-тестер уникальной RPG "Камертон 2026". Эта игра — симулятор вожатого, который поможет тебе принимать решения в ключевых ситуациях и создать идеальную смену.' },
+            { speaker: 'Система', text: 'Твоя задача — найти свой уникальный путь, научиться доверять и открыться творчеству, чтобы стать носителем атмосферы.' },
+            { action: 'show_choices', text: 'Готовы начать?' }
+        ],
+        choices: [
+            { text: 'Начать бета-тест (Обучение)', nextScene: 'tutorial_start' }
+        ]
+    },
     'tutorial_start': {
         location: 'Парапет (Инструктаж)', // Изменено
         background: 'url(images/night.jpg)', // Изменено
@@ -65,7 +72,7 @@ export const gameData = {
 
     'scene1': {
         location: 'Выбор мастерской',
-        background: 'url(images/workshop.jpg)',
+        background: 'url(images/front_of_the_dining.jpg)',
         sprites: [ 
             { name: 'Друг', src: 'images/bibikov.png', position: 'left' }, 
             { name: 'Ты', src: 'images/vitaly.png', position: 'right' }      

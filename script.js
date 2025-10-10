@@ -15,12 +15,19 @@ const speakerName = document.getElementById('speaker-name');
 const continuePrompt = document.getElementById('continue-prompt'); 
 const transitionOverlay = document.getElementById('transition-overlay'); 
 
+// ЭЛЕМЕНТЫ ЗАГРУЗКИ (НОВЫЕ)
+const loadingOverlay = document.getElementById('loading-overlay');
+const loadingText = document.getElementById('loading-text');
+const startGameButton = document.getElementById('start-game-button');
+const gameContainer = document.getElementById('game-container');
+const progressIndicator = document.getElementById('progress-indicator'); // Для отображения прогресса
+
 // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 const TYPING_SPEED = 25; // Скорость печати (мс на букву)
 let isTyping = false; 
 let currentTypingResolver = null; 
 
-let currentSceneId = 'intro';
+let currentSceneId = 'loading_screen'; // Начинаем со сцены загрузки
 let currentSceneStack = []; 
 let correctChoices = 0;
 let totalScenes = 0;
@@ -32,6 +39,89 @@ let isAwaitingConsequenceClick = false;
 // Запоминаем оригинальный первый текст Володи для сцены 'hint', чтобы его можно было восстанавливать
 const ORIGINAL_HINT_TEXT = gameData['hint'].story[0].text;
 
+
+// --- 2. ЛОГИКА ЗАГРУЗКИ КОНТЕНТА ---
+
+/**
+ * Ищет все изображения в gameData и загружает их.
+ */
+function preloadAssets() {
+    return new Promise(async (resolve) => {
+        const assetsToLoad = new Set();
+
+        for (const key in gameData) {
+            const scene = gameData[key];
+            // 1. Собираем все фоны
+            if (scene.background && scene.background.startsWith('url(')) {
+                const url = scene.background.slice(4, -1).replace(/['"]/g, '');
+                assetsToLoad.add(url);
+            }
+            // 2. Собираем все спрайты (массивы)
+            if (scene.sprites && Array.isArray(scene.sprites)) {
+                scene.sprites.forEach(sprite => assetsToLoad.add(sprite.src));
+            }
+            // 3. Собираем спрайты (одиночные)
+            if (scene.sprite && scene.sprite.src) {
+                assetsToLoad.add(scene.sprite.src);
+            }
+            // 4. Собираем спрайты из истории (смена эмоций)
+            if (scene.story) {
+                scene.story.forEach(step => {
+                    if (step.spriteSrc) {
+                        assetsToLoad.add(step.spriteSrc);
+                    }
+                });
+            }
+        }
+
+        const total = assetsToLoad.size;
+        let loadedCount = 0;
+
+        loadingText.textContent = `Загрузка: 0 из ${total} файлов... (0%)`;
+        
+        const loadPromises = Array.from(assetsToLoad).map(url => {
+            return new Promise(imgResolve => {
+                const img = new Image();
+                img.onload = img.onerror = () => { // Обрабатываем успех и ошибку одинаково
+                    loadedCount++;
+                    const percent = Math.round((loadedCount / total) * 100);
+                    loadingText.textContent = `Загрузка: ${loadedCount} из ${total} файлов... (${percent}%)`;
+                    if (progressIndicator) {
+                        progressIndicator.style.width = `${percent}%`;
+                    }
+                    imgResolve();
+                };
+                img.src = url;
+            });
+        });
+
+        // Ждем загрузки всех файлов
+        await Promise.all(loadPromises);
+
+        resolve();
+    });
+}
+
+/**
+ * Инициализирует игру после завершения загрузки и запускает анимацию исчезновения.
+ */
+function initializeGame() {
+    // 1. Показываем контейнер игры
+    gameContainer.style.display = 'block';
+
+    // 2. Запускаем первую сцену ('welcome_message'). 
+    // Фон и контент сцены появятся под экраном загрузки.
+    showScene('welcome_message'); 
+    
+    // 3. Запускаем анимацию плавного исчезновения оверлея
+    loadingOverlay.classList.add('fade-out');
+    
+    // 4. Полностью скрываем элемент оверлея после завершения анимации (0.5с)
+    setTimeout(() => {
+        loadingOverlay.style.display = 'none';
+        loadingOverlay.classList.remove('fade-out'); // Для сброса, если потребуется перезапуск
+    }, 500); 
+}
 
 // --- 3. ОСНОВНЫЕ ИГРОВЫЕ ФУНКЦИИ ---
 
@@ -49,6 +139,7 @@ function typeText(text) {
 
         function printChar() {
             if (!isTyping) { 
+                // Прерывание печати (Fast-Forward)
                 storyText.textContent = text;
                 document.getElementById('text-box').classList.add('text-complete');
                 continuePrompt.style.display = 'block';
@@ -57,7 +148,6 @@ function typeText(text) {
             }
 
             if (index < text.length) {
-                // Обработка markdown для полужирного шрифта (если нужно)
                 let char = text.charAt(index);
                 storyText.textContent += char;
                 index++;
@@ -80,7 +170,7 @@ function typeText(text) {
 function updateSpriteEmphasis(currentSpeakerName) {
     const sprites = spriteArea.querySelectorAll('.sprite');
     
-    const excludedNames = ['Система', 'РЕШЕНИЕ', 'ИТОГ', 'Твои Мысли', 'Подсказка'];
+    const excludedNames = ['Система', 'РЕШЕНИЕ', 'ИТОГ', 'Твои Мысли', 'Подсказка', 'ВОЗВРАТ'];
     
     if (sprites.length === 0 || !currentSpeakerName || excludedNames.some(name => currentSpeakerName.includes(name))) {
         sprites.forEach(sprite => sprite.classList.remove('dimmed'));
@@ -135,15 +225,14 @@ function renderSceneContent(sceneId) {
     }
 
     // --- ЛОГИКА ВОССТАНОВЛЕНИЯ HINT-ТЕКСТА ---
-    // Если мы ВЫХОДИМ из сцены подсказки, восстанавливаем текст Володи для следующего раза
     if (currentSceneId === 'hint' && sceneId !== 'hint') {
         gameData['hint'].story[0].text = ORIGINAL_HINT_TEXT;
     }
     // --- КОНЕЦ ЛОГИКИ ---
 
+    const isReturningFromHint = currentSceneId === 'hint' && sceneId !== 'hint';
     currentSceneId = sceneId;
-    currentStoryIndex = 0;
-    isAwaitingChoice = false;
+    
     isAwaitingConsequenceClick = false; 
 
     locationText.textContent = scene.location;
@@ -175,13 +264,22 @@ function renderSceneContent(sceneId) {
     speakerName.style.display = 'none'; 
     continuePrompt.style.display = 'none'; 
     
+    const textBox = document.getElementById('text-box');
+
     if (scene.isEnding) {
         updateSpriteEmphasis(null);
         generateEnding(sceneId);
         speakerName.style.display = 'none';
-        document.getElementById('text-box').onclick = null; 
+        textBox.onclick = null; 
     } else {
-        document.getElementById('text-box').onclick = goToNextStoryStep;
+        // Сброс индекса и флага происходит только если мы не возвращаемся из HINT
+        if (!isReturningFromHint) {
+            currentStoryIndex = 0;
+            isAwaitingChoice = false;
+        }
+
+        // Устанавливаем обработчик клика для перехода (Активирован, даже для hint)
+        textBox.onclick = goToNextStoryStep;
         goToNextStoryStep();
     }
 }
@@ -218,7 +316,24 @@ async function goToNextStoryStep() {
         return; 
     }
 
+    // Если ожидаем выбор или история закончилась
     if (isAwaitingChoice || !scene.story || currentStoryIndex >= scene.story.length) {
+        
+        // Этот блок специально для того, чтобы в сцене HINT гарантированно показать кнопку ВОЗВРАТ,
+        // даже если история состояла из одной фразы.
+        if (currentSceneId === 'hint' && !isAwaitingChoice) {
+            const lastStep = scene.story[scene.story.length - 1];
+            if (lastStep.action === 'show_choices') {
+                 // Здесь мы принудительно запускаем логику показа выбора
+                 document.getElementById('text-box').onclick = null;
+                 speakerName.textContent = 'ВОЗВРАТ'; 
+                 speakerName.style.display = 'block';
+                 continuePrompt.style.display = 'none'; 
+                 storyText.textContent = lastStep.text; 
+                 showChoices(scene);
+                 return;
+            }
+        }
         return;
     }
 
@@ -227,11 +342,23 @@ async function goToNextStoryStep() {
     // 1. Обработка действий (actions)
     if (step.action === 'show_choices') {
         updateSpriteEmphasis(null);
-        document.getElementById('text-box').onclick = null;
-        speakerName.textContent = currentSceneId === 'hint' ? 'ВОЗВРАТ' : 'РЕШЕНИЕ'; // Указываем, что в 'hint' мы возвращаемся
+        
+        // Отключаем клик по текстовому полю. Это важно для сцены HINT, 
+        // чтобы после показа выбора не было зацикливания. 
+        document.getElementById('text-box').onclick = null; 
+        
+        speakerName.textContent = currentSceneId === 'hint' ? 'ВОЗВРАТ' : 'РЕШЕНИЕ'; 
         speakerName.style.display = 'block';
         continuePrompt.style.display = 'none'; 
-        await typeText(step.text); // Напечатать текст перед выбором
+
+        // --- Поддержка HTML в тексте перед выбором ---
+        if (step.text.includes('<span')) {
+            storyText.innerHTML = step.text;
+        } else {
+            await typeText(step.text);
+        }
+        // ---------------------------------------------
+        
         showChoices(scene);
         return;
     }
@@ -240,7 +367,6 @@ async function goToNextStoryStep() {
     if (step.spriteSrc && step.speaker) {
         const targetSprite = spriteArea.querySelector(`.sprite[alt="${step.speaker}"]`);
         if (targetSprite) {
-            // Меняем источник изображения
             targetSprite.src = step.spriteSrc;
         } else {
             console.warn(`Спрайт для говорящего "${step.speaker}" не найден для смены эмоции.`);
@@ -257,18 +383,17 @@ async function goToNextStoryStep() {
         updateSpriteEmphasis(null);
     }
     
-    // --- ИСПРАВЛЕННЫЙ БЛОК: ИСПОЛЬЗОВАНИЕ typeText ИЛИ innerHTML ---
-// Если текст содержит HTML (например, <span> для цвета), используем innerHTML и пропускаем typeText
-if (step.text.includes('<span')) {
-    storyText.innerHTML = step.text;
-    document.getElementById('text-box').classList.add('text-complete');
-    continuePrompt.style.display = 'block'; 
-} else {
-    await typeText(step.text);
-}
-// -------------------------------------------------------------
+    // --- ИСПОЛЬЗОВАНИЕ typeText ИЛИ innerHTML ---
+    if (step.text.includes('<span')) {
+        storyText.innerHTML = step.text;
+        document.getElementById('text-box').classList.add('text-complete');
+        continuePrompt.style.display = 'block'; 
+    } else {
+        await typeText(step.text);
+    }
+    // -------------------------------------------------------------
 
-currentStoryIndex++;
+    currentStoryIndex++;
 }
 
 /**
@@ -283,7 +408,11 @@ function showChoices(scene) {
         button.textContent = choice.text;
         button.className = 'choice-button';
         
-        if (currentSceneId.startsWith('tutorial') || currentSceneId.startsWith('ending') || currentSceneId === 'intro') {
+        // Измененная логика: обрабатываем 'return' специально через handleChoice
+        // Для остальных: все, кроме основных сцен, ведут к следующей сцене напрямую
+        if (choice.nextScene === 'return') {
+            button.onclick = () => handleChoice(currentSceneId, index, false);
+        } else if (currentSceneId.startsWith('tutorial') || currentSceneId.startsWith('ending') || currentSceneId === 'welcome_message') {
             button.onclick = () => showScene(choice.nextScene);
         } else {
             button.onclick = () => handleChoice(currentSceneId, index, false);
@@ -295,11 +424,8 @@ function showChoices(scene) {
     choicesContainer.style.pointerEvents = 'auto';
     choicesContainer.style.opacity = '1';
 
-    // --- ИСПРАВЛЕННАЯ ЛОГИКА ПОКАЗА КНОПКИ ПОДСКАЗКИ ---
-    // Кнопка показывается, только если:
-    // 1. В текущей сцене есть поле 'hint'.
-    // 2. Сцена не является служебной ('hint', 'tutorial', 'ending', 'intro').
-    if (scene.hint && !scene.isHint && !currentSceneId.startsWith('tutorial') && !currentSceneId.startsWith('ending') && currentSceneId !== 'intro') {
+    // --- ЛОГИКА ПОКАЗА КНОПКИ ПОДСКАЗКИ ---
+    if (scene.hint && !scene.isHint && !currentSceneId.startsWith('tutorial') && !currentSceneId.startsWith('ending') && currentSceneId !== 'welcome_message') {
         hintButton.style.display = 'block';
     } else {
         hintButton.style.display = 'none';
@@ -313,29 +439,25 @@ function showChoices(scene) {
  */
 function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
     
-    // --- ИЗМЕНЕННАЯ ЛОГИКА ДЛЯ ПОДСКАЗКИ ---
+    // --- ЛОГИКА ДЛЯ ПОДСКАЗКИ ---
     if (isHintRequest) {
         const currentScene = gameData[sceneId];
         
-        // Дополнительная проверка на наличие hint
         if (!currentScene.hint) {
-            alert('Для этой ситуации подсказка не предусмотрена.');
-            // Кнопка должна была быть скрыта, но это дополнительная защита
             return;
         }
 
-        // 1. Сохраняем текущий ID сцены в стек для возврата
+        // ПЕРЕД входом в hint сохраняем текущее состояние истории в стеке!
         currentSceneStack.push(sceneId); 
         
-        // 2. Временно заменяем первый текст Володи на текст подсказки для этой сцены
+        // Временно заменяем первый текст Володи на текст подсказки
         gameData['hint'].story[0].text = currentScene.hint;
 
-        // 3. ПЕРЕХОДИМ на сцену "hint"
         showScene('hint'); 
         
         return;
     }
-    // --- КОНЕЦ ИЗМЕНЕННОЙ ЛОГИКИ ДЛЯ ПОДСКАЗКИ ---
+    // --- КОНЕЦ ЛОГИКИ ДЛЯ ПОДСКАЗКИ ---
 
 
     const scene = gameData[sceneId];
@@ -352,7 +474,9 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
     if (choice.nextScene === 'return') {
         const previousSceneId = currentSceneStack.pop();
         
-        // Восстановление оригинального текста происходит в renderSceneContent
+        // Мы возвращаемся на тот же шаг истории.
+        // Переменные currentStoryIndex и isAwaitingChoice сохраняют то состояние,
+        // в котором они были до вызова showScene('hint').
         showScene(previousSceneId);
         return;
     }
@@ -420,16 +544,16 @@ function generateEnding(sceneId) {
         consequencesReport.forEach((report, index) => {
             const status = report.isCorrect ? '✅ ВЕРНО' : '❌ ОШИБКА';
             reportHTML += `
-                <p style="margin-bottom: 5px;">--- **Ситуация ${index + 1}** (${report.scene}) ---</p>
-                <p style="margin-left: 10px;">**Выбор:** "${report.choice}"</p>
-                <p style="margin-left: 10px;">**Статус:** ${status}</p>
-                <p style="margin-left: 10px;">**Последствие:** ${report.consequence.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}</p>
+                <p style="margin-bottom: 5px;">--- <b>Ситуация ${index + 1}</b> (${report.scene}) ---</p>
+                <p style="margin-left: 10px;"><b>Выбор:</b> "${report.choice}"</p>
+                <p style="margin-left: 10px;"><b>Статус:</b> ${status}</p>
+                <p style="margin-left: 10px;"><b>Последствие:</b> ${report.consequence.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}</p>
             `;
         });
         reportHTML += '</div>';
 
         // Добавляем общий итог
-        overallText = `<p style="margin-top: 20px;">Ты принял **${correctChoices} из ${totalScenes}** решений, соответствующих духу смены.</p><p>Жизнь — это игра, в которой ты учишься. Спасибо за твой выбор!</p>`;
+        overallText = `<p style="margin-top: 20px;">Ты принял <b>${correctChoices} из ${totalScenes}</b> решений, соответствующих духу смены.</p><p>Жизнь — это игра, в которой ты учишься. Спасибо за твой выбор!</p>`;
     }
     
     storyText.innerHTML = mainText + overallText + reportHTML;
@@ -437,7 +561,7 @@ function generateEnding(sceneId) {
     showChoices(scene);
 }
 
-// --- 4. ЗАПУСК ИГРЫ ---
+// --- 4. ЗАПУСК ИГРЫ (ИЗМЕНЕННАЯ ТОЧКА ВХОДА) ---
 
 // Добавляем обработчик для кнопки подсказки
 hintButton.onclick = () => handleChoice(currentSceneId, null, true); 
@@ -450,5 +574,20 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// ЗАПУСК ИГРЫ
-showScene('intro');
+// ТОЧКА ВХОДА: Запускаем процесс предзагрузки
+window.onload = async () => {
+    // 1. Убедимся, что контейнер игры скрыт, а оверлей загрузки виден
+    gameContainer.style.display = 'none'; 
+    loadingOverlay.style.display = 'flex';
+    loadingOverlay.classList.remove('fade-out'); // Сбрасываем, если остался
+
+    // 2. Запускаем предзагрузку
+    await preloadAssets();
+
+    // 3. После загрузки показываем кнопку и ждем клика
+    loadingText.textContent = 'Контент загружен. Пожалуйста, нажмите "НАЧАТЬ ИГРУ".';
+    
+    // Добавляем обработчик на кнопку "НАЧАТЬ ИГРУ"
+    startGameButton.style.display = 'block';
+    startGameButton.onclick = initializeGame;
+};

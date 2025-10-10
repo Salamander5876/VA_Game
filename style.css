@@ -297,6 +297,79 @@ html, body {
     pointer-events: auto;
 }
 
+#loading-overlay {
+    /* Основные стили: занимает весь экран, центрирует контент */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #111; /* Темный фон */
+    color: #f0f0f0; /* Светлый текст */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    /* Убеждаемся, что фон не скроллится на мобильных */
+    overflow: hidden; 
+    transition: opacity 5.0s ease-out; 
+    pointer-events: auto; /* По умолчанию активен */
+}
+#loading-overlay.fade-out {
+    opacity: 0;
+    /* Убедимся, что он не мешает кликам, пока исчезает */
+    pointer-events: none; 
+    
+}
+#loading-text {
+    /* Стиль текста, указывающего прогресс */
+    margin-bottom: 25px; /* Увеличенный отступ для мобилок */
+    font-size: 1.4em; /* Чуть больший размер */
+    text-align: center;
+    padding: 0 15px; /* Небольшой горизонтальный отступ */
+}
+
+#loading-bar {
+    /* Контейнер индикатора */
+    width: 80%; /* На мобилках занимает большую ширину */
+    max-width: 400px; /* Ограничиваем на больших экранах */
+    height: 15px; /* Делаем толще для лучшей видимости */
+    background-color: #333;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+#progress-indicator { 
+    /* Сам индикатор прогресса */
+    width: 0%;
+    height: 100%;
+    background-color: #49a861; /* Зеленый цвет загрузки */
+    transition: width 0.3s ease-out; /* Плавное заполнение */
+}
+
+#start-game-button {
+    /* Стиль кнопки "Начать игру" */
+    margin-top: 40px; /* Увеличенный отступ */
+    padding: 15px 30px; /* Больший padding для удобного нажатия */
+    font-size: 1.5em; /* Больший шрифт */
+    cursor: pointer;
+    background-color: #49a861; /* Желтая кнопка */
+    border: none;
+    border-radius: 8px;
+    color: #333;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 0 4px 0 #49a861; /* Эффект 3D кнопки */
+    transition: all 0.1s;
+}
+
+#start-game-button:active {
+    box-shadow: 0 1px 0 #49a861;
+    transform: translateY(3px);
+}
+
 /* Медиа-запрос для МОБИЛЬНЫХ устройств (меньше 800px) */
 @media (max-width: 799px) {
     :root {
@@ -314,6 +387,22 @@ html, body {
 
     .sprite.right {
     right: -5%;
+    }
+
+    #loading-text {
+        font-size: 1.2em; /* Немного уменьшим для маленьких экранов */
+        margin-bottom: 20px;
+    }
+
+    #loading-bar {
+        width: 90%; /* Занимаем почти всю ширину */
+        height: 12px;
+    }
+
+    #start-game-button {
+        padding: 12px 25px;
+        font-size: 1.3em;
+        margin-top: 30px;
     }
  
  #hint-button {

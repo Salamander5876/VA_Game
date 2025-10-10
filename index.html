@@ -8,8 +8,12 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
-
-    <div id="game-container">
+    <div id="loading-overlay">
+    <div id="loading-text">Инициализация...</div>
+    <div id="loading-bar"></div>
+    <button id="start-game-button" style="display: none;">НАЧАТЬ ИГРУ</button>
+</div>
+    <div id="game-container" style="display: none;"> 
         <div id="header">
             <h1 id="title">Камертон 2026</h1>
             <p id="location"></p>
