@@ -1,0 +1,307 @@
+/* style.css - Полностью обновленный VN-Дизайн: Лес и Цифровой Костёр */
+
+/* --- ДОБАВЛЕНИЕ КАСТОМНОГО ШРИФТА --- */
+@font-face {
+    font-family: 'TDAText';
+    src: url('TDAText.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    /* Новая цветовая схема: ЗЕЛЕНЫЙ, ЗОЛОТОЙ, ГОЛУБОЙ, БЕЛЫЙ */
+    --primary-green: #0A6836; /* Темный Лесной (Основной цвет кнопок/UI) */
+    --light-green: #49a861; /* Светлая трава (Ховер, контрастный текст) */
+    --accent-warm: #ffbf00; /* Солнечный Луч / Костер (Теплый акцент) */
+    --accent-cool: #6abefa; /* Голубой Циан (Технологичная подсветка, рамки) */
+    
+    --text-dark: #212121; /* Темный текст для контраста */
+    --white: #F5F5F5; /* Туман / Палатка */
+
+    --text-color: var(--white);
+    --main-color: var(--primary-green);
+    --background-dark: #20362b; /* Очень темный, лесной фон */
+    /* ИЗМЕНЕНИЕ: ИСПОЛЬЗУЕМ TDAText */
+    --font-family: 'TDAText', 'Consolas', 'Courier New', monospace;
+    --text-box-height: 30vh;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--font-family);
+    background-color: var(--background-dark);
+    color: var(--text-color);
+}
+
+#game-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* Header - Прозрачный, минималистичный */
+#header {
+    position: absolute;
+    
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.158); 
+    padding: 10px 0;
+    backdrop-filter: blur(2px);
+    
+}
+
+#title {
+    font-size: 1.5em;
+    color: var(--accent-warm); /* Золото */
+    margin: 0;
+}
+
+#location {
+    font-style: normal;
+    color: var(--accent-cool); /* Светлая трава */
+    font-size: 0.9em;
+    margin: 0;
+}
+
+/* Story Area (Фон и Спрайты) */
+#story-area {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#background-image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.8s ease;
+}
+
+/* Sprite Area */
+#sprite-area {
+    position: absolute;
+    bottom: var(--text-box-height);
+    width: 100%;
+    height: calc(100% - var(--text-box-height));
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: none;
+}
+
+/* Text Box - ПОЛУПРОЗРАЧНЫЙ ФОН ("Вайб костра" + Техно-подсветка) */
+#text-box {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--text-box-height);
+    /* ПОЛУПРОЗРАЧНОСТЬ */
+    background-color: rgba(17, 31, 24, 0.85); /* Темный лесной фон */
+    backdrop-filter: blur(4px);
+    padding: 20px;
+    padding-top: 40px;
+    /* Техно-подсветка: Золото для теплоты (Костер) */
+    border-top: 2px solid var(--accent-warm); 
+    box-shadow: 0 -5px 20px rgba(200, 168, 72, 0.4); /* Теплое свечение золота */
+    box-sizing: border-box;
+    z-index: 500;
+    color: var(--text-color);
+    font-size: 1.1em;
+    overflow-y: auto;
+    overflow: visible !important;
+    cursor: pointer;
+    
+}
+
+/* Стиль для имени говорящего */
+#speaker-name {
+    /* Меняем цвет для большего контраста с полупрозрачным фоном */
+    background-color: var(--accent-warm); /* Золото */
+    color: var(--text-dark); /* Темный текст */
+    padding: 5px 15px;
+    position: absolute;
+    top: -34px;
+    left: 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-weight: bold;
+    font-size: 1.1em;
+    z-index: 501;
+    box-shadow: none; 
+}
+
+#story-text {
+    margin: 0;
+    line-height: 1.6;
+    /* Убедимся, что текст имеет фиксированную высоту строки, чтобы избежать прыжков */
+    white-space: pre-wrap; /* Сохраняет пробелы и переносит строки */
+    overflow: hidden; /* Скрывает текст, который не должен быть виден */
+    border-right: .15em solid var(--accent-cool); /* Имитация мигающего курсора */
+    font-size: 1.1em; /* Размер текста из вашего CSS */
+    
+    /* Эффект курсора (мигание будет в CSS, если нужно) */
+    animation: typing-cursor 0.7s steps(40) infinite;
+}
+/* Отключаем курсор, когда текст завершен */
+.text-complete #story-text {
+    border-right: none;
+    animation: none;
+}
+@keyframes typing-cursor {
+    from, to { border-color: transparent }
+    50% { border-color: var(--accent-cool); }
+}
+
+/* Новые стили для стрелки-подсказки "Нажмите, чтобы продолжить" */
+#continue-prompt {
+    position: absolute;
+    bottom: 5px;
+    right: 15px;
+    font-size: 1.2em;
+    color: var(--accent-cool); /* Голубой (технологичная стрелка) */
+    font-weight: bold;
+    animation: pulse 1.5s infinite;
+    pointer-events: none;
+    user-select: none;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+/* Choices and Buttons - Полупрозрачный контейнер */
+#choices-container {
+    position: fixed;
+    bottom: calc(var(--text-box-height) + 55px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 600;
+    padding: 10px;
+    border-radius: 4px; 
+    /* Полупрозрачный фон */
+    background-color: rgba(17, 31, 24, 0.7); 
+    backdrop-filter: blur(2px);
+    
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.choice-button {
+    /* *** ИСПРАВЛЕНИЕ: Добавление явного указания шрифта для кнопок *** */
+    font-family: var(--font-family);
+    /* *************************************************************** */
+    background-color: var(--main-color); /* Лесной зеленый */
+    color: var(--text-color);
+    border: 1px solid var(--light-green); 
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    text-align: center;
+    pointer-events: auto;
+}
+.choice-button:hover {
+    background-color: var(--light-green); /* Светлая трава при наведении */
+    box-shadow: 0 0 10px var(--light-green); /* Легкое зеленое свечение */
+}
+
+/* Кнопка-подсказка (Володя) */
+#hint-button {
+    position: fixed;
+    right: 15px;
+    /* Позиция для ПК (над выборами) */
+    bottom: calc(var(--text-box-height) + 35px); 
+    width: auto;
+    padding: 8px 15px;
+    z-index: 600;
+    background-color: var(--accent-warm); /* Золото */
+    color: var(--text-dark); /* Темный текст */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    display: none;
+    /* Усиливаем "вайб костра" свечением */
+    box-shadow: 0 0 15px rgba(200, 168, 72, 0.7);
+}
+
+/* Спрайт - базовый стиль */
+.sprite {
+    position: absolute;
+    height: 90%;
+    max-height: 100%;
+    bottom: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    /* Легкое, менее навязчивое свечение от спрайтов */
+    filter: drop-shadow(0 0 8px rgba(76, 140, 186, 0.4)); /* Голубое свечение */
+}
+
+.sprite.left {
+    left: 5%;
+}
+
+.sprite.right {
+    right: 5%;
+}
+
+.sprite.center {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Медиа-запрос для МОБИЛЬНЫХ устройств (меньше 800px) */
+@media (max-width: 799px) {
+    /* Кнопка выбора: используем всю ширину */
+    #choices-container {
+        width: 95%;
+    }
+    
+    /* Исправленная позиция Кнопки подсказки: выше контейнера выбора */
+    #hint-button {
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: calc(var(--text-box-height) + 50vh);
+        
+        width: 90%; 
+        max-width: 300px; 
+    }
+}
+
+
+/* Медиа-запрос для ПК (от 800px) */
+@media (min-width: 800px) {
+    :root {
+        --text-box-height: 30vh;
+    }
+    #text-box {
+        font-size: 1.2em;
+    }
+    #choices-container {
+        width: 60%;
+    }
+}
