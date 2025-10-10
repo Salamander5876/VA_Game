@@ -1,4 +1,4 @@
-/* style.css - Полностью обновленный VN-Дизайн: Лес и Цифровой Костёр */
+/* style.css - ФИНАЛЬНЫЙ ФИКС: Гарантированный размер спрайта и позиция */
 
 /* --- ДОБАВЛЕНИЕ КАСТОМНОГО ШРИФТА --- */
 @font-face {
@@ -9,21 +9,20 @@
 }
 
 :root {
-    /* Новая цветовая схема: ЗЕЛЕНЫЙ, ЗОЛОТОЙ, ГОЛУБОЙ, БЕЛЫЙ */
-    --primary-green: #0A6836; /* Темный Лесной (Основной цвет кнопок/UI) */
-    --light-green: #49a861; /* Светлая трава (Ховер, контрастный текст) */
-    --accent-warm: #ffbf00; /* Солнечный Луч / Костер (Теплый акцент) */
-    --accent-cool: #6abefa; /* Голубой Циан (Технологичная подсветка, рамки) */
+    /* Новая цветовая схема */
+    --primary-green: #0A6836; 
+    --light-green: #49a861; 
+    --accent-warm: #ffbf00; 
+    --accent-cool: #6abefa; 
     
-    --text-dark: #212121; /* Темный текст для контраста */
-    --white: #F5F5F5; /* Туман / Палатка */
+    --text-dark: #212121; 
+    --white: #F5F5F5; 
 
     --text-color: var(--white);
     --main-color: var(--primary-green);
-    --background-dark: #20362b; /* Очень темный, лесной фон */
-    /* ИЗМЕНЕНИЕ: ИСПОЛЬЗУЕМ TDAText */
+    --background-dark: #20362b; 
     --font-family: 'TDAText', 'Consolas', 'Courier New', monospace;
-    --text-box-height: 30vh;
+    --text-box-height: 30vh; /* Будет переопределено медиа-запросами */
 }
 
 html, body {
@@ -48,10 +47,10 @@ html, body {
     padding: 0;
 }
 
-/* Header - Прозрачный, минималистичный */
+/* Header */
 #header {
     position: absolute;
-    
+    top: 0; 
     left: 0;
     right: 0;
     text-align: center;
@@ -64,13 +63,13 @@ html, body {
 
 #title {
     font-size: 1.5em;
-    color: var(--accent-warm); /* Золото */
+    color: var(--accent-warm); 
     margin: 0;
 }
 
 #location {
     font-style: normal;
-    color: var(--accent-cool); /* Светлая трава */
+    color: var(--accent-cool); 
     font-size: 0.9em;
     margin: 0;
 }
@@ -91,33 +90,30 @@ html, body {
     transition: background-image 0.8s ease;
 }
 
-/* Sprite Area */
+/* Sprite Area (КОНТЕЙНЕР ДЛЯ СПРАЙТОВ) */
 #sprite-area {
     position: absolute;
-    bottom: var(--text-box-height);
+    /* Позиционируем контейнер спрайтов точно над текстовым полем, чтобы спрайты "стояли" на нём */
+    bottom: 0;
     width: 100%;
-    height: calc(100% - var(--text-box-height));
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
+    height: var(--text-box-height);
     pointer-events: none;
+    z-index: 501; /* Выше text-box (z-index: 500), чтобы спрайты визуально "стояли" сверху */
 }
 
-/* Text Box - ПОЛУПРОЗРАЧНЫЙ ФОН ("Вайб костра" + Техно-подсветка) */
+/* Text Box */
 #text-box {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     height: var(--text-box-height);
-    /* ПОЛУПРОЗРАЧНОСТЬ */
-    background-color: rgba(17, 31, 24, 0.85); /* Темный лесной фон */
+    background-color: rgba(17, 31, 24, 0.85); 
     backdrop-filter: blur(4px);
     padding: 20px;
     padding-top: 40px;
-    /* Техно-подсветка: Золото для теплоты (Костер) */
     border-top: 2px solid var(--accent-warm); 
-    box-shadow: 0 -5px 20px rgba(200, 168, 72, 0.4); /* Теплое свечение золота */
+    box-shadow: 0 -5px 20px rgba(200, 168, 72, 0.4); 
     box-sizing: border-box;
     z-index: 500;
     color: var(--text-color);
@@ -125,14 +121,12 @@ html, body {
     overflow-y: auto;
     overflow: visible !important;
     cursor: pointer;
-    
 }
 
 /* Стиль для имени говорящего */
 #speaker-name {
-    /* Меняем цвет для большего контраста с полупрозрачным фоном */
-    background-color: var(--accent-warm); /* Золото */
-    color: var(--text-dark); /* Темный текст */
+    background-color: var(--accent-warm); 
+    color: var(--text-dark); 
     padding: 5px 15px;
     position: absolute;
     top: -34px;
@@ -148,16 +142,12 @@ html, body {
 #story-text {
     margin: 0;
     line-height: 1.6;
-    /* Убедимся, что текст имеет фиксированную высоту строки, чтобы избежать прыжков */
-    white-space: pre-wrap; /* Сохраняет пробелы и переносит строки */
-    overflow: hidden; /* Скрывает текст, который не должен быть виден */
-    border-right: .15em solid var(--accent-cool); /* Имитация мигающего курсора */
-    font-size: 1.1em; /* Размер текста из вашего CSS */
-    
-    /* Эффект курсора (мигание будет в CSS, если нужно) */
+    white-space: pre-wrap; 
+    overflow: hidden; 
+    border-right: .15em solid var(--accent-cool); 
+    font-size: 1.1em; 
     animation: typing-cursor 0.7s steps(40) infinite;
 }
-/* Отключаем курсор, когда текст завершен */
 .text-complete #story-text {
     border-right: none;
     animation: none;
@@ -173,7 +163,7 @@ html, body {
     bottom: 5px;
     right: 15px;
     font-size: 1.2em;
-    color: var(--accent-cool); /* Голубой (технологичная стрелка) */
+    color: var(--accent-cool); 
     font-weight: bold;
     animation: pulse 1.5s infinite;
     pointer-events: none;
@@ -186,7 +176,7 @@ html, body {
     100% { opacity: 0.5; }
 }
 
-/* Choices and Buttons - Полупрозрачный контейнер */
+/* Choices and Buttons */
 #choices-container {
     position: fixed;
     bottom: calc(var(--text-box-height) + 55px);
@@ -200,7 +190,6 @@ html, body {
     z-index: 600;
     padding: 10px;
     border-radius: 4px; 
-    /* Полупрозрачный фон */
     background-color: rgba(17, 31, 24, 0.7); 
     backdrop-filter: blur(2px);
     
@@ -210,10 +199,8 @@ html, body {
 }
 
 .choice-button {
-    /* *** ИСПРАВЛЕНИЕ: Добавление явного указания шрифта для кнопок *** */
     font-family: var(--font-family);
-    /* *************************************************************** */
-    background-color: var(--main-color); /* Лесной зеленый */
+    background-color: var(--main-color); 
     color: var(--text-color);
     border: 1px solid var(--light-green); 
     padding: 12px;
@@ -225,39 +212,45 @@ html, body {
     pointer-events: auto;
 }
 .choice-button:hover {
-    background-color: var(--light-green); /* Светлая трава при наведении */
-    box-shadow: 0 0 10px var(--light-green); /* Легкое зеленое свечение */
+    background-color: var(--light-green); 
+    box-shadow: 0 0 10px var(--light-green); 
 }
 
 /* Кнопка-подсказка (Володя) */
 #hint-button {
     position: fixed;
     right: 15px;
-    /* Позиция для ПК (над выборами) */
     bottom: calc(var(--text-box-height) + 35px); 
     width: auto;
     padding: 8px 15px;
     z-index: 600;
-    background-color: var(--accent-warm); /* Золото */
-    color: var(--text-dark); /* Темный текст */
+    background-color: var(--accent-warm); 
+    color: var(--text-dark); 
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
     display: none;
-    /* Усиливаем "вайб костра" свечением */
     box-shadow: 0 0 15px rgba(200, 168, 72, 0.7);
 }
 
-/* Спрайт - базовый стиль */
+/* --- Спрайт - базовый стиль (ОГРАНИЧЕНИЕ И ПРОПОРЦИОНАЛЬНОЕ ИЗМЕНЕНИЕ) --- */
 .sprite {
     position: absolute;
-    height: 90%;
-    max-height: 100%;
-    bottom: 0;
+    
+    /* Масштабирование по размеру экрана: используем vh и vw для responsive размера */
+    max-height: 25vh; /* Увеличено для лучшей видимости, масштабируется по высоте экрана */
+    max-width: 40vw; /* Масштабируется по ширине экрана, пропорционально */
+    
+    /* Автоматическое сохранение пропорций */
+    width: auto; 
+    height: auto; 
+    
+    /* Позиционирование: низ спрайта ровно на верхней границе text-box (как будто "стоит" на нём) */
+    bottom: 100%; /* Низ спрайта на уровне top sprite-area, который совпадает с top text-box */
+    
     transition: opacity 0.5s ease, transform 0.5s ease;
-    /* Легкое, менее навязчивое свечение от спрайтов */
-    filter: drop-shadow(0 0 8px rgba(76, 140, 186, 0.4)); /* Голубое свечение */
+    filter: drop-shadow(0 0 8px rgba(76, 140, 186, 0.4)); 
 }
 
 .sprite.left {
@@ -273,22 +266,49 @@ html, body {
     transform: translateX(-50%);
 }
 
+/* --- Scene Transition Overlay --- */
+#transition-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background-dark); 
+    z-index: 9999; 
+    pointer-events: none; 
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out; 
+}
+#transition-overlay.active {
+    opacity: 1;
+    pointer-events: auto; 
+}
+
 /* Медиа-запрос для МОБИЛЬНЫХ устройств (меньше 800px) */
 @media (max-width: 799px) {
-    /* Кнопка выбора: используем всю ширину */
+    :root {
+        /* Высота текстового бокса увеличена, чтобы уменьшить область спрайтов и поднять их */
+        --text-box-height: 45vh; 
+    }
+    
     #choices-container {
         width: 95%;
     }
     
-    /* Исправленная позиция Кнопки подсказки: выше контейнера выбора */
     #hint-button {
         right: auto;
         left: 50%;
         transform: translateX(-50%);
-        bottom: calc(var(--text-box-height) + 50vh);
-        
+        /* Позиционируем кнопку выше (над увеличенным текстовым полем) */
+        bottom: calc(var(--text-box-height) + 10px); 
         width: 90%; 
         max-width: 300px; 
+    }
+
+    /* Responsive для спрайтов на мобильных: чуть меньше, чтобы не перекрывать */
+    .sprite {
+        max-height: 20vh;
+        max-width: 45vw;
     }
 }
 
@@ -296,12 +316,19 @@ html, body {
 /* Медиа-запрос для ПК (от 800px) */
 @media (min-width: 800px) {
     :root {
-        --text-box-height: 30vh;
+        /* Высота текстового бокса увеличена, чтобы уменьшить зону спрайта и поднять его */
+        --text-box-height: 40vh;
     }
     #text-box {
         font-size: 1.2em;
     }
     #choices-container {
         width: 60%;
+    }
+
+    /* Responsive для спрайтов на ПК: стандартный размер */
+    .sprite {
+        max-height: 5vh;
+        max-width: 35vw;
     }
 }
