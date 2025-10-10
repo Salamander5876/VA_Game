@@ -230,7 +230,7 @@ html, body {
 .sprite {
     position: absolute;
     
-    /* ОГРАНИЧЕНИЕ РАЗМЕРА */
+    /* ОГРАНИЧЕНИЕ РАЗМЕРА - ПК по умолчанию */
     max-height: 95%;
     max-width: 50vw; /* Вернули разумную ширину */
     
@@ -250,16 +250,16 @@ html, body {
 /* Класс для затемнения (молчащий/неактивный персонаж) */
 .sprite.dimmed {
     filter: brightness(60%) contrast(90%) grayscale(40%); /* Затемнение, снижение контраста, немного Ч/Б */
-    transform: scale(0.95); /* Немного уменьшаем */
+    transform: scale(0.97); /* Немного уменьшаем */
     opacity: 0.8; /* Небольшая прозрачность */
 }
 
 .sprite.left {
-    left: 5%;
+    left: 10%;
 }
 
 .sprite.right {
-    right: 5%;
+    right: 10%;
 }
 
 .sprite.center {
@@ -296,9 +296,16 @@ html, body {
         --text-box-height: 30vh;
     }
     .sprite {
-        /* Уменьшаем спрайт еще больше на мобильных, чтобы не закрывал экран */
+        /* ИСПРАВЛЕНИЕ: Уменьшаем ширину спрайта до 45% от ширины вьюпорта, чтобы два спрайта уместились рядом. */
         max-height: 100%;
-        max-width: 100vw;
+        max-width: 60vw; /* КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: 100vw было слишком много */
+    }
+    .sprite.left {
+    left: -5%;
+    }
+
+    .sprite.right {
+    right: -5%;
     }
  
  #hint-button {
