@@ -1,5 +1,3 @@
-/* style.css - ФИНАЛЬНЫЙ ФИКС: Гарантированный размер спрайта и позиция */
-
 /* --- ДОБАВЛЕНИЕ КАСТОМНОГО ШРИФТА --- */
 @font-face {
     font-family: 'TDAText';
@@ -9,20 +7,19 @@
 }
 
 :root {
-    /* Новая цветовая схема */
-    --primary-green: #0A6836; 
-    --light-green: #49a861; 
-    --accent-warm: #ffbf00; 
-    --accent-cool: #6abefa; 
-    
-    --text-dark: #212121; 
-    --white: #F5F5F5; 
+    /* Цветовая схема */
+    --primary-green: #0A6836;
+    --light-green: #49a861;
+    --accent-warm: #ffbf00; /* Желтый акцент */
+    --accent-cool: #6abefa; /* Синий акцент */
+    --text-dark: #212121;
+    --white: #F5F5F5;
 
     --text-color: var(--white);
     --main-color: var(--primary-green);
-    --background-dark: #20362b; 
+    --background-dark: #20362b;
     --font-family: 'TDAText', 'Consolas', 'Courier New', monospace;
-    --text-box-height: 30vh; /* Будет переопределено медиа-запросами */
+    --text-box-height: 30vh; /* Базовое значение */
 }
 
 html, body {
@@ -39,42 +36,37 @@ html, body {
 #game-container {
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
     position: relative;
-    border: none;
-    box-shadow: none;
-    padding: 0;
 }
 
 /* Header */
 #header {
     position: absolute;
-    top: 0; 
+    top: 0;
     left: 0;
     right: 0;
-    text-align: center;
     z-index: 100;
-    background-color: rgba(0, 0, 0, 0.158); 
+    background-color: #000000c9;
     padding: 10px 0;
     backdrop-filter: blur(2px);
-    
 }
 
 #title {
     font-size: 1.5em;
-    color: var(--accent-warm); 
+    color: var(--accent-warm);
     margin: 0;
+    text-align: center;
 }
 
 #location {
     font-style: normal;
-    color: var(--accent-cool); 
+    color: var(--accent-cool);
     font-size: 0.9em;
     margin: 0;
+    text-align: center;
 }
 
-/* Story Area (Фон и Спрайты) */
+/* Story Area (Область фона и спрайтов) */
 #story-area {
     position: relative;
     width: 100%;
@@ -93,22 +85,24 @@ html, body {
 /* Sprite Area (КОНТЕЙНЕР ДЛЯ СПРАЙТОВ) */
 #sprite-area {
     position: absolute;
-    /* Позиционируем контейнер спрайтов точно над текстовым полем, чтобы спрайты "стояли" на нём */
-    bottom: 0;
+    /* ГАРАНТИЯ ПОЗИЦИИ: Область спрайтов заканчивается ровно там, где начинается text-box */
+    bottom: var(--text-box-height);
     width: 100%;
-    height: var(--text-box-height);
+    /* Высота, оставшаяся над текстовым полем */
+    height: calc(100% - var(--text-box-height));
     pointer-events: none;
-    z-index: 501; /* Выше text-box (z-index: 500), чтобы спрайты визуально "стояли" сверху */
+    z-index: 200;
+    /* КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ: Обрезаем все, что пытается опуститься ниже */
+    overflow: hidden;
 }
 
-/* Text Box */
 #text-box {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     height: var(--text-box-height);
-    background-color: rgba(17, 31, 24, 0.85); 
+    background-color: #0e1813;
     backdrop-filter: blur(4px);
     padding: 20px;
     padding-top: 40px;
@@ -129,7 +123,7 @@ html, body {
     color: var(--text-dark); 
     padding: 5px 15px;
     position: absolute;
-    top: -34px;
+    top: -33px;
     left: 10px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
@@ -138,14 +132,13 @@ html, body {
     z-index: 501;
     box-shadow: none; 
 }
-
 #story-text {
     margin: 0;
     line-height: 1.6;
-    white-space: pre-wrap; 
-    overflow: hidden; 
-    border-right: .15em solid var(--accent-cool); 
-    font-size: 1.1em; 
+    white-space: pre-wrap;
+    overflow: hidden;
+    border-right: .15em solid var(--accent-cool);
+    font-size: 1.1em;
     animation: typing-cursor 0.7s steps(40) infinite;
 }
 .text-complete #story-text {
@@ -163,7 +156,7 @@ html, body {
     bottom: 5px;
     right: 15px;
     font-size: 1.2em;
-    color: var(--accent-cool); 
+    color: var(--accent-cool);
     font-weight: bold;
     animation: pulse 1.5s infinite;
     pointer-events: none;
@@ -189,10 +182,9 @@ html, body {
     gap: 10px;
     z-index: 600;
     padding: 10px;
-    border-radius: 4px; 
-    background-color: rgba(17, 31, 24, 0.7); 
+    border-radius: 4px;
+    background-color: rgba(17, 31, 24, 0.7);
     backdrop-filter: blur(2px);
-    
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -200,9 +192,9 @@ html, body {
 
 .choice-button {
     font-family: var(--font-family);
-    background-color: var(--main-color); 
+    background-color: var(--main-color);
     color: var(--text-color);
-    border: 1px solid var(--light-green); 
+    border: 1px solid var(--light-green);
     padding: 12px;
     border-radius: 4px;
     cursor: pointer;
@@ -212,8 +204,8 @@ html, body {
     pointer-events: auto;
 }
 .choice-button:hover {
-    background-color: var(--light-green); 
-    box-shadow: 0 0 10px var(--light-green); 
+    background-color: var(--light-green);
+    box-shadow: 0 0 10px var(--light-green);
 }
 
 /* Кнопка-подсказка (Володя) */
@@ -234,23 +226,32 @@ html, body {
     box-shadow: 0 0 15px rgba(200, 168, 72, 0.7);
 }
 
-/* --- Спрайт - базовый стиль (ОГРАНИЧЕНИЕ И ПРОПОРЦИОНАЛЬНОЕ ИЗМЕНЕНИЕ) --- */
+/* --- Спрайт - базовый стиль (РАЗМЕР И ПОЗИЦИЯ) --- */
 .sprite {
     position: absolute;
     
-    /* Масштабирование по размеру экрана: используем vh и vw для responsive размера */
-    max-height: 25vh; /* Увеличено для лучшей видимости, масштабируется по высоте экрана */
-    max-width: 40vw; /* Масштабируется по ширине экрана, пропорционально */
+    /* ОГРАНИЧЕНИЕ РАЗМЕРА */
+    max-height: 95%;
+    max-width: 50vw; /* Вернули разумную ширину */
     
-    /* Автоматическое сохранение пропорций */
-    width: auto; 
-    height: auto; 
+    width: auto;
+    height: auto;
     
-    /* Позиционирование: низ спрайта ровно на верхней границе text-box (как будто "стоит" на нём) */
-    bottom: 100%; /* Низ спрайта на уровне top sprite-area, который совпадает с top text-box */
+    /* ФИНАЛЬНЫЙ ФИКС: Прижимаем вниз и даём ОТРИЦАТЕЛЬНЫЙ отступ, чтобы "ноги" спрайта гарантированно обрезались */
+    bottom: -10px;
     
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    filter: drop-shadow(0 0 8px rgba(76, 140, 186, 0.4)); 
+    /* Добавлены плавные переходы для трансформации и фильтра */
+    transition: 
+        transform 0.4s ease-out, 
+        filter 0.4s ease-out, 
+        opacity 0.4s ease-out; 
+}
+
+/* Класс для затемнения (молчащий/неактивный персонаж) */
+.sprite.dimmed {
+    filter: brightness(60%) contrast(90%) grayscale(40%); /* Затемнение, снижение контраста, немного Ч/Б */
+    transform: scale(0.95); /* Немного уменьшаем */
+    opacity: 0.8; /* Небольшая прозрачность */
 }
 
 .sprite.left {
@@ -266,36 +267,41 @@ html, body {
     transform: translateX(-50%);
 }
 
-/* --- Scene Transition Overlay --- */
+/* --- Scene Transition Overlay (КРУГОВОЙ ПЕРЕХОД) --- */
 #transition-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: var(--background-dark); 
-    z-index: 9999; 
-    pointer-events: none; 
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out; 
+    background-color: #000000;
+    z-index: 9999;
+    pointer-events: none;
+    
+    /* ИСХОДНОЕ СОСТОЯНИЕ: Круг нулевого размера в центре */
+    clip-path: circle(0% at 50% 50%);
+    transition: clip-path 0.8s ease-in-out; /* Установили длительность перехода */
+    opacity: 1; /* Оставим 1, чтобы цвет был виден во время перехода */
 }
 #transition-overlay.active {
-    opacity: 1;
-    pointer-events: auto; 
+    /* АКТИВНОЕ СОСТОЯНИЕ: Круг расширяется, чтобы покрыть всю область */
+    clip-path: circle(150% at 50% 50%);
+    pointer-events: auto;
 }
 
 /* Медиа-запрос для МОБИЛЬНЫХ устройств (меньше 800px) */
 @media (max-width: 799px) {
     :root {
-        /* Высота текстового бокса увеличена, чтобы уменьшить область спрайтов и поднять их */
-        --text-box-height: 45vh; 
+        /* УВЕЛИЧЕННАЯ ВЫСОТА ТЕКСТОВОГО БОКСА для лучшего разделения на мобильных */
+        --text-box-height: 30vh;
     }
-    
-    #choices-container {
-        width: 95%;
+    .sprite {
+        /* Уменьшаем спрайт еще больше на мобильных, чтобы не закрывал экран */
+        max-height: 100%;
+        max-width: 100vw;
     }
-    
-    #hint-button {
+ 
+ #hint-button {
         right: auto;
         left: 50%;
         transform: translateX(-50%);
@@ -304,31 +310,14 @@ html, body {
         width: 90%; 
         max-width: 300px; 
     }
-
-    /* Responsive для спрайтов на мобильных: чуть меньше, чтобы не перекрывать */
-    .sprite {
-        max-height: 20vh;
-        max-width: 45vw;
-    }
+    
 }
 
 
 /* Медиа-запрос для ПК (от 800px) */
 @media (min-width: 800px) {
     :root {
-        /* Высота текстового бокса увеличена, чтобы уменьшить зону спрайта и поднять его */
-        --text-box-height: 40vh;
-    }
-    #text-box {
-        font-size: 1.2em;
-    }
-    #choices-container {
-        width: 60%;
-    }
-
-    /* Responsive для спрайтов на ПК: стандартный размер */
-    .sprite {
-        max-height: 5vh;
-        max-width: 35vw;
+        /* Комфортная высота текстового бокса на ПК */
+        --text-box-height: 20vh;
     }
 }

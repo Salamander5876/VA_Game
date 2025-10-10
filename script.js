@@ -32,7 +32,7 @@ let isAwaitingConsequenceClick = false;
 const gameData = {
     'intro': {
         location: 'Обучение',
-        background: 'url(images/start_screen.jpg)',
+        background: 'url(images/workcamp.jpg)',
         story: [
             { speaker: 'Система', text: 'Привет! Ты — бета-тестер уникальной RPG "Камертон 2026". Твоя задача — принимать решения в ключевых ситуациях, чтобы создать идеальную смену.' },
             { speaker: 'Система', text: 'Жизнь — это увлекательная игра, где ты находишь себя. Начни свой путь!' },
@@ -45,7 +45,9 @@ const gameData = {
     },
     'tutorial_start': {
         location: 'Игровая база (Обучение)',
-        background: 'url(images/workshop.png)',
+        background: 'url(images/workcamp.jpg)',
+        // Использован старый формат sprite:
+        sprite: { name: 'Инструктор', src: 'images/workshop.png', position: 'center' },
         story: [
             { speaker: 'Система', text: 'Добро пожаловать в обучающий режим! Все диалоги управляются нажатием на текстовое поле внизу экрана.' },
             { speaker: 'Система', text: 'Нажмите, чтобы увидеть, как текст сменяется. Вы увидите текст "Нажмите, чтобы продолжить..." справа внизу.' },
@@ -59,8 +61,8 @@ const gameData = {
     },
     'tutorial_choice': {
         location: 'Игровая база (Обучение)',
-        background: 'url(images/workshop.jpg)',
-        sprite: { name: 'engineer', src: 'images/sprite_engineer.png', position: 'center' },
+        background: 'url(images/workcamp.jpg)',
+        sprite: { name: 'Инструктор', src: 'images/workshop.png', position: 'center' },
         story: [
             { speaker: 'Инструктор', text: 'В ключевые моменты вы увидите кнопки выбора. От них зависит ваш прогресс и концовка.' },
             { speaker: 'Инструктор', text: 'Если вы сомневаетесь, нажмите на **желтую кнопку "Попросить совета (Володя)"**.' },
@@ -75,8 +77,8 @@ const gameData = {
     },
     'tutorial_end': {
         location: 'Игровая база (Обучение завершено)',
-        background: 'url(images/workshop.jpg)',
-        sprite: { name: 'engineer', src: 'images/sprite_engineer.png', position: 'center' },
+        background: 'url(images/workcamp.jpg)',
+        sprite: { name: 'Инструктор', src: 'images/workshop.png', position: 'center' },
         story: [
             { speaker: 'Инструктор', text: 'Отлично! Вы освоили основы. Ваш тестовый выбор не повлиял на результат.' },
             { speaker: 'Инструктор', text: 'Помните: верный выбор — это не всегда самый легкий, но всегда тот, что способствует **доверию, развитию и осознанности**.' },
@@ -90,7 +92,11 @@ const gameData = {
     'scene1': {
         location: 'Зона Прокачки (Утро)',
         background: 'url(images/workshop.jpg)',
-        sprite: { name: 'friend', src: 'images/sprite_friend.png', position: 'left' },
+        // ИЗМЕНЕНО: Добавлен массив 'sprites' для двух спрайтов
+        sprites: [ 
+            { name: 'Друг', src: 'images/workshop.png', position: 'left' }, // Замените на реальные пути
+            { name: 'Ты', src: 'images/workshop.png', position: 'right' }   // Замените на реальные пути
+        ],
         hint: 'Задача смены — помочь выразить себя и развить навыки, а также дать опыт осознанного выбора.',
         story: [
             { speaker: 'Ты', text: 'Утро первого дня. Я должен выбрать, что буду "прокачивать" в своей "игровой сборке".' },
@@ -287,6 +293,38 @@ function typeText(text) {
     });
 }
 
+// --- НОВАЯ ФУНКЦИЯ: УПРАВЛЕНИЕ ФОКУСОМ СПРАЙТОВ ---
+
+/**
+ * Затемняет всех, кроме говорящего персонажа.
+ * @param {string} currentSpeakerName Имя говорящего персонажа.
+ */
+function updateSpriteEmphasis(currentSpeakerName) {
+    // Получаем все спрайты на сцене
+    const sprites = spriteArea.querySelectorAll('.sprite');
+    
+    // Если спрайтов нет или сцены с диалогами, где нет персонажей, просто выходим
+    if (sprites.length === 0 || !currentSpeakerName || currentSpeakerName.includes('Система') || currentSpeakerName.includes('РЕШЕНИЕ') || currentSpeakerName.includes('ИТОГ') || currentSpeakerName.includes('Твои Мысли')) {
+        // Убеждаемся, что все спрайты в нормальном состоянии
+        sprites.forEach(sprite => sprite.classList.remove('dimmed'));
+        return;
+    }
+
+    // Проходим по всем спрайтам
+    sprites.forEach(sprite => {
+        // Имя спрайта хранится в атрибуте alt
+        const spriteName = sprite.alt;
+        
+        // Если имя спрайта совпадает с именем говорящего, то снимаем класс dimmed
+        if (spriteName === currentSpeakerName) {
+            sprite.classList.remove('dimmed');
+        } 
+        // Иначе, применяем класс dimmed
+        else {
+            sprite.classList.add('dimmed');
+        }
+    });
+}
 
 // --- 3. ИГРОВАЯ ЛОГИКА ---
 
@@ -307,15 +345,33 @@ function renderSceneContent(sceneId) {
     locationText.textContent = scene.location;
     backgroundImage.style.backgroundImage = scene.background ? scene.background : 'none';
 
-    // ЛОГИКА ОТОБРАЖЕНИЯ СПРАЙТОВ
+    // =========================================================
+    // ОБНОВЛЕННАЯ ЛОГИКА ОТОБРАЖЕНИЯ СПРАЙТОВ (ПОДДЕРЖКА МАССИВА)
+    // =========================================================
     spriteArea.innerHTML = '';
-    if (scene.sprite) {
-        const spriteDiv = document.createElement('img');
-        spriteDiv.src = scene.sprite.src;
-        spriteDiv.alt = scene.sprite.name;
-        spriteDiv.className = `sprite ${scene.sprite.position}`; // Добавляем класс позиции
-        spriteArea.appendChild(spriteDiv);
+    let spritesToRender = [];
+
+    // 1. Проверяем новый формат (массив 'sprites')
+    if (scene.sprites && Array.isArray(scene.sprites)) {
+        spritesToRender = scene.sprites;
+    } 
+    // 2. Проверяем старый формат (одиночный объект 'sprite') для обратной совместимости
+    else if (scene.sprite) {
+        spritesToRender = [scene.sprite];
     }
+
+    // Рендерим все спрайты в массиве
+    spritesToRender.forEach(spriteData => {
+        const spriteDiv = document.createElement('img');
+        spriteDiv.src = spriteData.src;
+        spriteDiv.alt = spriteData.name;
+        // Добавляем класс 'sprite' и класс позиции ('left', 'right', 'center')
+        // В начале сцены все спрайты будут в нормальном состоянии (без dimmed)
+        spriteDiv.className = `sprite ${spriteData.position}`; 
+        spriteArea.appendChild(spriteDiv);
+    });
+    // =========================================================
+
 
     // Скрываем элементы выбора в начале сцены
     choicesContainer.innerHTML = '';
@@ -326,6 +382,8 @@ function renderSceneContent(sceneId) {
     continuePrompt.style.display = 'none'; 
     
     if (scene.isEnding) {
+        // Убираем затемнение со всех спрайтов в конце
+        updateSpriteEmphasis(null);
         generateEnding(sceneId);
         speakerName.style.display = 'none';
         document.getElementById('text-box').onclick = null; 
@@ -338,26 +396,26 @@ function renderSceneContent(sceneId) {
 
 // ОСНОВНАЯ ФУНКЦИЯ ДЛЯ СМЕНЫ СЦЕН (С ПЕРЕХОДОМ)
 function showScene(sceneId) {
-    // Не применять переход при возврате из подсказки или если сцена не меняется
+    // ... (логика перехода остаётся прежней)
     if (sceneId === currentSceneId && !gameData[sceneId].isHint) {
         renderSceneContent(sceneId);
         return;
     }
 
     if (transitionOverlay) {
-        // 1. Начинаем затемнение
+        // 1. Начинаем маскирование (круг расширяется)
         transitionOverlay.classList.add('active');
         
-        // 2. Ждем, пока затемнение закончится (0.5с)
+        // 2. Ждем, пока маскирование закончится (0.8с) - СКОРРЕКТИРОВАНО ВРЕМЯ
         setTimeout(() => {
             renderSceneContent(sceneId); // Рендерим новый контент
             
-            // 3. Плавно убираем затемнение
+            // 3. Плавно убираем маскирование (круг сужается обратно)
             // Небольшая задержка, чтобы браузер успел обновить контент
             setTimeout(() => {
                 transitionOverlay.classList.remove('active');
             }, 50); 
-        }, 500); // Время должно соответствовать CSS transition-duration
+        }, 800); // Время должно соответствовать CSS transition-duration (0.8s)
     } else {
         // Прямой вызов, если элемент перехода не найден
         renderSceneContent(sceneId);
@@ -370,6 +428,9 @@ async function goToNextStoryStep() {
     
     // *** ЛОГИКА: ОБРАБОТКА КЛИКА ПОСЛЕ ВЫБОРА (для перехода к следующей сцене) ***
     if (isAwaitingConsequenceClick) {
+        // Убираем затемнение со всех спрайтов перед переходом
+        updateSpriteEmphasis(null);
+        
         // Определяем следующую сцену и переходим
         let nextSceneId = 'scene' + (totalScenes + 1);
 
@@ -401,6 +462,9 @@ async function goToNextStoryStep() {
 
     // Проверяем, не является ли этот шаг требованием показать выбор
     if (step.action === 'show_choices') {
+        // При показе выбора сбрасываем акцент со спрайтов
+        updateSpriteEmphasis(null);
+        
         document.getElementById('text-box').onclick = null;
         storyText.textContent = step.text;
         speakerName.textContent = 'РЕШЕНИЕ';
@@ -414,8 +478,12 @@ async function goToNextStoryStep() {
     if (step.speaker) {
         speakerName.textContent = step.speaker;
         speakerName.style.display = 'block';
+        // НОВОЕ: Управление акцентом спрайтов
+        updateSpriteEmphasis(step.speaker);
     } else {
         speakerName.style.display = 'none';
+        // НОВОЕ: Сбрасываем акцент, если нет конкретного говорящего
+        updateSpriteEmphasis(null);
     }
     
     // 2. Отображаем текущую фразу с эффектом печати и ждем
@@ -426,6 +494,7 @@ async function goToNextStoryStep() {
 
 // Функция для отображения кнопок выбора
 function showChoices(scene) {
+    // ... (логика показа выбора остается прежней)
     isAwaitingChoice = true;
 
     choicesContainer.innerHTML = ''; // Очистка
@@ -458,6 +527,8 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
     
     // 1. Обработка запроса подсказки
     if (isHintRequest) {
+        // Сбрасываем акцент перед уходом в подсказку
+        updateSpriteEmphasis(null);
         currentSceneStack.push(sceneId);
         showScene('hint');
         return;
@@ -486,6 +557,9 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
         showScene(choice.nextScene);
         return;
     }
+    
+    // НОВОЕ: Сбрасываем акцент, когда выбор сделан
+    updateSpriteEmphasis(null);
 
     // 4. Если это обычный сюжетный выбор
     totalScenes++;
@@ -493,9 +567,9 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
 
     if (choice.correct === true) {
         correctChoices++;
-        consequenceText = `✅ **Верно!** ${choice.consequence || ''}`;
+        consequenceText = `${choice.consequence || ''}`;
     } else if (choice.correct === false) {
-        consequenceText = `❌ **Последствие:** ${choice.consequence || 'Ситуация разрешилась без твоего решающего влияния.'}`;
+        consequenceText = `${choice.consequence || 'Ситуация разрешилась без твоего решающего влияния.'}`;
     }
 
     consequencesReport.push(consequenceText);
@@ -503,7 +577,7 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
     // Показываем последствие в текстовом поле
     speakerName.textContent = 'ИТОГ';
     speakerName.style.display = 'block';
-    storyText.innerHTML = `**ВЫБОР СДЕЛАН!** ${consequenceText.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}`;
+    storyText.innerHTML = `${consequenceText.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}`;
     
     // *** ЛОГИКА ОЖИДАНИЯ КЛИКА ДЛЯ ПЕРЕХОДА ***
     isAwaitingConsequenceClick = true; 
