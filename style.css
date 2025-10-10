@@ -114,7 +114,15 @@ html, body {
     font-size: 1.1em;
     overflow-y: auto;
     overflow: visible !important;
-    cursor: pointer;
+    
+
+    /* НОВЫЕ СТИЛИ ДЛЯ ЗАПРЕТА ВЫДЕЛЕНИЯ ТЕКСТА */
+    -webkit-user-select: none; /* Для старых версий Chrome/Safari */
+    -moz-user-select: none;    /* Для Firefox */
+    -ms-user-select: none;     /* Для IE/Edge */
+    user-select: none;         /* Стандартное свойство */
+    cursor: pointer;           /* (Опционально) Явно указываем, что поле кликабельно */
+
 }
 
 /* Стиль для имени говорящего */

@@ -29,9 +29,8 @@ let currentStoryIndex = 0;
 let isAwaitingChoice = false;
 let isAwaitingConsequenceClick = false; 
 
-
-// --- 2. ДАННЫЕ ИГРЫ (УДАЛЕНО И ЗАМЕНЕНО ИМПОРТОМ) ---
-// const gameData = { ... }; 
+// Запоминаем оригинальный первый текст Володи для сцены 'hint', чтобы его можно было восстанавливать
+const ORIGINAL_HINT_TEXT = gameData['hint'].story[0].text;
 
 
 // --- 3. ОСНОВНЫЕ ИГРОВЫЕ ФУНКЦИИ ---
@@ -40,7 +39,6 @@ let isAwaitingConsequenceClick = false;
  * Плавно отображает текст с эффектом печати.
  */
 function typeText(text) {
-    // ... (код typeText остается прежним)
     isTyping = true;
     storyText.textContent = '';
     document.getElementById('text-box').classList.remove('text-complete'); 
@@ -59,7 +57,9 @@ function typeText(text) {
             }
 
             if (index < text.length) {
-                storyText.textContent += text.charAt(index);
+                // Обработка markdown для полужирного шрифта (если нужно)
+                let char = text.charAt(index);
+                storyText.textContent += char;
                 index++;
                 setTimeout(printChar, TYPING_SPEED);
             } else {
@@ -80,7 +80,9 @@ function typeText(text) {
 function updateSpriteEmphasis(currentSpeakerName) {
     const sprites = spriteArea.querySelectorAll('.sprite');
     
-    if (sprites.length === 0 || !currentSpeakerName || currentSpeakerName.includes('Система') || currentSpeakerName.includes('РЕШЕНИЕ') || currentSpeakerName.includes('ИТОГ') || currentSpeakerName.includes('Твои Мысли')) {
+    const excludedNames = ['Система', 'РЕШЕНИЕ', 'ИТОГ', 'Твои Мысли', 'Подсказка'];
+    
+    if (sprites.length === 0 || !currentSpeakerName || excludedNames.some(name => currentSpeakerName.includes(name))) {
         sprites.forEach(sprite => sprite.classList.remove('dimmed'));
         return;
     }
@@ -101,7 +103,6 @@ function updateSpriteEmphasis(currentSpeakerName) {
  * Переключает сцену с эффектом перехода.
  */
 function showScene(sceneId) {
-    // ... (логика перехода остается прежней)
     if (sceneId === currentSceneId && !gameData[sceneId].isHint) {
         renderSceneContent(sceneId);
         return;
@@ -125,7 +126,6 @@ function showScene(sceneId) {
 
 /**
  * Рендерит всю информацию сцены (фон, спрайты, начальный текст).
- * Скорректирована для поддержки массива 'sprites'.
  */
 function renderSceneContent(sceneId) {
     const scene = gameData[sceneId];
@@ -133,6 +133,13 @@ function renderSceneContent(sceneId) {
         console.error('Сцена не найдена:', sceneId);
         return;
     }
+
+    // --- ЛОГИКА ВОССТАНОВЛЕНИЯ HINT-ТЕКСТА ---
+    // Если мы ВЫХОДИМ из сцены подсказки, восстанавливаем текст Володи для следующего раза
+    if (currentSceneId === 'hint' && sceneId !== 'hint') {
+        gameData['hint'].story[0].text = ORIGINAL_HINT_TEXT;
+    }
+    // --- КОНЕЦ ЛОГИКИ ---
 
     currentSceneId = sceneId;
     currentStoryIndex = 0;
@@ -164,7 +171,7 @@ function renderSceneContent(sceneId) {
     choicesContainer.innerHTML = '';
     choicesContainer.style.pointerEvents = 'none';
     choicesContainer.style.opacity = '0';
-    hintButton.style.display = 'none';
+    hintButton.style.display = 'none'; // Скрываем по умолчанию
     speakerName.style.display = 'none'; 
     continuePrompt.style.display = 'none'; 
     
@@ -221,7 +228,7 @@ async function goToNextStoryStep() {
     if (step.action === 'show_choices') {
         updateSpriteEmphasis(null);
         document.getElementById('text-box').onclick = null;
-        speakerName.textContent = 'РЕШЕНИЕ';
+        speakerName.textContent = currentSceneId === 'hint' ? 'ВОЗВРАТ' : 'РЕШЕНИЕ'; // Указываем, что в 'hint' мы возвращаемся
         speakerName.style.display = 'block';
         continuePrompt.style.display = 'none'; 
         await typeText(step.text); // Напечатать текст перед выбором
@@ -250,9 +257,18 @@ async function goToNextStoryStep() {
         updateSpriteEmphasis(null);
     }
     
+    // --- ИСПРАВЛЕННЫЙ БЛОК: ИСПОЛЬЗОВАНИЕ typeText ИЛИ innerHTML ---
+// Если текст содержит HTML (например, <span> для цвета), используем innerHTML и пропускаем typeText
+if (step.text.includes('<span')) {
+    storyText.innerHTML = step.text;
+    document.getElementById('text-box').classList.add('text-complete');
+    continuePrompt.style.display = 'block'; 
+} else {
     await typeText(step.text);
+}
+// -------------------------------------------------------------
 
-    currentStoryIndex++;
+currentStoryIndex++;
 }
 
 /**
@@ -267,10 +283,10 @@ function showChoices(scene) {
         button.textContent = choice.text;
         button.className = 'choice-button';
         
-        if (currentSceneId.startsWith('tutorial')) {
-             button.onclick = () => showScene(choice.nextScene);
+        if (currentSceneId.startsWith('tutorial') || currentSceneId.startsWith('ending') || currentSceneId === 'intro') {
+            button.onclick = () => showScene(choice.nextScene);
         } else {
-             button.onclick = () => handleChoice(currentSceneId, index, false);
+            button.onclick = () => handleChoice(currentSceneId, index, false);
         }
 
         choicesContainer.appendChild(button);
@@ -279,9 +295,16 @@ function showChoices(scene) {
     choicesContainer.style.pointerEvents = 'auto';
     choicesContainer.style.opacity = '1';
 
-    if (!scene.isHint && !currentSceneId.startsWith('tutorial')) {
+    // --- ИСПРАВЛЕННАЯ ЛОГИКА ПОКАЗА КНОПКИ ПОДСКАЗКИ ---
+    // Кнопка показывается, только если:
+    // 1. В текущей сцене есть поле 'hint'.
+    // 2. Сцена не является служебной ('hint', 'tutorial', 'ending', 'intro').
+    if (scene.hint && !scene.isHint && !currentSceneId.startsWith('tutorial') && !currentSceneId.startsWith('ending') && currentSceneId !== 'intro') {
         hintButton.style.display = 'block';
+    } else {
+        hintButton.style.display = 'none';
     }
+    // ----------------------------------------------------
 }
 
 
@@ -290,12 +313,30 @@ function showChoices(scene) {
  */
 function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
     
+    // --- ИЗМЕНЕННАЯ ЛОГИКА ДЛЯ ПОДСКАЗКИ ---
     if (isHintRequest) {
-        updateSpriteEmphasis(null);
-        currentSceneStack.push(sceneId);
-        showScene('hint');
+        const currentScene = gameData[sceneId];
+        
+        // Дополнительная проверка на наличие hint
+        if (!currentScene.hint) {
+            alert('Для этой ситуации подсказка не предусмотрена.');
+            // Кнопка должна была быть скрыта, но это дополнительная защита
+            return;
+        }
+
+        // 1. Сохраняем текущий ID сцены в стек для возврата
+        currentSceneStack.push(sceneId); 
+        
+        // 2. Временно заменяем первый текст Володи на текст подсказки для этой сцены
+        gameData['hint'].story[0].text = currentScene.hint;
+
+        // 3. ПЕРЕХОДИМ на сцену "hint"
+        showScene('hint'); 
+        
         return;
     }
+    // --- КОНЕЦ ИЗМЕНЕННОЙ ЛОГИКИ ДЛЯ ПОДСКАЗКИ ---
+
 
     const scene = gameData[sceneId];
     const choice = scene.choices[choiceIndex];
@@ -307,8 +348,11 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
     continuePrompt.style.display = 'none'; 
     document.getElementById('text-box').onclick = null; 
 
+    // Логика возврата из сцены 'hint'
     if (choice.nextScene === 'return') {
         const previousSceneId = currentSceneStack.pop();
+        
+        // Восстановление оригинального текста происходит в renderSceneContent
         showScene(previousSceneId);
         return;
     }
@@ -317,6 +361,8 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
         showScene(choice.nextScene);
         return;
     }
+    
+    // ... (Остальная логика обработки выбора) ...
     
     updateSpriteEmphasis(null);
 
@@ -339,6 +385,7 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
 
     speakerName.textContent = 'ИТОГ';
     speakerName.style.display = 'block';
+    // Используем innerHTML для поддержки тегов **
     storyText.innerHTML = `${consequenceText.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}`;
     
     isAwaitingConsequenceClick = true; 
