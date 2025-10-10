@@ -45,7 +45,7 @@ const gameData = {
         background: 'url(images/workshop.jpg)',
         story: [
             { speaker: 'Система', text: 'Добро пожаловать в обучающий режим! Все диалоги управляются нажатием на текстовое поле внизу экрана.' },
-            { speaker: 'Система', text: 'Нажмите, чтобы увидеть, как текст сменяется. Вы увидите стрелку "▽" справа внизу.' },
+            { speaker: 'Система', text: 'Нажмите, чтобы увидеть, как текст сменяется. Вы увидите текст "Нажмите, чтобы продолжить..." справа внизу.' },
             { speaker: 'Система', text: 'Имена говорящих отображаются слева вверху текстового поля.' },
             { speaker: 'Инструктор', text: 'Привет, Бета-тестер! Наша игра построена на выборе. Сейчас я покажу, как это работает.' },
             { action: 'show_choices', text: 'Туториал продолжается. Нажмите "Продолжить".' }
@@ -246,42 +246,42 @@ const gameData = {
 // --- НОВАЯ ФУНКЦИЯ: ЭФФЕКТ ПЕЧАТИ (КОНСОЛЬ) ---
 
 function typeText(text) {
-    isTyping = true;
-    storyText.textContent = '';
-    // Убираем класс, чтобы курсор мигал во время печати (требует CSS)
-    document.getElementById('text-box').classList.remove('text-complete'); 
+    isTyping = true;
+    storyText.textContent = '';
+    // Убираем класс, чтобы курсор мигал во время печати (требует CSS)
+    document.getElementById('text-box').classList.remove('text-complete'); 
 
-    return new Promise(resolve => {
-        currentTypingResolver = resolve;
-        let index = 0;
+    return new Promise(resolve => {
+        currentTypingResolver = resolve;
+        let index = 0;
 
-        function printChar() {
-            // Проверка на прерывание (Fast-Forward)
-            if (!isTyping) { 
-                storyText.textContent = text;
-                document.getElementById('text-box').classList.add('text-complete');
-                continuePrompt.style.display = 'block';
-                resolve(); // Завершаем Promise
-                return;
-            }
+        function printChar() {
+            // Проверка на прерывание (Fast-Forward)
+            if (!isTyping) { 
+                storyText.textContent = text;
+                document.getElementById('text-box').classList.add('text-complete');
+                continuePrompt.style.display = 'block';
+                resolve(); // Завершаем Promise
+                return;
+            }
 
-            if (index < text.length) {
-                // Добавляем следующую букву
-                storyText.textContent += text.charAt(index);
-                index++;
-                // Планируем печать следующей буквы
-                setTimeout(printChar, TYPING_SPEED);
-            } else {
-                isTyping = false;
-                document.getElementById('text-box').classList.add('text-complete');
-                continuePrompt.style.display = 'block'; // Показываем стрелку, когда текст напечатан
-                resolve();
-            }
-        }
+            if (index < text.length) {
+                // Добавляем следующую букву
+                storyText.textContent += text.charAt(index);
+                index++;
+                // Планируем печать следующей буквы
+                setTimeout(printChar, TYPING_SPEED);
+            } else {
+                isTyping = false;
+                document.getElementById('text-box').classList.add('text-complete');
+                continuePrompt.style.display = 'block'; // Показываем стрелку, когда текст напечатан
+                resolve();
+            }
+        }
 
-        // Запускаем печать
-        printChar();
-    });
+        // Запускаем печать
+        printChar();
+    });
 }
 
 
@@ -336,14 +336,14 @@ function showScene(sceneId) {
 async function goToNextStoryStep() {
     const scene = gameData[currentSceneId];
 
-    // 1. ЛОГИКА БЫСТРОЙ ПЕЧАТИ (FAST-FORWARD)
-    if (isTyping) {
-        isTyping = false; // Отключаем флаг, чтобы typeText завершился
-        if (currentTypingResolver) {
-            currentTypingResolver(); // Немедленно завершаем Promise в typeText
-        }
-        return; // Выходим, ждем следующего клика для перехода к следующему шагу
-    }
+    // 1. ЛОГИКА БЫСТРОЙ ПЕЧАТИ (FAST-FORWARD)
+    if (isTyping) {
+        isTyping = false; // Отключаем флаг, чтобы typeText завершился
+        if (currentTypingResolver) {
+            currentTypingResolver(); // Немедленно завершаем Promise в typeText
+        }
+        return; // Выходим, ждем следующего клика для перехода к следующему шагу
+    }
 
     if (isAwaitingChoice || !scene.story) {
         return;
@@ -374,9 +374,9 @@ async function goToNextStoryStep() {
     } else {
         speakerName.style.display = 'none';
     }
-    
-    // 2. Отображаем текущую фразу с эффектом печати и ждем
-    await typeText(step.text);
+    
+    // 2. Отображаем текущую фразу с эффектом печати и ждем
+    await typeText(step.text);
 
     currentStoryIndex++;
 }
@@ -484,28 +484,35 @@ function checkEnding() {
 }
 
 // Генерация финального отчета
+// *** ИСПРАВЛЕНИЕ БАГА: Обеспечение отображения текста для всех концовок ***
 function generateEnding(sceneId) {
-    const scene = gameData[sceneId];
+    const scene = gameData[sceneId];
 
-    if (sceneId === 'ending_consequences') {
-        // Формируем детальный отчет
-        let reportHTML = '<ul>';
-        consequencesReport.forEach((consequence, index) => {
-            reportHTML += `<li>**Ситуация ${index + 1}:** ${consequence.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}</li>`;
-        });
-        reportHTML += '</ul>';
+    // 1. Отображаем основной текст концовки (для обеих)
+    let mainText = scene.text.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>');
+    let reportHTML = '';
+    let overallText = '';
 
-        // Добавляем общий итог
-        let overallText = `<p>Ты принял ${correctChoices} из ${totalScenes} решений, соответствующих духу смены.</p><p>Жизнь — это игра, в которой ты учишься. Спасибо за твой выбор!</p>`;
+    // 2. Добавляем подробный отчет только для "ending_consequences"
+    if (sceneId === 'ending_consequences') {
+        // Формируем детальный отчет
+        reportHTML += '<ul>';
+        consequencesReport.forEach((consequence, index) => {
+            reportHTML += `<li>**Ситуация ${index + 1}:** ${consequence.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}</li>`;
+        });
+        reportHTML += '</ul>';
 
-        // Обновляем содержимое
-        storyText.innerHTML = scene.text + overallText + reportHTML;
-    }
-    // Для секретной концовки текст уже готов в gameData.
-    
-    // Включаем кнопки финальной сцены
-    showChoices(scene);
+        // Добавляем общий итог
+        overallText = `<p>Ты принял ${correctChoices} из ${totalScenes} решений, соответствующих духу смены.</p><p>Жизнь — это игра, в которой ты учишься. Спасибо за твой выбор!</p>`;
+    }
+    
+    // Обновляем содержимое storyText для всех концовок
+    storyText.innerHTML = mainText + overallText + reportHTML;
+    
+    // Включаем кнопки финальной сцены
+    showChoices(scene);
 }
+// *************************************************************************
 
 // --- 4. ЗАПУСК ИГРЫ ---
 
