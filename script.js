@@ -278,6 +278,29 @@ function renderSceneContent(sceneId) {
             isAwaitingChoice = false;
         }
 
+        // Если возвращаемся из подсказки, принудительно показываем экран выбора без повторной печати
+        if (isReturningFromHint) {
+            const choiceStepIndex = scene.story.findIndex(step => step.action === 'show_choices');
+            if (choiceStepIndex !== -1) {
+                const step = scene.story[choiceStepIndex];
+                updateSpriteEmphasis(null);
+                speakerName.textContent = 'РЕШЕНИЕ';
+                speakerName.style.display = 'block';
+                continuePrompt.style.display = 'none';
+                if (step.text.includes('<span')) {
+                    storyText.innerHTML = step.text;
+                } else {
+                    storyText.textContent = step.text;  // Устанавливаем текст напрямую, без печати
+                }
+                document.getElementById('text-box').classList.add('text-complete');
+                showChoices(scene);
+                textBox.onclick = null;
+                currentStoryIndex = choiceStepIndex;
+                isAwaitingChoice = true;
+                return;
+            }
+        }
+
         // Устанавливаем обработчик клика для перехода (Активирован, даже для hint)
         textBox.onclick = goToNextStoryStep;
         goToNextStoryStep();
@@ -539,21 +562,51 @@ function generateEnding(sceneId) {
     let overallText = '';
 
     if (sceneId === 'ending_consequences') {
-        // Формируем детальный отчет
-        reportHTML += '<div style="margin-top: 20px;">';
+        // Общий итог
+        overallText = `
+            <div style="margin-top: 20px; padding: 15px; background-color: rgba(10, 104, 54, 0.2); border-left: 4px solid var(--light-green); border-radius: 4px;">
+                <h3 style="margin: 0 0 10px 0; color: var(--light-green);">Общий итог</h3>
+                <p style="margin: 0;">Ты принял <b>${correctChoices} из ${totalScenes}</b> решений, соответствующих духу смены.</p>
+                <p style="margin: 10px 0 0 0;">Жизнь — это игра, в которой ты учишься. Спасибо за твой выбор!</p>
+            </div>
+        `;
+
+        // Детальный отчет в виде таблицы
+        reportHTML = `
+            <div style="margin-top: 30px;">
+                <h3 style="margin: 0 0 15px 0; color: var(--accent-warm);">Детальный отчет</h3>
+                <table style="width: 100%; border-collapse: collapse; background-color: rgba(0, 0, 0, 0.3); border-radius: 4px; overflow: hidden;">
+                    <thead>
+                        <tr style="background-color: rgba(10, 104, 54, 0.5);">
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--light-green); color: var(--white);">Ситуация</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--light-green); color: var(--white);">Выбор</th>
+                            <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--light-green); color: var(--white);">Статус</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--light-green); color: var(--white);">Последствие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
         consequencesReport.forEach((report, index) => {
             const status = report.isCorrect ? '✅ ВЕРНО' : '❌ ОШИБКА';
+            const statusColor = report.isCorrect ? 'color: #49a861;' : 'color: #ff4444;';
+            const consequenceText = report.consequence.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>');
+
             reportHTML += `
-                <p style="margin-bottom: 5px;">--- <b>Ситуация ${index + 1}</b> (${report.scene}) ---</p>
-                <p style="margin-left: 10px;"><b>Выбор:</b> "${report.choice}"</p>
-                <p style="margin-left: 10px;"><b>Статус:</b> ${status}</p>
-                <p style="margin-left: 10px;"><b>Последствие:</b> ${report.consequence.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}</p>
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                    <td style="padding: 10px; font-weight: bold;">${index + 1}. ${report.scene}</td>
+                    <td style="padding: 10px;">"${report.choice}"</td>
+                    <td style="padding: 10px; text-align: center; font-weight: bold; ${statusColor}">${status}</td>
+                    <td style="padding: 10px;">${consequenceText}</td>
+                </tr>
             `;
         });
-        reportHTML += '</div>';
 
-        // Добавляем общий итог
-        overallText = `<p style="margin-top: 20px;">Ты принял <b>${correctChoices} из ${totalScenes}</b> решений, соответствующих духу смены.</p><p>Жизнь — это игра, в которой ты учишься. Спасибо за твой выбор!</p>`;
+        reportHTML += `
+                    </tbody>
+                </table>
+            </div>
+        `;
     }
     
     storyText.innerHTML = mainText + overallText + reportHTML;

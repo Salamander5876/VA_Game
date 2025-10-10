@@ -104,8 +104,8 @@ html, body {
     height: var(--text-box-height);
     background-color: #0e1813;
     backdrop-filter: blur(4px);
-    padding: 20px;
-    padding-top: 40px;
+    padding: 10px;
+    padding-top: 10px;
     border-top: 2px solid var(--accent-warm); 
     box-shadow: 0 -5px 20px rgba(200, 168, 72, 0.4); 
     box-sizing: border-box;
@@ -113,8 +113,6 @@ html, body {
     color: var(--text-color);
     font-size: 1.1em;
     overflow-y: auto;
-    overflow: visible !important;
-    
 
     /* НОВЫЕ СТИЛИ ДЛЯ ЗАПРЕТА ВЫДЕЛЕНИЯ ТЕКСТА */
     -webkit-user-select: none; /* Для старых версий Chrome/Safari */
@@ -123,6 +121,24 @@ html, body {
     user-select: none;         /* Стандартное свойство */
     cursor: pointer;           /* (Опционально) Явно указываем, что поле кликабельно */
 
+    /* СКРОЛЛБАР СТИЛИЗАЦИЯ ДЛЯ ВЕБКИТА (Chrome/Safari) */
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--accent-cool);
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: var(--light-green);
+    }
 }
 
 /* Стиль для имени говорящего */
@@ -144,7 +160,7 @@ html, body {
     margin: 0;
     line-height: 1.6;
     white-space: pre-wrap;
-    overflow: hidden;
+    /* ИЗМЕНЕНИЕ: Убираем overflow: hidden, чтобы позволить скроллинг родительского контейнера */
     border-right: .15em solid var(--accent-cool);
     font-size: 1.1em;
     animation: typing-cursor 0.7s steps(40) infinite;
@@ -374,7 +390,7 @@ html, body {
 @media (max-width: 799px) {
     :root {
         /* УВЕЛИЧЕННАЯ ВЫСОТА ТЕКСТОВОГО БОКСА для лучшего разделения на мобильных */
-        --text-box-height: 30vh;
+        --text-box-height: 35vh; /* Увеличили высоту на 5vh для лучшего скролла */
     }
     .sprite {
         /* ИСПРАВЛЕНИЕ: Уменьшаем ширину спрайта до 45% от ширины вьюпорта, чтобы два спрайта уместились рядом. */
@@ -422,6 +438,6 @@ html, body {
 @media (min-width: 800px) {
     :root {
         /* Комфортная высота текстового бокса на ПК */
-        --text-box-height: 20vh;
+        --text-box-height: 25vh; /* Увеличили на 5vh для лучшего скролла */
     }
 }
