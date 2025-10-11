@@ -112,7 +112,7 @@ html, body {
     z-index: 500;
     color: var(--text-color);
     font-size: 1.1em;
-    overflow-y: auto;
+    overflow: visible; /* ИЗМЕНЕНИЕ: Позволяем absolute дочерним элементам выходить за границы */
 
     /* НОВЫЕ СТИЛИ ДЛЯ ЗАПРЕТА ВЫДЕЛЕНИЯ ТЕКСТА */
     -webkit-user-select: none; /* Для старых версий Chrome/Safari */
@@ -147,7 +147,7 @@ html, body {
     color: var(--text-dark); 
     padding: 5px 15px;
     position: absolute;
-    top: -33px;
+    top: -32px; /* Увеличили отрицательный top для лучшей видимости */
     left: 10px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
@@ -329,8 +329,7 @@ html, body {
     z-index: 1000;
     /* Убеждаемся, что фон не скроллится на мобильных */
     overflow: hidden; 
-    transition: opacity 5.0s ease-out; 
-    pointer-events: auto; /* По умолчанию активен */
+    transition: opacity
 }
 #loading-overlay.fade-out {
     opacity: 0;
