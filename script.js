@@ -761,11 +761,13 @@ function checkEnding() {
 function generateEnding(sceneId) {
     const scene = gameData[sceneId];
 
-    let mainText = scene.text.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>');
+    let mainText = '';
     let reportHTML = '';
     let overallText = '';
 
     if (sceneId === 'ending_consequences') {
+        mainText = scene.text.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>');
+
         // Общий итог
         overallText = `
             <div style="margin-top: 20px; padding: 15px; background-color: rgba(10, 104, 54, 0.2); border-left: 4px solid var(--light-green); border-radius: 4px;">
@@ -811,6 +813,20 @@ function generateEnding(sceneId) {
                 </table>
             </div>
         `;
+    } else if (scene.story) {
+        // Для других концовок рендерим story как последовательность текста
+        let endingStoryHTML = '';
+        scene.story.forEach(step => {
+            if (step.speaker) {
+                endingStoryHTML += `<p><b>${step.speaker}:</b> ${step.text.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}</p>`;
+            } else {
+                endingStoryHTML += `<p>${step.text.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}</p>`;
+            }
+            // Если есть action show_choices, не рендерим здесь, так как showChoices будет вызвано после
+        });
+        mainText = endingStoryHTML;
+    } else if (scene.text) {
+        mainText = scene.text.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>');
     }
     
     storyText.innerHTML = mainText + overallText + reportHTML;
