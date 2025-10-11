@@ -41,7 +41,7 @@ export const gameData = {
     'tutorial_choice': {
         location: 'Парапет (Обучение)', // Изменено
         background: 'url(images/background/night.jpg)', // Изменено
-        sprites: [{ name: 'Володя', baseSrc: 'images/volodya_2', frames: 6, position: 'center' }], // Изменено для анимации
+        sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_2', frames: 6, position: 'center' }], // Изменено для анимации
         story: [
             { speaker: 'Володя', text: 'В ключевые моменты вы увидите кнопки выбора. От них зависит ваш прогресс и концовка.' }, // Изменено от Володи
             { speaker: 'Володя', text: 'Если вы сомневаетесь, нажмите на <span style="color: #ffbf00; font-weight: bold;">желтую кнопку "Попросить совета (Володя)"</span>.' }, // Изменено от Володи
