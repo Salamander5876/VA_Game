@@ -71,7 +71,7 @@ export const gameData = {
 
     'scene1': {
         location: 'Выбор мастерской',
-        background: 'url(images/front_of_the_dining.jpg)',
+        background: 'url(images/background/front_of_the_dining.jpg)',
         sprites: [ 
             { name: 'Друг', src: 'images/bibikov.png', position: 'left' }, 
             { name: 'Ты', src: 'images/vitaly.png', position: 'right' }      
@@ -206,8 +206,8 @@ export const gameData = {
     },
     'hint': {
         location: 'Парапет',
-        background: 'url(images/night.jpg)',
-        sprites: [{ name: 'Володя', baseSrc: 'images/volodya_1', frames: 6, position: 'center' }],
+        background: 'url(images/background/night.jpg)',
+        sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_1', frames: 6, position: 'center' }],
         isHint: true,
         story: [
             // ЭТОТ ТЕКСТ БУДЕТ ЗАМЕНЕН НА scene.hint в handleChoice!
