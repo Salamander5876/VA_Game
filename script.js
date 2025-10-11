@@ -29,7 +29,7 @@ const DEFAULT_FRAMES = 6; // Количество кадров по умолча
 let isTyping = false; 
 let currentTypingResolver = null; 
 
-let currentSceneId = 'loading_screen'; // Начинаем со сцены загрузки
+let currentSceneId = 'welcome_message'; // Начинаем со сцены загрузки
 let currentSceneStack = []; 
 let correctChoices = 0;
 let totalScenes = 0;
@@ -39,26 +39,90 @@ let isAwaitingChoice = false;
 let isAwaitingConsequenceClick = false; 
 
 // Запоминаем оригинальный первый текст Володи для сцены 'hint', чтобы его можно было восстанавливать
-const ORIGINAL_HINT_TEXT = gameData['hint'].story[0].text;
+const ORIGINAL_HINT_TEXT = gameData['hint'] ? gameData['hint'].story[0].text : 'Возврат...';
+
+
+// --- НОВЫЕ АУДИО-КОНСТАНТЫ И ЭЛЕМЕНТЫ ---
+const typingSound = new Audio('sound/typing.mp3'); 
+typingSound.volume = 0.3; // Регулировка громкости звука печати
+
+const transitionSound = new Audio('sound/переход.mp3');
+transitionSound.volume = 0.5; // Регулировка громкости звука перехода
+
+// НОВЫЕ ЭЛЕМЕНТЫ ДЛЯ ФОНОВОЙ МУЗЫКИ (BGM)
+const backgroundMusic = new Audio();
+backgroundMusic.volume = 0.4; // Громкость BGM
+let currentBGM = null; // Отслеживание текущей BGM
+
+// Флаг для контроля частоты проигрывания звука печати
+let typingSoundPlaybackCounter = 0;
+const TYPING_SOUND_INTERVAL = 1; // Проигрывать звук на каждую 2-ю букву
+
+/**
+ * Инициализирует аудио-элементы, чтобы они были готовы к проигрыванию.
+ */
+function initializeAudio() {
+    // Предварительная загрузка для ускорения
+    typingSound.preload = 'auto';
+    transitionSound.preload = 'auto';
+    backgroundMusic.preload = 'auto'; // Добавлено для BGM
+    
+    // Подготовка звука печати (для быстрого сброса и проигрывания)
+    typingSound.load(); 
+    transitionSound.load(); 
+    // BGM будет загружаться в preloadAssets
+}
+
+/**
+ * Останавливает и сбрасывает звук печати.
+ */
+function stopTypingSound() {
+    typingSound.pause();
+    typingSound.currentTime = 0;
+}
+// --- КОНЕЦ НОВЫХ АУДИО-КОНСТАНТ И ЭЛЕМЕНТОВ ---
+
+
+// --- ПОЛИФИЛ ДЛЯ ОДНОКРАТНОГО СЛУШАТЕЛЯ НА DOCUMENT ---
+/**
+ * Вспомогательная функция для добавления обработчика, который удаляется после первого вызова.
+ */
+document.once = function(event, callback) {
+    const listener = function() {
+        callback();
+        document.removeEventListener(event, listener);
+    };
+    document.addEventListener(event, listener);
+};
+// --- КОНЕЦ ПОЛИФИЛА ---
 
 
 // --- 2. ЛОГИКА ЗАГРУЗКИ КОНТЕНТА ---
 
 /**
- * Ищет все изображения в gameData и загружает их.
+ * Ищет все изображения и музыку в gameData и загружает их.
  */
 function preloadAssets() {
     return new Promise(async (resolve) => {
         const assetsToLoad = new Set();
+        // Добавляем звуковые файлы к загрузке, чтобы отобразить полный прогресс
+        assetsToLoad.add(typingSound.src.split('/').pop()); // Просто для счетчика
+        assetsToLoad.add(transitionSound.src.split('/').pop()); // Просто для счетчика
 
         for (const key in gameData) {
             const scene = gameData[key];
+            
+            // 0. Собираем BGM (НОВОЕ)
+            if (scene.bgm) { 
+                assetsToLoad.add(scene.bgm);
+            }
+            
             // 1. Собираем все фоны
             if (scene.background && scene.background.startsWith('url(')) {
                 const url = scene.background.slice(4, -1).replace(/['"]/g, '');
                 assetsToLoad.add(url);
             }
-            // 2. Собираем все спрайты (массивы)
+            // 2, 3, 4. Собираем все спрайты (существующая логика)
             if (scene.sprites && Array.isArray(scene.sprites)) {
                 scene.sprites.forEach(spriteData => {
                     if (spriteData.baseSrc && spriteData.frames) {
@@ -70,7 +134,6 @@ function preloadAssets() {
                     }
                 });
             }
-            // 3. Собираем спрайты (одиночные)
             if (scene.sprite) {
                 const spriteData = scene.sprite;
                 if (spriteData.baseSrc && spriteData.frames) {
@@ -81,11 +144,9 @@ function preloadAssets() {
                     assetsToLoad.add(spriteData.src);
                 }
             }
-            // 4. Собираем спрайты из истории (смена эмоций) - предполагаем baseSrc для анимации
             if (scene.story) {
                 scene.story.forEach(step => {
                     if (step.spriteSrc) {
-                        // Предполагаем, что spriteSrc - базовый путь для анимированного спрайта
                         for (let i = 1; i <= DEFAULT_FRAMES; i++) {
                             assetsToLoad.add(`${step.spriteSrc}/${i}.png`);
                         }
@@ -94,24 +155,43 @@ function preloadAssets() {
             }
         }
 
-        const total = assetsToLoad.size;
+        // Удаляем фиктивные имена (например, звуки, которые не URL), чтобы загружать только реальные URL
+        const realAssetsToLoad = Array.from(assetsToLoad).filter(url => url.includes('/') || url.endsWith('.mp3')); 
+        const total = realAssetsToLoad.length;
         let loadedCount = 0;
 
         loadingText.textContent = `Загрузка: 0 из ${total} файлов... (0%)`;
         
-        const loadPromises = Array.from(assetsToLoad).map(url => {
-            return new Promise(imgResolve => {
-                const img = new Image();
-                img.onload = img.onerror = () => { // Обрабатываем успех и ошибку одинаково
-                    loadedCount++;
-                    const percent = Math.round((loadedCount / total) * 100);
-                    loadingText.textContent = `Загрузка: ${loadedCount} из ${total} файлов... (${percent}%)`;
-                    if (progressIndicator) {
-                        progressIndicator.style.width = `${percent}%`;
-                    }
-                    imgResolve();
-                };
-                img.src = url;
+        initializeAudio(); 
+        
+        const loadPromises = realAssetsToLoad.map(url => {
+            return new Promise(assetResolve => {
+                // Определяем, это изображение или аудио
+                if (url.endsWith('.mp3')) {
+                    const audio = new Audio(url);
+                    audio.oncanplaythrough = audio.onerror = () => {
+                        loadedCount++;
+                        const percent = Math.round((loadedCount / total) * 100);
+                        loadingText.textContent = `Загрузка: ${loadedCount} из ${total} файлов... (${percent}%)`;
+                        if (progressIndicator) {
+                            progressIndicator.style.width = `${percent}%`;
+                        }
+                        assetResolve();
+                    };
+                    audio.load();
+                } else {
+                    const img = new Image();
+                    img.onload = img.onerror = () => { 
+                        loadedCount++;
+                        const percent = Math.round((loadedCount / total) * 100);
+                        loadingText.textContent = `Загрузка: ${loadedCount} из ${total} файлов... (${percent}%)`;
+                        if (progressIndicator) {
+                            progressIndicator.style.width = `${percent}%`;
+                        }
+                        assetResolve();
+                    };
+                    img.src = url;
+                }
             });
         });
 
@@ -130,7 +210,6 @@ function initializeGame() {
     gameContainer.style.display = 'block';
 
     // 2. Запускаем первую сцену ('welcome_message'). 
-    // Фон и контент сцены появятся под экраном загрузки.
     showScene('welcome_message'); 
     
     // 3. Запускаем анимацию плавного исчезновения оверлея
@@ -150,6 +229,7 @@ function initializeGame() {
  */
 function typeText(text) {
     isTyping = true;
+    stopTypingSound(); // Сбрасываем звук, если он был активен
     storyText.textContent = '';
     document.getElementById('text-box').classList.remove('text-complete'); 
 
@@ -163,6 +243,7 @@ function typeText(text) {
                 storyText.textContent = text;
                 document.getElementById('text-box').classList.add('text-complete');
                 continuePrompt.style.display = 'block';
+                stopTypingSound(); // Останавливаем звук при прерывании
                 resolve(); 
                 return;
             }
@@ -170,12 +251,23 @@ function typeText(text) {
             if (index < text.length) {
                 let char = text.charAt(index);
                 storyText.textContent += char;
+                
+                // ЛОГИКА ЗВУКА ПЕЧАТИ
+                if (typingSoundPlaybackCounter % TYPING_SOUND_INTERVAL === 0 && char.trim() !== '') {
+                    // Проигрываем звук только если символ не пробел и на каждой N-ой итерации
+                    typingSound.currentTime = 0; // Сбрасываем для мгновенного проигрывания
+                    typingSound.play().catch(e => console.log("Ошибка проигрывания звука печати:", e));
+                }
+                typingSoundPlaybackCounter++;
+                // КОНЕЦ ЛОГИКИ ЗВУКА ПЕЧАТИ
+                
                 index++;
                 setTimeout(printChar, TYPING_SPEED);
             } else {
                 isTyping = false;
                 document.getElementById('text-box').classList.add('text-complete');
                 continuePrompt.style.display = 'block'; 
+                stopTypingSound(); // Останавливаем звук по завершении
                 resolve();
             }
         }
@@ -257,6 +349,13 @@ function showScene(sceneId) {
         return;
     }
 
+    // ЛОГИКА ЗВУКА ПЕРЕХОДА: Проигрываем звук только при реальной смене сцены
+    if (sceneId !== currentSceneId) {
+        transitionSound.currentTime = 0; // Сбрасываем для мгновенного проигрывания
+        transitionSound.play().catch(e => console.log("Ошибка проигрывания звука перехода:", e));
+    }
+    // КОНЕЦ ЛОГИКИ ЗВУКА ПЕРЕХОДА
+
     if (transitionOverlay) {
         transitionOverlay.classList.add('active');
         
@@ -274,12 +373,13 @@ function showScene(sceneId) {
 
 
 /**
- * Рендерит всю информацию сцены (фон, спрайты, начальный текст).
+ * Рендерит всю информацию сцены (фон, спрайты, начальный текст, BGM).
  */
 function renderSceneContent(sceneId) {
     // Останавливаем все предыдущие анимации спрайтов
     stopAllSpriteAnimations();
-
+    stopTypingSound(); // Остановка звука печати при смене контента
+    
     const scene = gameData[sceneId];
     if (!scene) {
         console.error('Сцена не найдена:', sceneId);
@@ -288,7 +388,9 @@ function renderSceneContent(sceneId) {
 
     // --- ЛОГИКА ВОССТАНОВЛЕНИЯ HINT-ТЕКСТА ---
     if (currentSceneId === 'hint' && sceneId !== 'hint') {
-        gameData['hint'].story[0].text = ORIGINAL_HINT_TEXT;
+        if (gameData['hint']) {
+            gameData['hint'].story[0].text = ORIGINAL_HINT_TEXT;
+        }
     }
     // --- КОНЕЦ ЛОГИКИ ---
 
@@ -297,6 +399,30 @@ function renderSceneContent(sceneId) {
     
     isAwaitingConsequenceClick = false; 
 
+    // --- ЛОГИКА СМЕНЫ BGM (НОВОЕ) ---
+    if (scene.bgm && scene.bgm !== currentBGM) {
+        currentBGM = scene.bgm;
+        backgroundMusic.src = currentBGM;
+        backgroundMusic.loop = true; // Зацикливание музыки
+        
+        backgroundMusic.play().catch(e => {
+            console.warn("Автозапуск BGM заблокирован. Музыка начнется после первого взаимодействия с пользователем.", e);
+            // Если автозапуск заблокирован, добавляем слушатель на первый клик/нажатие клавиши
+            document.once('click', () => {
+                backgroundMusic.play().catch(err => console.error("Ошибка повторного запуска BGM:", err));
+            });
+            document.once('keydown', () => {
+                backgroundMusic.play().catch(err => console.error("Ошибка повторного запуска BGM:", err));
+            });
+        });
+
+    } else if (!scene.bgm && currentBGM) {
+        backgroundMusic.pause();
+        currentBGM = null;
+    }
+    // --- КОНЕЦ ЛОГИКИ СМЕНЫ BGM ---
+    
+    
     locationText.textContent = scene.location;
     backgroundImage.style.backgroundImage = scene.background ? scene.background : 'none';
 
@@ -358,7 +484,7 @@ function renderSceneContent(sceneId) {
                 if (step.text.includes('<span')) {
                     storyText.innerHTML = step.text;
                 } else {
-                    storyText.textContent = step.text;  // Устанавливаем текст напрямую, без печати
+                    storyText.textContent = step.text;  // Устанавливаем текст напрямую, без печати
                 }
                 document.getElementById('text-box').classList.add('text-complete');
                 showChoices(scene);
@@ -434,8 +560,7 @@ async function goToNextStoryStep() {
     if (step.action === 'show_choices') {
         updateSpriteEmphasis(null);
         
-        // Отключаем клик по текстовому полю. Это важно для сцены HINT, 
-        // чтобы после показа выбора не было зацикливания. 
+        // Отключаем клик по текстовому полю.
         document.getElementById('text-box').onclick = null; 
         
         speakerName.textContent = currentSceneId === 'hint' ? 'ВОЗВРАТ' : 'РЕШЕНИЕ'; 
@@ -551,7 +676,9 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
         currentSceneStack.push(sceneId); 
         
         // Временно заменяем первый текст Володи на текст подсказки
-        gameData['hint'].story[0].text = currentScene.hint;
+        if (gameData['hint']) {
+            gameData['hint'].story[0].text = currentScene.hint;
+        }
 
         showScene('hint'); 
         

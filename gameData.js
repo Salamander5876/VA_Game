@@ -10,6 +10,7 @@ export const gameData = {
     'welcome_message': {
         location: 'Приветствие',
         background: 'url(images/background/night.jpg)', // Фон для приветствия
+        bgm: 'sound/night.mp3', // НОВАЯ ОПЦИЯ: Музыка для приветствия
         story: [
             { speaker: 'Система', text: 'Привет!' },
             { speaker: 'Система', text: 'Давай знакомиться!' },
@@ -25,6 +26,7 @@ export const gameData = {
         location: 'Парапет (Инструктаж)', // Изменено
         background: 'url(images/background/night.jpg)', // Изменено
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_1', frames: 6, position: 'center' }], // Изменено для анимации
+        bgm: 'sound/night.mp3', // НОВАЯ ОПЦИЯ: Музыка для приветствия
         story: [
             { speaker: 'Система', text: 'Добро пожаловать в обучающий режим!' },
             { speaker: 'Володя', text: 'Привет! Я <span style="color: #6abefa; font-weight: bold;"> Володя Анисимов</span>, и я буду твоим наставником в этом симуляторе. Я помогу тебе понять, что такое быть **осознанным вожатым**.' }, // Добавлено от Володи
@@ -42,6 +44,7 @@ export const gameData = {
         location: 'Парапет (Обучение)', // Изменено
         background: 'url(images/background/night.jpg)', // Изменено
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_2', frames: 6, position: 'center' }], // Изменено для анимации
+        bgm: 'sound/night.mp3', // НОВАЯ ОПЦИЯ: Музыка для приветствия
         story: [
             { speaker: 'Володя', text: 'В ключевые моменты вы увидите кнопки выбора. От них зависит ваш прогресс и концовка.' }, // Изменено от Володи
             { speaker: 'Володя', text: 'Если вы сомневаетесь, нажмите на <span style="color: #ffbf00; font-weight: bold;">желтую кнопку "Попросить совета (Володя)"</span>.' }, // Изменено от Володи
@@ -56,8 +59,9 @@ export const gameData = {
     },
     'tutorial_end': {
         location: 'Парапет (Обучение завершено)', // Изменено
-        background: 'url(images/night.jpg)', // Изменено
-        sprites: [{ name: 'Володя', baseSrc: 'images/volodya_3', frames: 6, position: 'center' }], // Изменено для анимации
+        background: 'url(images/background/night.jpg)', // Изменено
+        sprites: [{ name: 'Володя', src: 'images/volodya_3.png',  position: 'center' }], // Изменено для анимации
+        bgm: 'sound/night.mp3', // НОВАЯ ОПЦИЯ: Музыка для приветствия
         story: [
             { speaker: 'Володя', text: 'Отлично! Вы освоили основы. Ваш тестовый выбор не повлиял на результат.' }, // Изменено от Володи
             { speaker: 'Володя', text: 'Помните: верный выбор — это не всегда самый легкий, но всегда тот, что способствует **доверию, развитию и осознанности**.' }, // Изменено от Володи
@@ -70,8 +74,9 @@ export const gameData = {
     },
 
     'scene1': {
-        location: 'Выбор мастерской',
+        location: 'Ребенок: Выбор мастерской',
         background: 'url(images/background/front_of_the_dining.jpg)',
+        bgm: 'sound/night.mp3', // НОВАЯ ОПЦИЯ: Музыка для приветствия
         sprites: [ 
             { name: 'Друг', src: 'images/bibikov.png', position: 'left' }, 
             { name: 'Ты', src: 'images/vitaly.png', position: 'right' }      
