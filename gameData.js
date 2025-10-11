@@ -213,6 +213,7 @@ export const gameData = {
         location: 'Парапет',
         background: 'url(images/background/night.jpg)',
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_1', frames: 6, position: 'center' }],
+        bgm: 'sound/hint.mp3',
         isHint: true,
         story: [
             // ЭТОТ ТЕКСТ БУДЕТ ЗАМЕНЕН НА scene.hint в handleChoice!
@@ -220,12 +221,12 @@ export const gameData = {
             { 
                 speaker: 'Володя', 
                 text: 'Подумай, какой выбор соответствует идее: "Жизнь — это увлекательная игра, где ты находишь себя, учишься доверять и открываешь свою уникальность через творчество, приключения и поддержку команды".',
-                spriteSrc: 'images/volodya_2'
+                spriteSrc: 'images/sprites/volodya_2'
             },
             {
                 speaker: 'Володя', 
                 text: 'Помни: самое важное — это осознанность и поддержка твоей команды. Смело возвращайся к решению!',
-                spriteSrc: 'images/volodya_3'
+                spriteSrc: 'images/sprites/volodya_3'
             },
             { action: 'show_choices', text: 'Вернитесь к решению.' }
         ],
