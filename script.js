@@ -24,6 +24,8 @@ const progressIndicator = document.getElementById('progress-indicator'); // Дл
 
 // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
 const TYPING_SPEED = 25; // Скорость печати (мс на букву)
+const ANIMATION_FRAME_DELAY = 200; // Задержка между кадрами анимации (мс)
+const DEFAULT_FRAMES = 6; // Количество кадров по умолчанию для анимированных спрайтов и фонов
 let isTyping = false; 
 let currentTypingResolver = null; 
 
@@ -58,17 +60,35 @@ function preloadAssets() {
             }
             // 2. Собираем все спрайты (массивы)
             if (scene.sprites && Array.isArray(scene.sprites)) {
-                scene.sprites.forEach(sprite => assetsToLoad.add(sprite.src));
+                scene.sprites.forEach(spriteData => {
+                    if (spriteData.baseSrc && spriteData.frames) {
+                        for (let i = 1; i <= spriteData.frames; i++) {
+                            assetsToLoad.add(`${spriteData.baseSrc}/${i}.png`);
+                        }
+                    } else if (spriteData.src) {
+                        assetsToLoad.add(spriteData.src);
+                    }
+                });
             }
             // 3. Собираем спрайты (одиночные)
-            if (scene.sprite && scene.sprite.src) {
-                assetsToLoad.add(scene.sprite.src);
+            if (scene.sprite) {
+                const spriteData = scene.sprite;
+                if (spriteData.baseSrc && spriteData.frames) {
+                    for (let i = 1; i <= spriteData.frames; i++) {
+                        assetsToLoad.add(`${spriteData.baseSrc}/${i}.png`);
+                    }
+                } else if (spriteData.src) {
+                    assetsToLoad.add(spriteData.src);
+                }
             }
-            // 4. Собираем спрайты из истории (смена эмоций)
+            // 4. Собираем спрайты из истории (смена эмоций) - предполагаем baseSrc для анимации
             if (scene.story) {
                 scene.story.forEach(step => {
                     if (step.spriteSrc) {
-                        assetsToLoad.add(step.spriteSrc);
+                        // Предполагаем, что spriteSrc - базовый путь для анимированного спрайта
+                        for (let i = 1; i <= DEFAULT_FRAMES; i++) {
+                            assetsToLoad.add(`${step.spriteSrc}/${i}.png`);
+                        }
                     }
                 });
             }
@@ -190,6 +210,45 @@ function updateSpriteEmphasis(currentSpeakerName) {
 }
 
 /**
+ * Останавливает все анимации спрайтов перед сменой сцены.
+ */
+function stopAllSpriteAnimations() {
+    const sprites = spriteArea.querySelectorAll('.sprite');
+    sprites.forEach(sprite => {
+        const intervalId = sprite.dataset.intervalId;
+        if (intervalId) {
+            clearInterval(parseInt(intervalId));
+            delete sprite.dataset.intervalId;
+        }
+    });
+}
+
+/**
+ * Запускает анимацию для указанного спрайта.
+ */
+function startSpriteAnimation(sprite, baseSrc, frames = DEFAULT_FRAMES) {
+    // Останавливаем предыдущую анимацию
+    const oldIntervalId = sprite.dataset.intervalId;
+    if (oldIntervalId) {
+        clearInterval(parseInt(oldIntervalId));
+    }
+
+    sprite.dataset.baseSrc = baseSrc;
+    sprite.dataset.frames = frames;
+    sprite.dataset.currentFrame = 1;
+    sprite.src = `${baseSrc}/1.png`;
+
+    const interval = setInterval(() => {
+        let frame = parseInt(sprite.dataset.currentFrame) + 1;
+        if (frame > frames) frame = 1;
+        sprite.dataset.currentFrame = frame;
+        sprite.src = `${baseSrc}/${frame}.png`;
+    }, ANIMATION_FRAME_DELAY);
+
+    sprite.dataset.intervalId = interval;
+}
+
+/**
  * Переключает сцену с эффектом перехода.
  */
 function showScene(sceneId) {
@@ -218,6 +277,9 @@ function showScene(sceneId) {
  * Рендерит всю информацию сцены (фон, спрайты, начальный текст).
  */
 function renderSceneContent(sceneId) {
+    // Останавливаем все предыдущие анимации спрайтов
+    stopAllSpriteAnimations();
+
     const scene = gameData[sceneId];
     if (!scene) {
         console.error('Сцена не найдена:', sceneId);
@@ -251,9 +313,15 @@ function renderSceneContent(sceneId) {
 
     spritesToRender.forEach(spriteData => {
         const spriteDiv = document.createElement('img');
-        spriteDiv.src = spriteData.src;
         spriteDiv.alt = spriteData.name;
         spriteDiv.className = `sprite ${spriteData.position}`; 
+        
+        if (spriteData.baseSrc && spriteData.frames > 1) {
+            startSpriteAnimation(spriteDiv, spriteData.baseSrc, spriteData.frames);
+        } else {
+            spriteDiv.src = spriteData.src;
+        }
+        
         spriteArea.appendChild(spriteDiv);
     });
     
@@ -386,11 +454,20 @@ async function goToNextStoryStep() {
         return;
     }
 
-    // 2. СМЕНА СПРАЙТА
+    // 2. СМЕНА СПРАЙТА (теперь с поддержкой анимации)
     if (step.spriteSrc && step.speaker) {
         const targetSprite = spriteArea.querySelector(`.sprite[alt="${step.speaker}"]`);
         if (targetSprite) {
-            targetSprite.src = step.spriteSrc;
+            // Останавливаем текущую анимацию
+            const oldIntervalId = targetSprite.dataset.intervalId;
+            if (oldIntervalId) {
+                clearInterval(parseInt(oldIntervalId));
+                delete targetSprite.dataset.intervalId;
+            }
+
+            // Устанавливаем новый базовый путь и запускаем анимацию
+            const newBaseSrc = step.spriteSrc; // Предполагаем, что это базовый путь без .png
+            startSpriteAnimation(targetSprite, newBaseSrc, DEFAULT_FRAMES);
         } else {
             console.warn(`Спрайт для говорящего "${step.speaker}" не найден для смены эмоции.`);
         }

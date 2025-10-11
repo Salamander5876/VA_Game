@@ -9,7 +9,7 @@ export const gameData = {
     },
     'welcome_message': {
         location: 'Приветствие',
-        background: 'url(images/night.jpg)', // Фон для приветствия
+        background: 'url(images/background/night.jpg)', // Фон для приветствия
         story: [
             { speaker: 'Система', text: 'Привет!' },
             { speaker: 'Система', text: 'Давай знакомиться!' },
@@ -23,8 +23,8 @@ export const gameData = {
     },
     'tutorial_start': {
         location: 'Парапет (Инструктаж)', // Изменено
-        background: 'url(images/night.jpg)', // Изменено
-        sprites: [{ name: 'Володя', src: 'images/volodya_1.png', position: 'center' }], // Изменено
+        background: 'url(images/background/night.jpg)', // Изменено
+        sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_1', frames: 6, position: 'center' }], // Изменено для анимации
         story: [
             { speaker: 'Система', text: 'Добро пожаловать в обучающий режим!' },
             { speaker: 'Володя', text: 'Привет! Я <span style="color: #6abefa; font-weight: bold;"> Володя Анисимов</span>, и я буду твоим наставником в этом симуляторе. Я помогу тебе понять, что такое быть **осознанным вожатым**.' }, // Добавлено от Володи
@@ -40,8 +40,8 @@ export const gameData = {
     },
     'tutorial_choice': {
         location: 'Парапет (Обучение)', // Изменено
-        background: 'url(images/night.jpg)', // Изменено
-        sprites: [{ name: 'Володя', src: 'images/volodya_2.png', position: 'center' }], // Изменено
+        background: 'url(images/background/night.jpg)', // Изменено
+        sprites: [{ name: 'Володя', baseSrc: 'images/volodya_2', frames: 6, position: 'center' }], // Изменено для анимации
         story: [
             { speaker: 'Володя', text: 'В ключевые моменты вы увидите кнопки выбора. От них зависит ваш прогресс и концовка.' }, // Изменено от Володи
             { speaker: 'Володя', text: 'Если вы сомневаетесь, нажмите на <span style="color: #ffbf00; font-weight: bold;">желтую кнопку "Попросить совета (Володя)"</span>.' }, // Изменено от Володи
@@ -57,7 +57,7 @@ export const gameData = {
     'tutorial_end': {
         location: 'Парапет (Обучение завершено)', // Изменено
         background: 'url(images/night.jpg)', // Изменено
-        sprites: [{ name: 'Володя', src: 'images/volodya_3.png', position: 'center' }], // Изменено
+        sprites: [{ name: 'Володя', baseSrc: 'images/volodya_3', frames: 6, position: 'center' }], // Изменено для анимации
         story: [
             { speaker: 'Володя', text: 'Отлично! Вы освоили основы. Ваш тестовый выбор не повлиял на результат.' }, // Изменено от Володи
             { speaker: 'Володя', text: 'Помните: верный выбор — это не всегда самый легкий, но всегда тот, что способствует **доверию, развитию и осознанности**.' }, // Изменено от Володи
@@ -207,11 +207,21 @@ export const gameData = {
     'hint': {
         location: 'Парапет',
         background: 'url(images/night.jpg)',
-        sprites: [{ name: 'Володя', src: 'images/volodya_1.png', position: 'center' }],
+        sprites: [{ name: 'Володя', baseSrc: 'images/volodya_1', frames: 6, position: 'center' }],
         isHint: true,
         story: [
             // ЭТОТ ТЕКСТ БУДЕТ ЗАМЕНЕН НА scene.hint в handleChoice!
             { speaker: 'Володя', text: 'Привет! Я Володя Анисимов, кандидат на должность старшего вожатого. Скажу так, я ценю тех, кто не боится ответственности, готов к диалогу и горит своим делом.' }, 
+            { 
+                speaker: 'Володя', 
+                text: 'Подумай, какой выбор соответствует идее: "Жизнь — это увлекательная игра, где ты находишь себя, учишься доверять и открываешь свою уникальность через творчество, приключения и поддержку команды".',
+                spriteSrc: 'images/volodya_2'
+            },
+            {
+                speaker: 'Володя', 
+                text: 'Помни: самое важное — это осознанность и поддержка твоей команды. Смело возвращайся к решению!',
+                spriteSrc: 'images/volodya_3'
+            },
             { action: 'show_choices', text: 'Вернитесь к решению.' }
         ],
         choices: [
@@ -221,7 +231,7 @@ export const gameData = {
     'ending_consequences': {
         location: 'Отчет о последствиях (HAPPY END?)',
         background: 'url(images/night.jpg)',
-        sprites: [{ name: 'Володя', src: 'images/volodya_1.png', position: 'center' }],
+        sprites: [{ name: 'Володя', baseSrc: 'images/volodya_1', frames: 6, position: 'center' }],
         text: 'Бета-тест завершен. Твои решения сформировали мир игры. Вот что произошло на смене:',
         isEnding: true,
         choices: [
@@ -231,8 +241,8 @@ export const gameData = {
     'ending_secret': {
         location: 'Секретная концовка: Проект "Камертон 2026"',
         background: 'url(images/night.jpg)',
-        sprites: [{ name: 'Володя', src: 'images/volodya_1.png', position: 'center' }],
-        text: '!!! Секретная концовка !!!\n**Ваше видение ситуации совпадает с моим. Раз мы так похожы, возможно вам стоит проголосовать за меня "**. \nМоя цель создать смену, где каждый вожатый понимает свою роль, а ребенок чувствует, что его любят и ждут. Спасибо, что пережили такой необчынй опыт с открытым сердцем и вниманием.\n\n**Счастливая концовка: HAPPY END!!! Все счастливы!!!**',
+        sprites: [{ name: 'Володя', baseSrc: 'images/volodya_1', frames: 6, position: 'center' }],
+        text: '!!! Секретная концовка !!!\n\n**Ваше видение ситуации совпадает с моим. У вас есть "Рейтинг ВОЛОДЯ АНИСИМОВ"**. \n\nВы стремитесь создать смену, где каждый вожатый понимает свою роль, а ребенок чувствует, что его любят и ждут. Спасибо, что прожили этот опыт с открытым сердцем и вниманием.\n\n**Счастливая концовка: HAPPY END!!! Все счастливы!!!**',
         isEnding: true,
         choices: [
             { text: 'Поделиться результатом', nextScene: 'final_share' }
@@ -241,8 +251,8 @@ export const gameData = {
     'final_share': {
         location: 'ФИНАЛ',
         background: 'url(images/night.jpg)',
-        sprites: [{ name: 'Володя', src: 'images/volodya_3.png', position: 'center' }],
-        text: 'Спасибо что сыграли в игру! Смена "Камертон 2026" ждёт твоего голоса за кандидата на позицию старшего вожатого. До встречи в реальности!',
+        sprites: [{ name: 'Володя', baseSrc: 'images/volodya_3', frames: 6, position: 'center' }],
+        text: 'Спасибо за игру! Смена "Камертон 2026" ждёт тебя! (Здесь можно поставить ссылку на регистрацию)',
         isEnding: true,
         choices: []
     }
