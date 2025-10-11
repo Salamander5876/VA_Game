@@ -76,7 +76,7 @@ export const gameData = {
     'scene1': {
         location: 'Ребенок: Выбор мастерской',
         background: 'url(images/background/front_of_the_dining.jpg)',
-        bgm: 'sound/night.mp3', // НОВАЯ ОПЦИЯ: Музыка для приветствия
+        bgm: 'sound/scene1.mp3', // НОВАЯ ОПЦИЯ: Музыка для приветствия
         sprites: [ 
             { name: 'Друг', src: 'images/bibikov.png', position: 'left' }, 
             { name: 'Ты', src: 'images/vitaly.png', position: 'right' }      
