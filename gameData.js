@@ -59,7 +59,7 @@ export const gameData = {
 'tutorial_end': {
     location: 'Парапет (Обучение завершено)',
     background: 'url(images/background/night.jpg)',
-    sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
+    sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_2', frames: 6, position: 'center' }],
     bgm: 'sound/night.mp3',
     story: [
         { speaker: 'Володя', text: 'Отлично! Вы освоили основы. Ваш тестовый выбор не повлиял на результат.' },
