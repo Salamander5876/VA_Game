@@ -226,7 +226,7 @@ export const gameData = {
             {
                 speaker: 'Володя', 
                 text: 'Помни: самое важное — это осознанность и поддержка твоей команды. Смело возвращайся к решению!',
-                spriteSrc: 'images/sprites/volodya_3'
+                src: 'images/volodya_3.png'
             },
             { action: 'show_choices', text: 'Вернитесь к решению.' }
         ],
