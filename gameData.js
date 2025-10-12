@@ -115,11 +115,14 @@ export const gameData = {
 
     'scene2': {
         location: 'Башня Гильдий',
-        background: 'url(images/guild.jpg)',
-        sprites: [{ name: 'Лидер', src: 'images/sprite_leader.png', position: 'right' }],
+        background: 'url(images/background/lab.jpg)',
+        bgm: 'sound/Helynt - Movie Reference.mp3',
+        sprites: [{ name: 'Участник 1', src: 'images/sprites/maniken_left.png', position: 'right' },
+            { name: 'Участник 2', src: 'images/sprites/maniken_right.png', position: 'left' }
+        ],
         hint: 'Смена учит взаимодействовать и доверять, а в команде должно царить уважение. Конфликты нужно решать до начала работы.',
         story: [
-            { speaker: 'Лидер Гильдии', text: 'Нам нужно подготовить выступление, но эти двое опять спорят. Время идет, а мы стоим на месте.' },
+            { speaker: 'Лидер', text: 'Нам нужно подготовить выступление, но эти двое опять спорят. Время идет, а мы стоим на месте.' },
             { speaker: 'Участник 1', text: 'Моя идея лучше! А ты, Лидер, вообще молчи, ты тут только недавно!' },
             { speaker: 'Участник 2', text: 'Он прав! Если ты не можешь быть объективным, то я ухожу из проекта!' },
             { speaker: 'Ты', text: 'Ситуация накаляется. Я должен вмешаться, иначе команда распадется.' },
@@ -140,8 +143,11 @@ export const gameData = {
     },
     'scene3': {
         location: 'Поляна Следов (День творчества)',
-        background: 'url(images/art_festival.jpg)',
-        sprite: { name: 'creative', src: 'images/sprite_creative.png', position: 'left' },
+        background: 'url(images/background/lab.jpg)',
+        bgm: 'sound/Helynt - Potions.mp3',
+        sprites: [{ name: 'Расстроенный Участник', src: 'images/sprites/maniken_left.png', position: 'right' },
+            { name: 'Ты', src: 'images/sprites/maniken_right.png', position: 'left' }
+        ],
         hint: 'Важно, чтобы каждый ребенок чувствовал вклад и гордость за общее дело, и что его идеи поддерживают.',
         story: [
             { speaker: 'Ты', text: 'Началась работа над арт-объектом. Кажется, один из участников расстроен. Его идея не прошла голосование.' },
@@ -164,8 +170,9 @@ export const gameData = {
     },
     'scene4': {
         location: 'Темный зал ("500 Огней")',
-        background: 'url(images/500_fires.jpg)',
-        sprite: { name: 'speaker', src: 'images/sprite_speaker.png', position: 'right' },
+        background: 'url(images/background/lab.jpg)',
+        bgm: 'sound/Midnight Anima - Dead Signal Smile.mp3',
+        sprite: { name: 'Ведущий', src: 'images/sprites/maniken_left.png', position: 'center' },
         hint: 'Смена — безопасное место, где поддерживают твои идеи и чувства, а главное — где каждый может быть услышан. Сбрось свои страхи.',
         story: [
             { speaker: 'Ведущий', text: 'В зале 500 огней. Кто хочет поделиться своей мыслью или чувством?' },
@@ -188,8 +195,11 @@ export const gameData = {
     },
     'scene5': {
         location: 'База Бета-тестеров (Финал)',
-        background: 'url(images/final_day.jpg)',
-        sprite: { name: 'engineer', src: 'images/sprite_engineer.png', position: 'left' },
+        background: 'url(images/background/lab.jpg)',
+        bgm: 'sound/Animal Crossing_ New Leaf - 3PM.mp3',
+        sprites: [{ name: 'Инженер', src: 'images/sprites/maniken_left.png', position: 'right' },
+            { name: 'Ты', src: 'images/sprites/maniken_right.png', position: 'left' }
+        ],
         hint: 'Опыт вторичен, главное — доводить начатое до конца. Команда должна работать слаженно, без перегрузок, но с чувством, что стали частью важного процесса.',
         story: [
             { speaker: 'Инженер', text: 'Мы отловили все основные "баги", команда! Осталась только скучная документация, и можно идти на вечеринку!' },
@@ -238,7 +248,7 @@ export const gameData = {
         location: 'Отчет о последствиях (HAPPY END?)',
         background: 'url(images/background/night.jpg)',
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
-        bgm: 'sound/night.mp3',
+        bgm: 'sound/hint.mp3',
         text: 'Бета-тест завершен. Твои решения сформировали мир игры. Вот что произошло на смене:',
         isEnding: true,
         choices: [
@@ -249,7 +259,7 @@ export const gameData = {
     location: 'Секретная концовка: Тот же Камертон!',
     background: 'url(images/background/night.jpg)',
     sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
-    bgm: 'sound/night.mp3',
+    bgm: 'sound/hint.mp3',
     story: [
         { speaker: 'Володя', text: '!!! Секретная концовка!!!\nТы настроил свой Камертон на ту же частоту, что и я. <span style="color: #ffbf00; font-weight: bold;">Именно такое видение Смены я хочу воплотить.</span> Возможно тебе стоит проголосовать за меня на выборах. Ахахаха' },
         { speaker: 'Володя', text: 'Мы с тобой создали идеальную смену, основанную на развитии, доверии и творчестве. Смену, где каждый вожатый и ребенок чувствует себя на своем месте.' },
@@ -265,7 +275,7 @@ export const gameData = {
     location: 'ФИНАЛ',
     background: 'url(images/background/night.jpg)',
     sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
-    bgm: 'sound/night.mp3',
+    bgm: 'sound/hint.mp3',
     story: [
         { speaker: 'Володя', text: 'Спасибо за игру! Твои решения показали, какая смена может получится результате действий каждого.' },
         { speaker: 'Система', text: 'Если тебе откликается эта философия и ты хочешь, чтобы Смена "Камертон 2026" стала такой в реальности,<span style="color: #ffbf00; font-weight: bold;"> то твой голос на выборах Старших Вожатых имеет значение!</span>' },
