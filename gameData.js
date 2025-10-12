@@ -19,7 +19,7 @@ export const gameData = {
         { action: 'show_choices', text: 'Готовы настроить свой Камертон?' }
     ],
     choices: [
-        { text: 'Начать бета-тест (Инструктаж)', nextScene: 'video_ending' }
+        { text: 'Начать бета-тест (Инструктаж)', nextScene: 'tutorial_start' }
     ]
 },
 'tutorial_start': {
@@ -292,7 +292,7 @@ export const gameData = {
     bgm: null, // Важно: останавливаем BGM, видео должно иметь свой звук
     isEnding: true,
     isFinalVideo: true, // НОВЫЙ ФЛАГ для запуска handleVideoEnding()
-    finalText: '<h2 style="color: #6abefa;">Видеообращение Вожатым</h2><p>Спасибо что дошёл до конца, твой вклад в формирование идеального <span style="color: #ffbf00; font-weight: bold;">"Камертона 2026"</span>.</p> <p>Твой осознанный выбор имеет значение.</p><p>Увидимся на смене!</p>',
+    finalText: '<h2 style="color: #6abefa;">Обращение к вожатым</h2><p>Спасибо, что дошли до конца.</p><p>Помните, что <strong>именно ваш вклад</strong> - это тот самый пазл, из которого будет построена атмосфера <span style="color: #ffbf00; font-weight: bold;">«Камертона 2026»</span>.</p> <p>Ваш осознанный выбор - это начало большой истории для сотен детей.</p><p>Увидимся на лагере!</p>',
     choices: [] // Видео-сцена не имеет кнопок выбора
 }
 };
