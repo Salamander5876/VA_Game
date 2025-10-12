@@ -15,6 +15,12 @@ const speakerName = document.getElementById('speaker-name');
 const continuePrompt = document.getElementById('continue-prompt'); 
 const transitionOverlay = document.getElementById('transition-overlay'); 
 
+
+// ЭЛЕМЕНТЫ ДЛЯ ВИДЕО-КОНЦОВКИ (НОВЫЕ)
+const endingScreen = document.getElementById('ending-screen');
+const gameEndingVideo = document.getElementById('game-ending-video');
+const finalMessage = document.getElementById('final-message'); // Текст после видео
+const endingRestartButton = document.getElementById('ending-restart-button'); // Кнопка перезапуска
 // ЭЛЕМЕНТЫ ЗАГРУЗКИ (НОВЫЕ)
 const loadingOverlay = document.getElementById('loading-overlay');
 const loadingText = document.getElementById('loading-text');
@@ -756,16 +762,24 @@ function checkEnding() {
 }
 
 /**
- * Генерация финального отчета.
+ * Генерация финального отчета или запуск видео.
  */
 function generateEnding(sceneId) {
     const scene = gameData[sceneId];
+
+    // --- НОВАЯ ЛОГИКА: Если это сцена для видео, запускаем видео-обработчик и выходим ---
+    if (scene.isFinalVideo) {
+        handleVideoEnding(scene);
+        return; // Завершаем работу этой функции
+    }
+    // ---------------------------------------------------------------------------------
 
     let mainText = '';
     let reportHTML = '';
     let overallText = '';
 
     if (sceneId === 'ending_consequences') {
+        // ... (остальная логика для ending_consequences остается без изменений) ...
         mainText = scene.text.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>');
 
         // Общий итог
@@ -834,6 +848,45 @@ function generateEnding(sceneId) {
     showChoices(scene);
 }
 
+/**
+ * Управляет отображением видео-концовки.
+ * @param {object} scene - Объект сцены концовки из gameData.
+ */
+function handleVideoEnding(scene) {
+    // 1. Скрываем основной игровой контейнер и показываем экран концовки
+    gameContainer.style.display = 'none';
+    endingScreen.style.display = 'flex';
+    
+    // 2. Убеждаемся, что видеоэлемент видим, а финальный текст скрыт
+    gameEndingVideo.style.display = 'block';
+    finalMessage.style.display = 'none';
+    
+    // 3. Устанавливаем источник видео и пытаемся запустить
+    // ВАЖНО: Убедитесь, что файл 1013.mp4 лежит в корне или что путь верный
+    gameEndingVideo.src = '1013.mp4'; 
+    gameEndingVideo.load();
+    gameEndingVideo.play().catch(e => {
+        console.warn("Автозапуск видео заблокирован. Пользователю придется нажать Play.", e);
+    });
+
+    // 4. Ожидаем завершения видео
+    gameEndingVideo.onended = () => {
+        // Останавливаем BGM, если она еще играет
+        backgroundMusic.pause();
+        currentBGM = null;
+        
+        // 5. Скрываем видео и показываем финальное сообщение
+        gameEndingVideo.style.display = 'none';
+        
+        // Показываем финальный текст (из scene.finalText, который мы добавим)
+        finalMessage.innerHTML = scene.finalText ? scene.finalText.replace(/\*\*/g, '<b>') : 'Игра завершена. Нажмите кнопку, чтобы начать заново.';
+        finalMessage.style.display = 'block';
+        
+        // 6. Показываем кнопку перезапуска
+        endingRestartButton.style.display = 'block';
+    };
+}
+
 // --- 4. ЗАПУСК ИГРЫ (ИЗМЕНЕННАЯ ТОЧКА ВХОДА) ---
 
 // Добавляем обработчик для кнопки подсказки
@@ -863,4 +916,21 @@ window.onload = async () => {
     // Добавляем обработчик на кнопку "НАЧАТЬ ИГРУ"
     startGameButton.style.display = 'block';
     startGameButton.onclick = initializeGame;
+};
+
+// Добавляем обработчик для кнопки перезапуска после видео
+endingRestartButton.onclick = () => {
+    // Сброс всех переменных
+    correctChoices = 0;
+    totalScenes = 0;
+    consequencesReport = [];
+    currentSceneId = 'welcome_message'; 
+
+    // Скрытие экрана концовки и показ экрана загрузки/начала игры
+    endingScreen.style.display = 'none';
+    gameContainer.style.display = 'none';
+    
+    // Перезапуск игры с начальной сцены (или вызов window.location.reload() для полного сброса)
+    // Лучше всего перезапустить всю страницу, чтобы гарантировать сброс всех состояний.
+    window.location.reload(); 
 };

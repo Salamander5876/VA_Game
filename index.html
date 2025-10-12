@@ -9,12 +9,13 @@
 </head>
 <body>
     <div id="loading-overlay">
-    <div id="loading-text">Инициализация...</div>
-    <div id="loading-bar">
-        <div id="progress-indicator"></div>
+        <div id="loading-text">Инициализация...</div>
+        <div id="loading-bar">
+            <div id="progress-indicator"></div>
+        </div>
+        <button id="start-game-button" style="display: none;">НАЧАТЬ ИГРУ</button>
     </div>
-    <button id="start-game-button" style="display: none;">НАЧАТЬ ИГРУ</button>
-</div>
+    
     <div id="game-container" style="display: none;"> 
         <div id="header">
             <h1 id="title">Камертон 2026</h1>
@@ -22,23 +23,54 @@
         </div>
 
         <div id="story-area">
-        <div id="sprite-area"></div>
-        <div id="background-image"></div>
-    </div>
-    
-    <div id="text-box">
-        <span id="speaker-name"></span> 
-        <p id="story-text">Нажмите, чтобы начать...</p>
-        <div id="continue-prompt">Нажмите, чтобы продолжить...</div>
-    </div>
+            <div id="sprite-area"></div>
+            <div id="background-image"></div>
+        </div>
+        
+        <div id="text-box">
+            <span id="speaker-name"></span> 
+            <p id="story-text">Нажмите, чтобы начать...</p>
+            <div id="continue-prompt">Нажмите, чтобы продолжить...</div>
+        </div>
 
-    <div id="choices-container">
-    </div>
+        <div id="choices-container">
+        </div>
 
         <button id="hint-button" class="action-button">Попросить совета (Володя)</button>
     </div>
 
     <div id="transition-overlay"></div> 
+
+    <div id="ending-screen" style="
+        display: none; 
+        position: fixed; 
+        top: 0; left: 0; 
+        width: 100%; height: 100%; 
+        background-color: black; 
+        z-index: 9999; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        color: white; 
+        padding: 20px;
+        box-sizing: border-box;
+    ">
+        <h1 id="ending-title" style="margin-bottom: 30px; text-align: center; font-size: 1.2em;">Финальное обращение (тут будет другое видео)</h1>
+        
+        <video id="game-ending-video" width="90%" height="auto" controls style="max-width: 900%;">
+            <source src="1013.mp4" type="video/mp4">
+            Ваш браузер не поддерживает тег video.
+        </video>
+
+        <p id="final-message" style="
+            display: none; 
+            text-align: center; 
+            font-size: 1.2em; 
+            margin-top: 20px;
+        "></p>
+        
+        <button id="ending-restart-button" class="choice-button" style="display: none; margin-top: 30px; font-size: 1.5em; padding: 10px 20px;">Начать заново</button>
+    </div>
 
     <script type="module" src="script.js"></script>
 </body>
