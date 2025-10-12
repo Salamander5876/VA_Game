@@ -59,7 +59,7 @@ export const gameData = {
 'tutorial_end': {
     location: 'Парапет (Обучение завершено)',
     background: 'url(images/background/night.jpg)',
-    sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_2', frames: 6, position: 'center' }],
+    sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
     bgm: 'sound/night.mp3',
     story: [
         { speaker: 'Володя', text: 'Отлично! Вы освоили основы. Ваш тестовый выбор не повлиял на результат.' },
@@ -226,7 +226,7 @@ export const gameData = {
             {
                 speaker: 'Володя', 
                 text: 'Самое важное, на мой взгляд, - это то, насколько осознанно ты подходишь к делу, насколько глубоко понимаешь, зачем и ради чего это делаешь. Смело возвращайся к решению!',
-                spriteSrc: 'images/sprites/volodya_2'
+                spriteSrc: 'images/sprites/volodya_3'
             },
             { action: 'show_choices', text: 'Вернитесь к решению.' }
         ],
@@ -236,8 +236,9 @@ export const gameData = {
     },
     'ending_consequences': {
         location: 'Отчет о последствиях (HAPPY END?)',
-        background: 'url(images/night.jpg)',
-        sprites: [{ name: 'Володя', baseSrc: 'images/volodya_1', frames: 6, position: 'center' }],
+        background: 'url(images/background/night.jpg)',
+        sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
+        bgm: 'sound/night.mp3',
         text: 'Бета-тест завершен. Твои решения сформировали мир игры. Вот что произошло на смене:',
         isEnding: true,
         choices: [
@@ -246,8 +247,9 @@ export const gameData = {
     },
     'ending_secret': {
     location: 'Секретная концовка: Тот же Камертон!',
-    background: 'url(images/night.jpg)',
-    sprites: [{ name: 'Володя', baseSrc: 'images/volodya_1', frames: 6, position: 'center' }],
+    background: 'url(images/background/night.jpg)',
+    sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
+    bgm: 'sound/night.mp3',
     story: [
         { speaker: 'Володя', text: '!!! Секретная концовка!!!\nТы настроил свой Камертон на ту же частоту, что и я. <span style="color: #ffbf00; font-weight: bold;">Именно такое видение Смены я хочу воплотить.</span> Возможно тебе стоит проголосовать за меня на выборах. Ахахаха' },
         { speaker: 'Володя', text: 'Мы с тобой создали идеальную смену, основанную на развитии, доверии и творчестве. Смену, где каждый вожатый и ребенок чувствует себя на своем месте.' },
@@ -261,8 +263,9 @@ export const gameData = {
 },
 'final_share': {
     location: 'ФИНАЛ',
-    background: 'url(images/night.jpg)',
-    sprites: [{ name: 'Володя', baseSrc: 'images/volodya_3', frames: 6, position: 'center' }],
+    background: 'url(images/background/night.jpg)',
+    sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
+    bgm: 'sound/night.mp3',
     story: [
         { speaker: 'Володя', text: 'Спасибо за игру! Твои решения показали, какая смена может получится результате действий каждого.' },
         { speaker: 'Система', text: 'Если тебе откликается эта философия и ты хочешь, чтобы Смена "Камертон 2026" стала такой в реальности,<span style="color: #ffbf00; font-weight: bold;"> то твой голос на выборах Старших Вожатых имеет значение!</span>' },
