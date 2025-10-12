@@ -112,33 +112,15 @@ html, body {
     z-index: 500;
     color: var(--text-color);
     font-size: 1.1em;
-    overflow: visible; /* ИЗМЕНЕНИЕ: Позволяем absolute дочерним элементам выходить за границы */
+    
+    overflow: visible; /* Позволяем absolute дочерним элементам выходить за границы */
 
-    /* НОВЫЕ СТИЛИ ДЛЯ ЗАПРЕТА ВЫДЕЛЕНИЯ ТЕКСТА */
+    /* СТИЛИ ДЛЯ ЗАПРЕТА ВЫДЕЛЕНИЯ ТЕКСТА */
     -webkit-user-select: none; /* Для старых версий Chrome/Safari */
     -moz-user-select: none;    /* Для Firefox */
     -ms-user-select: none;     /* Для IE/Edge */
     user-select: none;         /* Стандартное свойство */
     cursor: pointer;           /* (Опционально) Явно указываем, что поле кликабельно */
-
-    /* СКРОЛЛБАР СТИЛИЗАЦИЯ ДЛЯ ВЕБКИТА (Chrome/Safari) */
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: var(--accent-cool);
-        border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        background: var(--light-green);
-    }
 }
 
 /* Стиль для имени говорящего */
@@ -157,13 +139,46 @@ html, body {
     box-shadow: none; 
 }
 #story-text {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 40px;
     margin: 0;
     line-height: 1.6;
     white-space: pre-wrap;
-    /* ИЗМЕНЕНИЕ: Убираем overflow: hidden, чтобы позволить скроллинг родительского контейнера */
     border-right: .15em solid var(--accent-cool);
     font-size: 1.1em;
     animation: typing-cursor 0.7s steps(40) infinite;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px; /* Пространство под скроллбар */
+    
+    /* СКРОЛЛБАР СТИЛИЗАЦИЯ ДЛЯ ВЕБКИТА (Chrome/Safari) */
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--accent-cool);
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: var(--light-green);
+    }
+
+    /* ЗАПРЕТ ВЫДЕЛЕНИЯ ДЛЯ story-text */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
 }
 .text-complete #story-text {
     border-right: none;
@@ -438,6 +453,9 @@ html, body {
         max-width: 300px; 
     }
     
+    #story-text {
+        bottom: 45px; /* Немного больше для мобильных, учитывая больший text-box */
+    }
 }
 
 

@@ -36,7 +36,7 @@ export const gameData = {
         { action: 'show_choices', text: 'Инструктаж продолжается. Нажмите "Продолжить".' }
     ],
     choices: [
-        { text: 'Я готов к выбору!', nextScene: 'tutorial_choice' }
+        { text: 'Продолжить!', nextScene: 'tutorial_choice' }
     ]
 },
 'tutorial_choice': {
@@ -226,7 +226,7 @@ export const gameData = {
             {
                 speaker: 'Володя', 
                 text: 'Самое важное, на мой взгляд, - это то, насколько осознанно ты подходишь к делу, насколько глубоко понимаешь, зачем и ради чего это делаешь. Смело возвращайся к решению!',
-                src: 'images/volodya_3.png'
+                spriteSrc: 'images/sprites/volodya_2'
             },
             { action: 'show_choices', text: 'Вернитесь к решению.' }
         ],
@@ -241,7 +241,7 @@ export const gameData = {
         text: 'Бета-тест завершен. Твои решения сформировали мир игры. Вот что произошло на смене:',
         isEnding: true,
         choices: [
-            { text: 'Поделиться результатом', nextScene: 'final_share' }
+            { text: 'Продолжить', nextScene: 'final_share' }
         ]
     },
     'ending_secret': {
