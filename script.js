@@ -14,7 +14,7 @@ const hintButton = document.getElementById('hint-button');
 const speakerName = document.getElementById('speaker-name');
 const continuePrompt = document.getElementById('continue-prompt'); 
 const transitionOverlay = document.getElementById('transition-overlay'); 
-
+let isAdvancing = false;  // НОВОЕ: Защита от множественных вызовов goToNextStoryStep
 
 // ЭЛЕМЕНТЫ ДЛЯ ВИДЕО-КОНЦОВКИ (НОВЫЕ)
 const endingScreen = document.getElementById('ending-screen');
@@ -350,6 +350,13 @@ function startSpriteAnimation(sprite, baseSrc, frames = DEFAULT_FRAMES) {
  * Переключает сцену с эффектом перехода.
  */
 function showScene(sceneId) {
+    if (isAdvancing) return;  // НОВОЕ: Защита от рекурсии/быстрых вызовов во время перехода
+
+    if (sceneId === currentSceneId && !gameData[sceneId].isHint) {
+        renderSceneContent(sceneId);
+        return;
+    }
+    
     if (sceneId === currentSceneId && !gameData[sceneId].isHint) {
         renderSceneContent(sceneId);
         return;
@@ -511,10 +518,14 @@ function renderSceneContent(sceneId) {
 /**
  * Переходит к следующему шагу истории (фразе) или запускает действие.
  */
+/**
+ * Переходит к следующему шагу истории (фразе) или запускает действие.
+ */
+/**
+ * Переходит к следующему шагу истории (фразе) или запускает действие.
+ */
 async function goToNextStoryStep() {
-    const scene = gameData[currentSceneId];
-    
-    // ЛОГИКА БЫСТРОЙ ПЕЧАТИ (Fast-Forward)
+    // Fast-forward всегда разрешен (даже если advancing)
     if (isTyping) {
         isTyping = false; 
         if (currentTypingResolver) {
@@ -523,110 +534,124 @@ async function goToNextStoryStep() {
         return; 
     }
 
-    // ЛОГИКА: ОБРАБОТКА КЛИКА ПОСЛЕ ВЫБОРА (для перехода к следующей сцене)
-    if (isAwaitingConsequenceClick) {
-        updateSpriteEmphasis(null);
+    // Блокировка, если уже обрабатываем шаг (кроме typing)
+    if (isAdvancing) return;
+
+    isAdvancing = true;
+
+    try {
+        const scene = gameData[currentSceneId];
         
-        let nextSceneId = 'scene' + (totalScenes + 1);
+        // ЛОГИКА: ОБРАБОТКА КЛИКА ПОСЛЕ ВЫБОРА (для перехода к следующей сцене)
+        if (isAwaitingConsequenceClick) {
+            updateSpriteEmphasis(null);
+            
+            let nextSceneId = 'scene' + (totalScenes + 1);
 
-        isAwaitingConsequenceClick = false; 
+            isAwaitingConsequenceClick = false; 
 
-        if (gameData[nextSceneId]) {
-            showScene(nextSceneId);
-        } else {
-            checkEnding(); 
+            isAdvancing = false;  // Сброс флага ПЕРЕД переходом, чтобы showScene не заблокировался
+            if (gameData[nextSceneId]) {
+                showScene(nextSceneId);
+            } else {
+                checkEnding(); 
+            }
+            return; 
         }
-        return; 
-    }
 
-    // Если ожидаем выбор или история закончилась
-    if (isAwaitingChoice || !scene.story || currentStoryIndex >= scene.story.length) {
-        
-        // Этот блок специально для того, чтобы в сцене HINT гарантированно показать кнопку ВОЗВРАТ,
-        // даже если история состояла из одной фразы.
-        if (currentSceneId === 'hint' && !isAwaitingChoice) {
-            const lastStep = scene.story[scene.story.length - 1];
-            if (lastStep.action === 'show_choices') {
-                 // Здесь мы принудительно запускаем логику показа выбора
-                 document.getElementById('text-box').onclick = null;
-                 speakerName.textContent = 'ВОЗВРАТ'; 
-                 speakerName.style.display = 'block';
-                 continuePrompt.style.display = 'none'; 
-                 storyText.textContent = lastStep.text; 
-                 showChoices(scene);
-                 return;
+        // Если ожидаем выбор или история закончилась
+        if (isAwaitingChoice || !scene.story || currentStoryIndex >= scene.story.length) {
+            
+            // Этот блок специально для того, чтобы в сцене HINT гарантированно показать кнопку ВОЗВРАТ,
+            // даже если история состояла из одной фразы.
+            if (currentSceneId === 'hint' && !isAwaitingChoice) {
+                const lastStep = scene.story[scene.story.length - 1];
+                if (lastStep.action === 'show_choices') {
+                     // Здесь мы принудительно запускаем логику показа выбора
+                     document.getElementById('text-box').onclick = null;
+                     speakerName.textContent = 'ВОЗВРАТ'; 
+                     speakerName.style.display = 'block';
+                     continuePrompt.style.display = 'none'; 
+                     storyText.textContent = lastStep.text; 
+                     showChoices(scene);
+                     return;
+                }
+            }
+            return;
+        }
+
+        const step = scene.story[currentStoryIndex];
+
+        // 1. Обработка действий (actions)
+        if (step.action === 'show_choices') {
+            updateSpriteEmphasis(null);
+            
+            // НЕ устанавливаем onclick=null СЮДА (позволяем пропускать печать)
+            speakerName.textContent = currentSceneId === 'hint' ? 'ВОЗВРАТ' : 'РЕШЕНИЕ'; 
+            speakerName.style.display = 'block';
+            continuePrompt.style.display = 'none'; 
+
+            // --- Поддержка HTML в тексте перед выбором ---
+            if (step.text.includes('<span')) {
+                storyText.innerHTML = step.text;
+                document.getElementById('text-box').classList.add('text-complete');
+                continuePrompt.style.display = 'block';
+                showChoices(scene);
+            } else {
+                await typeText(step.text);
+                showChoices(scene);
+            }
+            // ---------------------------------------------
+            
+            // Устанавливаем onclick=null ТОЛЬКО ПОСЛЕ показа выбора (теперь безопасно)
+            document.getElementById('text-box').onclick = null;
+            return;
+        }
+
+        // 2. СМЕНА СПРАЙТА (теперь с поддержкой анимации)
+        if (step.spriteSrc && step.speaker) {
+            const targetSprite = spriteArea.querySelector(`.sprite[alt="${step.speaker}"]`);
+            if (targetSprite) {
+                // Останавливаем текущую анимацию
+                const oldIntervalId = targetSprite.dataset.intervalId;
+                if (oldIntervalId) {
+                    clearInterval(parseInt(oldIntervalId));
+                    delete targetSprite.dataset.intervalId;
+                }
+
+                // Устанавливаем новый базовый путь и запускаем анимацию
+                const newBaseSrc = step.spriteSrc; // Предполагаем, что это базовый путь без .png
+                startSpriteAnimation(targetSprite, newBaseSrc, DEFAULT_FRAMES);
+            } else {
+                console.warn(`Спрайт для говорящего "${step.speaker}" не найден для смены эмоции.`);
             }
         }
-        return;
-    }
 
-    const step = scene.story[currentStoryIndex];
-
-    // 1. Обработка действий (actions)
-    if (step.action === 'show_choices') {
-        updateSpriteEmphasis(null);
+        // 3. Отображение диалога
+        if (step.speaker) {
+            speakerName.textContent = step.speaker;
+            speakerName.style.display = 'block';
+            updateSpriteEmphasis(step.speaker);
+        } else {
+            speakerName.style.display = 'none';
+            updateSpriteEmphasis(null);
+        }
         
-        // Отключаем клик по текстовому полю.
-        document.getElementById('text-box').onclick = null; 
-        
-        speakerName.textContent = currentSceneId === 'hint' ? 'ВОЗВРАТ' : 'РЕШЕНИЕ'; 
-        speakerName.style.display = 'block';
-        continuePrompt.style.display = 'none'; 
-
-        // --- Поддержка HTML в тексте перед выбором ---
+        // --- ИСПОЛЬЗОВАНИЕ typeText ИЛИ innerHTML ---
         if (step.text.includes('<span')) {
             storyText.innerHTML = step.text;
+            document.getElementById('text-box').classList.add('text-complete');
+            continuePrompt.style.display = 'block'; 
         } else {
             await typeText(step.text);
         }
-        // ---------------------------------------------
-        
-        showChoices(scene);
-        return;
-    }
+        // -------------------------------------------------------------
 
-    // 2. СМЕНА СПРАЙТА (теперь с поддержкой анимации)
-    if (step.spriteSrc && step.speaker) {
-        const targetSprite = spriteArea.querySelector(`.sprite[alt="${step.speaker}"]`);
-        if (targetSprite) {
-            // Останавливаем текущую анимацию
-            const oldIntervalId = targetSprite.dataset.intervalId;
-            if (oldIntervalId) {
-                clearInterval(parseInt(oldIntervalId));
-                delete targetSprite.dataset.intervalId;
-            }
-
-            // Устанавливаем новый базовый путь и запускаем анимацию
-            const newBaseSrc = step.spriteSrc; // Предполагаем, что это базовый путь без .png
-            startSpriteAnimation(targetSprite, newBaseSrc, DEFAULT_FRAMES);
-        } else {
-            console.warn(`Спрайт для говорящего "${step.speaker}" не найден для смены эмоции.`);
-        }
+        currentStoryIndex++;
+    } finally {
+        isAdvancing = false;
     }
-
-    // 3. Отображение диалога
-    if (step.speaker) {
-        speakerName.textContent = step.speaker;
-        speakerName.style.display = 'block';
-        updateSpriteEmphasis(step.speaker);
-    } else {
-        speakerName.style.display = 'none';
-        updateSpriteEmphasis(null);
-    }
-    
-    // --- ИСПОЛЬЗОВАНИЕ typeText ИЛИ innerHTML ---
-    if (step.text.includes('<span')) {
-        storyText.innerHTML = step.text;
-        document.getElementById('text-box').classList.add('text-complete');
-        continuePrompt.style.display = 'block'; 
-    } else {
-        await typeText(step.text);
-    }
-    // -------------------------------------------------------------
-
-    currentStoryIndex++;
 }
-
 /**
  * Отображает кнопки выбора и активирует кнопку подсказки.
  */
@@ -710,11 +735,13 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
         // Мы возвращаемся на тот же шаг истории.
         // Переменные currentStoryIndex и isAwaitingChoice сохраняют то состояние,
         // в котором они были до вызова showScene('hint').
+        isAdvancing = false;  // Сброс флага перед переходом
         showScene(previousSceneId);
         return;
     }
 
     if (choice.nextScene) {
+        isAdvancing = false;  // Сброс флага перед переходом
         showScene(choice.nextScene);
         return;
     }
@@ -745,6 +772,7 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
     // Используем innerHTML для поддержки тегов **
     storyText.innerHTML = `${consequenceText.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}`;
     
+    isAdvancing = false;  // Сброс флага после установки текста
     isAwaitingConsequenceClick = true; 
     document.getElementById('text-box').onclick = goToNextStoryStep; 
     continuePrompt.style.display = 'block'; 
@@ -857,36 +885,72 @@ function handleVideoEnding(scene) {
     gameContainer.style.display = 'none';
     endingScreen.style.display = 'flex';
     
-    // 2. Убеждаемся, что видеоэлемент видим, а финальный текст скрыт
-    gameEndingVideo.style.display = 'block';
+    // 2. Убеждаемся, что видеоэлемент видим, а финальный текст и кнопка play скрыты
+    const video = gameEndingVideo;
+    const playBtn = document.getElementById('play-video-btn');
     finalMessage.style.display = 'none';
+    playBtn.style.display = 'none';
+    video.style.display = 'block';
     
-    // 3. Устанавливаем источник видео и пытаемся запустить
-    // ВАЖНО: Убедитесь, что файл 1013.mp4 лежит в корне или что путь верный
-    gameEndingVideo.src = '1013.mp4'; 
-    gameEndingVideo.load();
-    gameEndingVideo.play().catch(e => {
-        console.warn("Автозапуск видео заблокирован. Пользователю придется нажать Play.", e);
+    // 3. Настройка видео для кросс-браузерности
+    video.src = '1013.mp4';  // Убедись, что путь верный (относительно index.html)
+    video.load();  // Перезагружаем источник
+    video.muted = false  // Muted для автоплея (разблокирует в большинстве браузеров)
+    video.preload = 'metadata';  // Быстрая проверка метаданных без полной загрузки
+    
+    // 4. Пытаемся автоплей (muted)
+    const playPromise = video.play();
+    playPromise.then(() => {
+        console.log('Видео автозапустилось (muted).');
+        // Если пользователь кликнет, unmute
+        video.addEventListener('click', () => {
+            video.muted = false;
+        }, { once: true });  // Только один раз
+    }).catch(e => {
+        console.warn('Автоплей заблокирован. Показываем кнопку play:', e);
+        playBtn.style.display = 'block';  // Показываем кнопку
+        playBtn.onclick = () => {
+            video.muted = false;  // Unmute при ручном play
+            video.play().catch(err => {
+                console.error('Ошибка ручного play:', err);
+                // Fallback: Показать текст без видео
+                video.style.display = 'none';
+                playBtn.style.display = 'none';
+                finalMessage.innerHTML = scene.finalText ? scene.finalText.replace(/\*\*/g, '<b>') : 'Ошибка воспроизведения видео. Нажмите, чтобы начать заново.';
+                finalMessage.style.display = 'block';
+                endingRestartButton.style.display = 'block';
+            });
+        };
     });
 
-    // 4. Ожидаем завершения видео
-    gameEndingVideo.onended = () => {
+    // 5. Обработка завершения видео (работает для auto и manual)
+    video.onended = () => {
         // Останавливаем BGM, если она еще играет
         backgroundMusic.pause();
         currentBGM = null;
         
-        // 5. Скрываем видео и показываем финальное сообщение
-        gameEndingVideo.style.display = 'none';
+        // Скрываем видео и кнопку play
+        video.style.display = 'none';
+        playBtn.style.display = 'none';
         
-        // Показываем финальный текст (из scene.finalText, который мы добавим)
+        // Показываем финальный текст
         finalMessage.innerHTML = scene.finalText ? scene.finalText.replace(/\*\*/g, '<b>') : 'Игра завершена. Нажмите кнопку, чтобы начать заново.';
         finalMessage.style.display = 'block';
         
-        // 6. Показываем кнопку перезапуска
+        // Показываем кнопку перезапуска
+        endingRestartButton.style.display = 'block';
+    };
+
+    // Дополнительная обработка ошибок видео (если не грузится)
+    video.onerror = () => {
+        console.error('Ошибка загрузки видео (кодек/путь?).');
+        video.style.display = 'none';
+        playBtn.style.display = 'none';
+        finalMessage.innerHTML = '<p style="color: #ff4444;">Ошибка загрузки видео (проверьте файл 1013.mp4). Финал:</p>' + (scene.finalText ? scene.finalText.replace(/\*\*/g, '<b>') : '');
+        finalMessage.style.display = 'block';
         endingRestartButton.style.display = 'block';
     };
 }
-
 // --- 4. ЗАПУСК ИГРЫ (ИЗМЕНЕННАЯ ТОЧКА ВХОДА) ---
 
 // Добавляем обработчик для кнопки подсказки

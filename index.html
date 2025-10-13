@@ -42,36 +42,38 @@
     <div id="transition-overlay"></div> 
 
     <div id="ending-screen" style="
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background-color: black; 
+    z-index: 9999; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    color: white; 
+    padding: 20px;
+    box-sizing: border-box;
+">
+    <h1 id="ending-title" style="margin-bottom: 30px; text-align: center; font-size: 1.2em;">Финальное обращение (тут будет другое видео)</h1>
+    
+    <video id="game-ending-video" width="70%" height="auto" controls preload="metadata" style="max-width: 70%;">
+        <source src="1013.mp4" type="video/mp4">
+        Ваш браузер не поддерживает тег video.
+    </video>
+
+    <!-- НОВАЯ КНОПКА ДЛЯ РУЧНОГО PLAY (скрыта по умолчанию) -->
+    <button id="play-video-btn" class="choice-button" style="display: none; margin-top: 20px; font-size: 1.2em; padding: 15px 30px;">▶ Воспроизвести видео</button>
+
+    <p id="final-message" style="
         display: none; 
-        position: fixed; 
-        top: 0; left: 0; 
-        width: 100%; height: 100%; 
-        background-color: black; 
-        z-index: 9999; 
-        flex-direction: column; 
-        justify-content: center; 
-        align-items: center; 
-        color: white; 
-        padding: 20px;
-        box-sizing: border-box;
-    ">
-        <h1 id="ending-title" style="margin-bottom: 30px; text-align: center; font-size: 1.2em;">Финальное обращение (тут будет другое видео)</h1>
-        
-        <video id="game-ending-video" width="90%" height="auto" controls style="max-width: 900%;">
-            <source src="1013.mp4" type="video/mp4">
-            Ваш браузер не поддерживает тег video.
-        </video>
-
-        <p id="final-message" style="
-            display: none; 
-            text-align: center; 
-            font-size: 1.2em; 
-            margin-top: 20px;
-        "></p>
-        
-        <button id="ending-restart-button" class="choice-button" style="display: none; margin-top: 30px; font-size: 1.5em; padding: 10px 20px;">Начать заново</button>
-    </div>
-
+        text-align: center; 
+        font-size: 1.2em; 
+        margin-top: 20px;
+    "></p>
+    
+    <button id="ending-restart-button" class="choice-button" style="display: none; margin-top: 30px; font-size: 1.5em; padding: 10px 20px;">Начать заново</button>
+</div>
     <script type="module" src="script.js"></script>
 </body>
 </html>

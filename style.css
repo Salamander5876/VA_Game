@@ -151,7 +151,7 @@ html, body {
     font-size: 1.1em;
     animation: typing-cursor 0.7s steps(40) infinite;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     padding-right: 8px; /* Пространство под скроллбар */
     
     /* СКРОЛЛБАР СТИЛИЗАЦИЯ ДЛЯ ВЕБКИТА (Chrome/Safari) */
