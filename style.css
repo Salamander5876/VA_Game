@@ -1,4 +1,4 @@
-/* --- ДОБАВЛЕНИЕ КАСТОМНОГО ШРИФТА --- */
+/* --- КАСТОМНЫЙ ШРИФТ --- */
 @font-face {
     font-family: 'TDAText';
     src: url('TDAText.ttf') format('truetype');
@@ -10,16 +10,23 @@
     /* Цветовая схема */
     --primary-green: #0A6836;
     --light-green: #49a861;
-    --accent-warm: #ffbf00; /* Желтый акцент */
-    --accent-cool: #6abefa; /* Синий акцент */
+    --dark-green: #053d20;
+    --accent-warm: #ffbf00;
+    --accent-warm-dark: #cc9900;
+    --accent-cool: #6abefa;
     --text-dark: #212121;
     --white: #F5F5F5;
-
     --text-color: var(--white);
     --main-color: var(--primary-green);
-    --background-dark: #20362b;
+    --background-dark: #0d1f16;
+    --background-overlay: rgba(13, 31, 22, 0.95);
     --font-family: 'TDAText', 'Consolas', 'Courier New', monospace;
-    --text-box-height: 30vh; /* Базовое значение */
+    --text-box-height: 30vh;
+    
+    /* Эффекты */
+    --glow-green: 0 0 20px rgba(73, 168, 97, 0.6);
+    --glow-gold: 0 0 25px rgba(255, 191, 0, 0.7);
+    --shadow-deep: 0 10px 40px rgba(0, 0, 0, 0.7);
 }
 
 html, body {
@@ -29,10 +36,343 @@ html, body {
     height: 100%;
     overflow: hidden;
     font-family: var(--font-family);
-    background-color: var(--background-dark);
+    background: linear-gradient(135deg, #0d1f16 0%, #1a3329 50%, #0d1f16 100%);
     color: var(--text-color);
 }
 
+/* === ГЛАВНОЕ МЕНЮ (ОБНОВЛЕННОЕ) === */
+#main-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(73, 168, 97, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(255, 191, 0, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, #0A6836 0%, #0d1f16 50%, #053d20 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: menuFadeIn 1s ease-out;
+}
+
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#menu-container {
+    text-align: center;
+    padding: 50px 60px;
+    background: rgba(10, 104, 54, 0.15);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    box-shadow: 
+        var(--shadow-deep),
+        inset 0 0 60px rgba(73, 168, 97, 0.1),
+        0 0 0 2px rgba(73, 168, 97, 0.3);
+    border: 1px solid rgba(73, 168, 97, 0.4);
+    max-width: 500px;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-decoration {
+    font-size: 3em;
+    color: var(--accent-warm);
+    opacity: 0.6;
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: float 3s ease-in-out infinite;
+    text-shadow: 0 0 20px rgba(255, 191, 0, 0.8);
+    z-index: 1;
+}
+
+.menu-decoration.bottom {
+    top: auto;
+    bottom: 20px;
+    animation-delay: 1.5s;
+}
+
+#menu-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 191, 0, 0.05) 50%,
+        transparent 70%
+    );
+    animation: shimmer 6s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: rotate(0deg) translate(0, 0); }
+    100% { transform: rotate(360deg) translate(0, 0); }
+}
+
+#menu-title {
+    font-size: 3.5em;
+    background: linear-gradient(135deg, #ffbf00 0%, #49a861 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 10px 0;
+    text-shadow: 0 4px 20px rgba(255, 191, 0, 0.4);
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 1;
+    animation: titleGlow 3s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 191, 0, 0.6)); }
+    50% { filter: drop-shadow(0 0 25px rgba(255, 191, 0, 0.9)); }
+}
+
+#menu-subtitle {
+    font-size: 1.3em;
+    color: var(--accent-cool);
+    margin: 0 0 40px 0;
+    text-shadow: 0 2px 10px rgba(106, 190, 250, 0.5);
+    position: relative;
+    z-index: 1;
+}
+
+#menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: relative;
+    z-index: 1;
+}
+
+.menu-button {
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    color: var(--text-color);
+    border: 2px solid var(--light-green);
+    padding: 18px 45px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.3em;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.menu-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 191, 0, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.menu-button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.menu-button:hover {
+    background: linear-gradient(135deg, var(--light-green) 0%, var(--primary-green) 100%);
+    box-shadow: 
+        var(--glow-green),
+        0 6px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px);
+    border-color: var(--accent-warm);
+}
+
+.menu-button:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* === НАСТРОЙКИ И ПАНЕЛИ (ОБНОВЛЕННЫЕ) === */
+#settings-screen, #achievements-screen, #pause-menu, #history-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10001;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.settings-panel, .achievements-panel, .pause-panel, .history-content {
+    background: linear-gradient(135deg, rgba(10, 104, 54, 0.95) 0%, rgba(5, 61, 32, 0.95) 100%);
+    padding: 45px;
+    border-radius: 20px;
+    max-width: 550px;
+    width: 90%;
+    box-shadow: 
+        var(--shadow-deep),
+        inset 0 0 40px rgba(73, 168, 97, 0.1),
+        0 0 0 2px rgba(73, 168, 97, 0.3);
+    border: 1px solid rgba(73, 168, 97, 0.5);
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: panelSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes panelSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.settings-panel h2, .achievements-panel h2, .pause-panel h2, .history-content h3 {
+    color: var(--accent-warm);
+    margin-top: 0;
+    text-align: center;
+    font-size: 2em;
+    text-shadow: var(--glow-gold);
+    margin-bottom: 30px;
+}
+
+.setting-item {
+    margin: 25px 0;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border-left: 3px solid var(--accent-cool);
+}
+
+.setting-item label {
+    flex: 1;
+    min-width: 150px;
+    font-size: 1.1em;
+    color: var(--accent-cool);
+}
+
+.setting-item input[type="range"] {
+    flex: 2;
+    min-width: 150px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, var(--accent-warm), var(--light-green));
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255, 191, 0, 0.6);
+    transition: all 0.3s;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: var(--glow-gold);
+}
+
+.setting-item input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    accent-color: var(--accent-warm);
+}
+
+/* === ДОСТИЖЕНИЯ === */
+.achievement-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 12px;
+    border-left: 4px solid var(--accent-cool);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s;
+}
+
+.achievement-item:hover {
+    background: rgba(0, 0, 0, 0.4);
+    transform: translateX(5px);
+}
+
+.achievement-item.unlocked {
+    border-left-color: var(--accent-warm);
+    box-shadow: inset 0 0 20px rgba(255, 191, 0, 0.1);
+}
+
+.achievement-item.locked {
+    opacity: 0.5;
+    filter: grayscale(50%);
+}
+
+.achievement-icon {
+    font-size: 2.5em;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.achievement-info {
+    flex: 1;
+}
+
+.achievement-title {
+    font-weight: bold;
+    color: var(--accent-warm);
+    margin-bottom: 5px;
+    font-size: 1.2em;
+}
+
+.achievement-desc {
+    color: var(--accent-cool);
+    font-size: 0.9em;
+}
+
+/* === ИГРОВОЙ КОНТЕЙНЕР === */
 #game-container {
     width: 100%;
     height: 100%;
@@ -41,32 +381,83 @@ html, body {
 
 /* Header */
 #header {
-    position: absolute;
+    position: fixed; /* ИЗМЕНЕНО: было absolute, теперь fixed */
     top: 0;
     left: 0;
     right: 0;
     z-index: 100;
-    background-color: #000000c9;
-    padding: 10px 0;
-    backdrop-filter: blur(2px);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%);
+    padding: 15px 0;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+    border-bottom: 2px solid rgba(73, 168, 97, 0.3);
 }
 
 #title {
-    font-size: 1.5em;
-    color: var(--accent-warm);
+    font-size: 1.8em;
+    background: linear-gradient(135deg, #ffbf00 0%, #49a861 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin: 0;
     text-align: center;
+    letter-spacing: 2px;
+    filter: drop-shadow(0 2px 5px rgba(255, 191, 0, 0.4));
 }
 
 #location {
     font-style: normal;
     color: var(--accent-cool);
-    font-size: 0.9em;
-    margin: 0;
+    font-size: 1em;
+    margin: 5px 0 0 0;
     text-align: center;
+    text-shadow: 0 2px 5px rgba(106, 190, 250, 0.4);
 }
 
-/* Story Area (Область фона и спрайтов) */
+#progress-indicator-game {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: var(--light-green);
+    text-shadow: 0 1px 5px rgba(73, 168, 97, 0.5);
+}
+
+/* Кнопки управления */
+#pause-menu-btn, #history-btn {
+    position: fixed;
+    top: 20px;
+    background: linear-gradient(135deg, rgba(10, 104, 54, 0.9), rgba(5, 61, 32, 0.9));
+    color: var(--white);
+    border: 2px solid var(--light-green);
+    padding: 12px 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.4em;
+    z-index: 150;
+    transition: all 0.3s;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+#pause-menu-btn {
+    right: 20px;
+}
+
+#history-btn {
+    right: 85px;
+}
+
+#pause-menu-btn:hover, #history-btn:hover {
+    background: linear-gradient(135deg, var(--light-green), var(--primary-green));
+    box-shadow: var(--glow-green);
+    transform: scale(1.1) rotate(5deg);
+}
+
+#pause-menu-btn:active, #history-btn:active {
+    transform: scale(0.95);
+}
+
+/* Story Area */
 #story-area {
     position: relative;
     width: 100%;
@@ -79,390 +470,741 @@ html, body {
     height: 100%;
     background-size: cover;
     background-position: center;
-    transition: background-image 0.8s ease;
+    transition: background-image 1s ease;
+    filter: brightness(0.8);
 }
 
-/* Sprite Area (КОНТЕЙНЕР ДЛЯ СПРАЙТОВ) */
+/* Sprite Area */
 #sprite-area {
     position: absolute;
-    /* ГАРАНТИЯ ПОЗИЦИИ: Область спрайтов заканчивается ровно там, где начинается text-box */
     bottom: var(--text-box-height);
     width: 100%;
-    /* Высота, оставшаяся над текстовым полем */
     height: calc(100% - var(--text-box-height));
     pointer-events: none;
     z-index: 200;
-    /* КРИТИЧЕСКОЕ ИЗМЕНЕНИЕ: Обрезаем все, что пытается опуститься ниже */
     overflow: hidden;
 }
 
+/* Text Box */
 #text-box {
-    position: absolute;
+    position: fixed; /* ИЗМЕНЕНО: было absolute, теперь fixed */
     bottom: 0;
     left: 0;
     right: 0;
     height: var(--text-box-height);
-    background-color: #0e1813;
-    backdrop-filter: blur(4px);
-    padding: 10px;
-    padding-top: 10px;
-    border-top: 2px solid var(--accent-warm); 
-    box-shadow: 0 -5px 20px rgba(200, 168, 72, 0.4); 
+    background: linear-gradient(180deg, rgba(14, 24, 19, 0.95) 0%, rgba(10, 18, 15, 0.98) 100%);
+    backdrop-filter: blur(8px);
+    padding: 15px;
+    padding-top: 20px;
+    border-top: 3px solid var(--accent-warm);
+    box-shadow: 
+        0 -5px 30px rgba(255, 191, 0, 0.3),
+        inset 0 2px 20px rgba(0, 0, 0, 0.3);
     box-sizing: border-box;
     z-index: 500;
     color: var(--text-color);
     font-size: 1.1em;
-    
-    overflow: visible; /* Позволяем absolute дочерним элементам выходить за границы */
-
-    /* СТИЛИ ДЛЯ ЗАПРЕТА ВЫДЕЛЕНИЯ ТЕКСТА */
-    -webkit-user-select: none; /* Для старых версий Chrome/Safari */
-    -moz-user-select: none;    /* Для Firefox */
-    -ms-user-select: none;     /* Для IE/Edge */
-    user-select: none;         /* Стандартное свойство */
-    cursor: pointer;           /* (Опционально) Явно указываем, что поле кликабельно */
-}
-
-/* Стиль для имени говорящего */
-#speaker-name {
-    background-color: var(--accent-warm); 
-    color: var(--text-dark); 
-    padding: 5px 15px;
-    position: absolute;
-    top: -32px; /* Увеличили отрицательный top для лучшей видимости */
-    left: 10px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    font-weight: bold;
-    font-size: 1.1em;
-    z-index: 501;
-    box-shadow: none; 
-}
-#story-text {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    bottom: 40px;
-    margin: 0;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    border-right: .15em solid var(--accent-cool);
-    font-size: 1.1em;
-    animation: typing-cursor 0.7s steps(40) infinite;
-    overflow-y: auto;
-    overflow-x: auto;
-    padding-right: 8px; /* Пространство под скроллбар */
-    
-    /* СКРОЛЛБАР СТИЛИЗАЦИЯ ДЛЯ ВЕБКИТА (Chrome/Safari) */
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: var(--accent-cool);
-        border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        background: var(--light-green);
-    }
-
-    /* ЗАПРЕТ ВЫДЕЛЕНИЯ ДЛЯ story-text */
+    overflow: visible;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
     cursor: pointer;
 }
+
+#text-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--accent-warm) 50%, 
+        transparent 100%);
+    box-shadow: 0 0 10px var(--accent-warm);
+}
+
+/* ОБНОВЛЕННЫЙ СТИЛЬ ДЛЯ SPEAKER NAME */
+#speaker-name {
+    background: linear-gradient(135deg, var(--accent-warm) 0%, var(--accent-warm-dark) 100%);
+    color: var(--text-dark);
+    padding: 8px 20px;
+    position: absolute;
+    top: -38px;
+    left: 15px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    font-weight: bold;
+    font-size: 1.2em;
+    z-index: 501;
+    box-shadow: 
+        0 -4px 15px rgba(255, 191, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    letter-spacing: 1px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: none;
+}
+
+/* НОВЫЙ СТИЛЬ ДЛЯ HINT BUTTON - КАК SPEAKER NAME НО СПРАВА */
+#hint-button {
+    background: linear-gradient(135deg, var(--accent-warm) 0%, var(--accent-warm-dark) 100%);
+    color: var(--text-dark);
+    padding: 8px 20px;
+    position: absolute;
+    top: -38px;
+    right: 15px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    font-weight: bold;
+    font-size: 1.1em;
+    z-index: 501;
+    box-shadow: 
+        0 -4px 15px rgba(255, 191, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    letter-spacing: 1px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: none;
+    animation: hintPulse 2s ease-in-out infinite;
+    pointer-events: auto; /* ВАЖНО: Разрешаем клики */
+    font-family: var(--font-family);
+}
+
+@keyframes hintPulse {
+    0%, 100% {
+        box-shadow: 
+            0 -4px 15px rgba(255, 191, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 -4px 25px rgba(255, 191, 0, 0.7),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3),
+            0 0 20px rgba(255, 191, 0, 0.5);
+    }
+}
+
+#hint-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+        0 -6px 20px rgba(255, 191, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 0 25px rgba(255, 191, 0, 0.6);
+}
+
+#hint-button:active {
+    transform: translateY(-1px);
+}
+
+#story-text {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 45px;
+    margin: 0;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    border-right: .15em solid var(--accent-cool);
+    font-size: 1.15em;
+    animation: typing-cursor 0.7s steps(40) infinite;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 12px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    pointer-events: auto; /* ВАЖНО: Разрешаем клики по тексту */
+}
+
 .text-complete #story-text {
     border-right: none;
     animation: none;
 }
+
 @keyframes typing-cursor {
     from, to { border-color: transparent }
     50% { border-color: var(--accent-cool); }
 }
 
-/* Новые стили для стрелки-подсказки "Нажмите, чтобы продолжить" */
+#story-text::-webkit-scrollbar {
+    width: 10px;
+}
+
+#story-text::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+#story-text::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--accent-cool), var(--primary-green));
+    border-radius: 5px;
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+#story-text::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--light-green), var(--accent-cool));
+}
+
 #continue-prompt {
     position: absolute;
-    bottom: 5px;
-    right: 15px;
-    font-size: 1.2em;
+    bottom: 8px;
+    right: 20px;
+    font-size: 1.1em;
     color: var(--accent-cool);
     font-weight: bold;
     animation: pulse 1.5s infinite;
     pointer-events: none;
     user-select: none;
+    text-shadow: 0 0 10px rgba(106, 190, 250, 0.7);
 }
 
 @keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
 }
 
-/* Choices and Buttons */
+/* Choices */
 #choices-container {
     position: fixed;
-    bottom: calc(var(--text-box-height) + 55px);
+    bottom: calc(var(--text-box-height) + 60px);
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
-    max-width: 600px;
+    max-width: 650px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
     z-index: 600;
-    padding: 10px;
-    border-radius: 4px;
-    background-color: rgba(17, 31, 24, 0.7);
-    backdrop-filter: blur(2px);
+    padding: 20px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(10, 104, 54, 0.85), rgba(5, 61, 32, 0.85));
+    backdrop-filter: blur(10px);
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
+    box-shadow: 
+        var(--shadow-deep),
+        inset 0 0 30px rgba(73, 168, 97, 0.1),
+        0 0 0 2px rgba(73, 168, 97, 0.3);
+    border: 1px solid rgba(73, 168, 97, 0.4);
 }
 
 .choice-button {
     font-family: var(--font-family);
-    background-color: var(--main-color);
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
     color: var(--text-color);
-    border: 1px solid var(--light-green);
-    padding: 12px;
-    border-radius: 4px;
+    border: 2px solid var(--light-green);
+    padding: 16px 20px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.2s, box-shadow 0.2s;
+    font-size: 1.1em;
+    font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: center;
     pointer-events: auto;
+    min-height: 52px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
+
+.choice-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 191, 0, 0.3), transparent);
+    transform: translateY(-50%);
+    transition: left 0.5s;
+}
+
+.choice-button:hover::before {
+    left: 100%;
+}
+
 .choice-button:hover {
-    background-color: var(--light-green);
-    box-shadow: 0 0 10px var(--light-green);
+    background: linear-gradient(135deg, var(--light-green) 0%, var(--primary-green) 100%);
+    box-shadow: 
+        var(--glow-green),
+        0 6px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px);
+    border-color: var(--accent-warm);
 }
 
-/* Кнопка-подсказка (Володя) */
-#hint-button {
-    position: fixed;
-    right: 15px;
-    bottom: calc(var(--text-box-height) + 35px); 
-    width: auto;
-    padding: 8px 15px;
-    z-index: 600;
-    background-color: var(--accent-warm); 
-    color: var(--text-dark); 
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    display: none;
-    box-shadow: 0 0 15px rgba(200, 168, 72, 0.7);
+.choice-button:active {
+    transform: translateY(-1px);
 }
 
-/* --- Спрайт - базовый стиль (РАЗМЕР И ПОЗИЦИЯ) --- */
+/* Спрайты */
 .sprite {
     position: absolute;
-    
-    /* ОГРАНИЧЕНИЕ РАЗМЕРА - ПК по умолчанию */
     max-height: 95%;
-    max-width: 50vw; /* Вернули разумную ширину */
-    
+    max-width: 50vw;
     width: auto;
     height: auto;
-    
-    /* ФИНАЛЬНЫЙ ФИКС: Прижимаем вниз и даём ОТРИЦАТЕЛЬНЫЙ отступ, чтобы "ноги" спрайта гарантированно обрезались */
     bottom: -10px;
-    
-    /* Добавлены плавные переходы для трансформации и фильтра */
     transition: 
         transform 0.4s ease-out, 
         filter 0.4s ease-out, 
-        opacity 0.4s ease-out; 
+        opacity 0.4s ease-out;
+    animation: sprite-appear 0.6s ease-out;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
 }
 
-/* Класс для затемнения (молчащий/неактивный персонаж) */
+@keyframes sprite-appear {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 .sprite.dimmed {
-    filter: brightness(60%) contrast(90%) grayscale(40%); /* Затемнение, снижение контраста, немного Ч/Б */
-    transform: scale(0.97); /* Немного уменьшаем */
-    opacity: 0.8; /* Небольшая прозрачность */
+    filter: brightness(55%) contrast(85%) grayscale(50%) drop-shadow(0 3px 10px rgba(0, 0, 0, 0.7));
+    transform: scale(0.96);
+    opacity: 0.75;
 }
 
-.sprite.left {
-    left: 10%;
-}
-
-.sprite.right {
-    right: 10%;
-}
-
+.sprite.left { left: 10%; }
+.sprite.right { right: 10%; }
 .sprite.center {
     left: 50%;
     transform: translateX(-50%);
 }
 
-/* --- Scene Transition Overlay (КРУГОВОЙ ПЕРЕХОД) --- */
+/* Переходы */
 #transition-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #000000;
+    background: radial-gradient(circle, #0A6836 0%, #000000 100%);
     z-index: 9999;
     pointer-events: none;
-    
-    /* ИСХОДНОЕ СОСТОЯНИЕ: Круг нулевого размера в центре */
     clip-path: circle(0% at 50% 50%);
-    transition: clip-path 1.5s ease-in-out; /* Установили длительность перехода */
-    opacity: 10; /* Оставим 1, чтобы цвет был виден во время перехода */
+    transition: clip-path 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
 }
+
 #transition-overlay.active {
-    /* АКТИВНОЕ СОСТОЯНИЕ: Круг расширяется, чтобы покрыть всю область */
     clip-path: circle(150% at 50% 50%);
     pointer-events: auto;
 }
 
+/* Загрузка */
 #loading-overlay {
-    /* Основные стили: занимает весь экран, центрирует контент */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #111; /* Темный фон */
-    color: #f0f0f0; /* Светлый текст */
+    background: linear-gradient(135deg, #0d1f16 0%, #1a3329 50%, #0d1f16 100%);
+    color: #f0f0f0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
-    /* Убеждаемся, что фон не скроллится на мобильных */
-    overflow: hidden; 
-    transition: opacity
+    z-index: 10000;
+    overflow: hidden;
+    transition: opacity 0.6s;
 }
+
 #loading-overlay.fade-out {
     opacity: 0;
-    /* Убедимся, что он не мешает кликам, пока исчезает */
-    pointer-events: none; 
-    
+    pointer-events: none;
 }
+
 #loading-text {
-    /* Стиль текста, указывающего прогресс */
-    margin-bottom: 25px; /* Увеличенный отступ для мобилок */
-    font-size: 1.4em; /* Чуть больший размер */
+    margin-bottom: 30px;
+    font-size: 1.5em;
     text-align: center;
-    padding: 0 15px; /* Небольшой горизонтальный отступ */
+    padding: 0 20px;
+    color: var(--accent-cool);
+    text-shadow: 0 2px 10px rgba(106, 190, 250, 0.5);
 }
 
 #loading-bar {
-    /* Контейнер индикатора */
-    width: 80%; /* На мобилках занимает большую ширину */
-    max-width: 400px; /* Ограничиваем на больших экранах */
-    height: 15px; /* Делаем толще для лучшей видимости */
-    background-color: #333;
-    border-radius: 8px;
+    width: 85%;
+    max-width: 450px;
+    height: 18px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 
+        0 0 20px rgba(0, 0, 0, 0.5),
+        inset 0 2px 5px rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(73, 168, 97, 0.3);
 }
 
-#progress-indicator { 
-    /* Сам индикатор прогресса */
+#progress-indicator {
     width: 0%;
     height: 100%;
-    background-color: #49a861; /* Зеленый цвет загрузки */
-    transition: width 0.3s ease-out; /* Плавное заполнение */
+    background: linear-gradient(90deg, var(--primary-green), var(--light-green), var(--accent-warm));
+    background-size: 200% 100%;
+    animation: progressShimmer 2s linear infinite;
+    transition: width 0.3s ease-out;
+    box-shadow: 
+        0 0 15px rgba(73, 168, 97, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+@keyframes progressShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
 #start-game-button {
-    /* Стиль кнопки "Начать игру" */
-    margin-top: 40px; /* Увеличенный отступ */
-    padding: 15px 30px; /* Больший padding для удобного нажатия */
-    font-size: 1.5em; /* Больший шрифт */
-    cursor: pointer;
-    background-color: #49a861; /* Желтая кнопка */
-    border: none;
-    border-radius: 8px;
-    color: #333;
+    margin-top: 45px;
+    padding: 18px 40px;
+    font-size: 1.6em;
     font-weight: bold;
+    cursor: pointer;
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, var(--accent-warm) 0%, var(--accent-warm-dark) 100%);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    color: var(--text-dark);
     text-transform: uppercase;
-    box-shadow: 0 4px 0 #49a861; /* Эффект 3D кнопки */
-    transition: all 0.1s;
+    letter-spacing: 2px;
+    box-shadow: 
+        0 6px 0 var(--accent-warm-dark),
+        0 10px 25px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+#start-game-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+#start-game-button:hover::before {
+    left: 100%;
+}
+
+#start-game-button:hover {
+    box-shadow: 
+        0 6px 0 var(--accent-warm-dark),
+        var(--glow-gold),
+        0 12px 30px rgba(0, 0, 0, 0.6);
+    transform: translateY(-2px);
 }
 
 #start-game-button:active {
-    box-shadow: 0 1px 0 #49a861;
-    transform: translateY(3px);
+    box-shadow: 
+        0 2px 0 var(--accent-warm-dark),
+        0 4px 15px rgba(0, 0, 0, 0.4);
+    transform: translateY(4px);
 }
 
-/* Медиа-запрос для МОБИЛЬНЫХ устройств (меньше 800px) */
+/* Экран концовки */
+#ending-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #000000 0%, #0d1f16 50%, #000000 100%);
+    z-index: 9999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#ending-title {
+    margin-bottom: 35px;
+    text-align: center;
+    font-size: 2em;
+    color: var(--accent-warm);
+    text-shadow: var(--glow-gold);
+}
+
+#game-ending-video {
+    max-width: 70%;
+    border-radius: 15px;
+    box-shadow: 
+        var(--shadow-deep),
+        0 0 40px rgba(73, 168, 97, 0.3);
+    border: 3px solid rgba(73, 168, 97, 0.5);
+}
+
+#final-message {
+    text-align: center;
+    font-size: 1.3em;
+    margin-top: 25px;
+    max-width: 800px;
+    line-height: 1.8;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+/* История диалогов */
+.history-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    margin: 12px 0;
+    border-radius: 10px;
+    border-left: 4px solid var(--accent-cool);
+    transition: all 0.3s;
+}
+
+.history-item:hover {
+    background: rgba(0, 0, 0, 0.4);
+    border-left-color: var(--accent-warm);
+    transform: translateX(5px);
+}
+
+.history-speaker {
+    font-weight: bold;
+    color: var(--accent-warm);
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.history-list {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Скроллбар для панелей */
+.settings-panel::-webkit-scrollbar,
+.achievements-panel::-webkit-scrollbar,
+.pause-panel::-webkit-scrollbar,
+.history-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.settings-panel::-webkit-scrollbar-track,
+.achievements-panel::-webkit-scrollbar-track,
+.pause-panel::-webkit-scrollbar-track,
+.history-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.settings-panel::-webkit-scrollbar-thumb,
+.achievements-panel::-webkit-scrollbar-thumb,
+.pause-panel::-webkit-scrollbar-thumb,
+.history-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--accent-warm), var(--primary-green));
+    border-radius: 5px;
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+/* === АДАПТИВ === */
 @media (max-width: 799px) {
     :root {
-        /* УВЕЛИЧЕННАЯ ВЫСОТА ТЕКСТОВОГО БОКСА для лучшего разделения на мобильных */
-        --text-box-height: 35vh; /* Увеличили высоту на 5vh для лучшего скролла */
-    }
-    .sprite {
-        /* ИСПРАВЛЕНИЕ: Уменьшаем ширину спрайта до 45% от ширины вьюпорта, чтобы два спрайта уместились рядом. */
-        max-height: 100%;
-        max-width: 60vw; /* КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: 100vw было слишком много */
-    }
-    .sprite.left {
-    left: -5%;
-    }
-
-    .sprite.right {
-    right: -5%;
-    }
-
-    #loading-text {
-        font-size: 1.2em; /* Немного уменьшим для маленьких экранов */
-        margin-bottom: 20px;
-    }
-
-    #loading-bar {
-        width: 90%; /* Занимаем почти всю ширину */
-        height: 12px;
-    }
-
-    #start-game-button {
-        padding: 12px 25px;
-        font-size: 1.3em;
-        margin-top: 30px;
-    }
-    #background-image
-    {
-        
-        width: 100%;
-    height: 70%;
-    background-size: cover;
-    background-position: center;
-    }
- 
- #hint-button {
-        right: auto;
-        left: 50%;
-        transform: translateX(-50%);
-        /* Позиционируем кнопку выше (над увеличенным текстовым полем) */
-        bottom: calc(var(--text-box-height) + 10px); 
-        width: 90%; 
-        max-width: 300px; 
+        --text-box-height: 35vh;
     }
     
-    #story-text {
-        bottom: 45px; /* Немного больше для мобильных, учитывая больший text-box */
+    .sprite {
+        max-height: 100%;
+        max-width: 60vw;
+    }
+    
+    .sprite.left { left: -5%; }
+    .sprite.right { right: -5%; }
+    
+    #background-image {
+        width: 100%;
+        height: 70%;
+        background-size: cover;
+        background-position: center;
+    }
+    
+    /* МОБИЛЬНАЯ ВЕРСИЯ HINT BUTTON */
+    #hint-button {
+        position: fixed;
+        top: auto;
+        right: auto;
+        bottom: calc(var(--text-box-height) + 15px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 320px;
+        border-radius: 12px;
+        padding: 12px 20px;
+        font-size: 1em;
+        z-index: 600;
+        border: 2px solid rgba(0, 0, 0, 0.2);
+    }
+    
+    #menu-title {
+        font-size: 2.5em;
+    }
+    
+    #menu-container {
+        padding: 35px 40px;
+    }
+    
+    .settings-panel, .achievements-panel, .pause-panel, .history-content {
+        padding: 30px 25px;
+    }
+    
+    #pause-menu-btn {
+        right: 15px;
+        top: 15px;
+        padding: 10px 13px;
+        font-size: 1.2em;
+    }
+    
+    #history-btn {
+        right: 70px;
+        top: 15px;
+        padding: 10px 13px;
+        font-size: 1.2em;
+    }
+    
+    #choices-container {
+        bottom: calc(var(--text-box-height) + 80px);
+        padding: 15px;
+    }
+    
+    .choice-button {
+        font-size: 1em;
+        padding: 14px 18px;
+    }
+    
+    #speaker-name {
+        font-size: 1em;
+        padding: 6px 15px;
+        top: -34px;
     }
 }
 
-
-/* Медиа-запрос для ПК (от 800px) */
 @media (min-width: 800px) {
     :root {
-        /* Комфортная высота текстового бокса на ПК */
-        --text-box-height: 25vh; /* Увеличили на 5vh для лучшего скролла */
+        --text-box-height: 25vh;
     }
+}
+
+/* Дополнительные анимации */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Эффект частиц (опционально, для особых моментов) */
+@keyframes particles {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(1);
+    }
+}
+
+/* Плавное появление элементов */
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.slide-in-bottom {
+    animation: slideInBottom 0.5s ease-out;
+}
+
+@keyframes slideInBottom {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Эффект свечения для важных элементов */
+.glow-effect {
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(73, 168, 97, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(73, 168, 97, 0.8);
+    }
+}
+
+/* Улучшенный фокус для доступности */
+button:focus-visible,
+.menu-button:focus-visible,
+.choice-button:focus-visible {
+    outline: 3px solid var(--accent-warm);
+    outline-offset: 3px;
+}
+
+/* Скрытие outline по умолчанию (для мыши) */
+button:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Плавные переходы для всех интерактивных элементов */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Защита от слишком быстрого скролла */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Оптимизация производительности */
+.sprite,
+#background-image,
+#transition-overlay {
+    will-change: transform, opacity;
+}
+
+/* Финальные штрихи */
+::selection {
+    background: var(--accent-warm);
+    color: var(--text-dark);
+}
+
+::-moz-selection {
+    background: var(--accent-warm);
+    color: var(--text-dark);
 }

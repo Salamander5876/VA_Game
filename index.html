@@ -8,6 +8,7 @@
     <link rel="icon" href="images/ico.png" type="image/png">
 </head>
 <body>
+    <!-- Оверлей загрузки -->
     <div id="loading-overlay">
         <div id="loading-text">Инициализация...</div>
         <div id="loading-bar">
@@ -16,11 +17,77 @@
         <button id="start-game-button" style="display: none;">НАЧАТЬ ИГРУ</button>
     </div>
     
+    <!-- Главное меню (НОВОЕ) -->
+    <div id="main-menu" style="display: none;">
+        <div id="menu-container">
+            <div class="menu-decoration">✦</div>
+            <h1 id="menu-title">Камертон 2026</h1>
+            <p id="menu-subtitle">Визуальная новелла о выборе пути</p>
+            <div id="menu-buttons">
+                <button class="menu-button" id="new-game-btn">🎮 Новая игра</button>
+                <button class="menu-button" id="continue-game-btn" style="display: none;">▶️ Продолжить</button>
+                <button class="menu-button" id="settings-btn">⚙️ Настройки</button>
+                <button class="menu-button" id="achievements-btn">🏆 Достижения</button>
+            </div>
+            <div class="menu-decoration bottom">✦</div>
+        </div>
+    </div>
+
+    <!-- Экран настроек (НОВОЕ) -->
+    <div id="settings-screen" style="display: none;">
+        <div class="settings-panel">
+            <h2>Настройки</h2>
+            <div class="setting-item">
+                <label>Скорость текста:</label>
+                <input type="range" id="text-speed-slider" min="0.5" max="2" step="0.5" value="1">
+                <span id="text-speed-value">1x</span>
+            </div>
+            <div class="setting-item">
+                <label>Громкость музыки:</label>
+                <input type="range" id="bgm-volume-slider" min="0" max="1" step="0.1" value="0.4">
+                <span id="bgm-volume-value">40%</span>
+            </div>
+            <div class="setting-item">
+                <label>Громкость звуков:</label>
+                <input type="range" id="sfx-volume-slider" min="0" max="1" step="0.1" value="0.3">
+                <span id="sfx-volume-value">30%</span>
+            </div>
+            <div class="setting-item">
+                <label>
+                    <input type="checkbox" id="skip-tutorial-checkbox">
+                    Пропускать обучение
+                </label>
+            </div>
+            <button class="menu-button" id="settings-back-btn">Назад</button>
+        </div>
+    </div>
+
+    <!-- Экран достижений (НОВОЕ) -->
+    <div id="achievements-screen" style="display: none;">
+        <div class="achievements-panel">
+            <h2>Достижения</h2>
+            <div id="achievements-list">
+                <!-- Будет заполнено через JS -->
+            </div>
+            <button class="menu-button" id="achievements-back-btn">Назад</button>
+        </div>
+    </div>
+    
+    <!-- Игровой контейнер -->
     <div id="game-container" style="display: none;"> 
         <div id="header">
             <h1 id="title">Камертон 2026</h1>
             <p id="location"></p>
+            <div id="progress-indicator-game">
+                <span id="scene-progress"></span>
+            </div>
         </div>
+
+        <!-- Кнопка меню паузы (НОВАЯ) -->
+        <button id="pause-menu-btn" title="Меню">☰</button>
+
+        <!-- Кнопка истории диалогов (НОВАЯ) -->
+        <button id="history-btn" title="История">📜</button>
 
         <div id="story-area">
             <div id="sprite-area"></div>
@@ -28,52 +95,53 @@
         </div>
         
         <div id="text-box">
-            <span id="speaker-name"></span> 
+            <span id="speaker-name"></span>
+            <button id="hint-button">💡 Попросить совета</button>
             <p id="story-text">Нажмите, чтобы начать...</p>
-            <div id="continue-prompt">Нажмите, чтобы продолжить...</div>
+            <div id="continue-prompt">▶ Нажмите, чтобы продолжить...</div>
         </div>
 
-        <div id="choices-container">
-        </div>
+        <div id="choices-container"></div>
+    </div>
 
-        <button id="hint-button" class="action-button">Попросить совета (Володя)</button>
+    <!-- История диалогов (НОВАЯ) -->
+    <div id="history-panel" style="display: none;">
+        <div class="history-content">
+            <h3>История диалогов</h3>
+            <div id="history-list"></div>
+            <button class="menu-button" id="history-close-btn">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Меню паузы (НОВОЕ) -->
+    <div id="pause-menu" style="display: none;">
+        <div class="pause-panel">
+            <h2>Пауза</h2>
+            <button class="menu-button" id="resume-btn">Продолжить</button>
+            <button class="menu-button" id="pause-settings-btn">Настройки</button>
+            <button class="menu-button" id="save-game-btn">Сохранить</button>
+            <button class="menu-button" id="main-menu-btn">Главное меню</button>
+        </div>
     </div>
 
     <div id="transition-overlay"></div> 
 
-    <div id="ending-screen" style="
-    display: none; 
-    position: fixed; 
-    top: 0; left: 0; 
-    width: 100%; height: 100%; 
-    background-color: black; 
-    z-index: 9999; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center; 
-    color: white; 
-    padding: 20px;
-    box-sizing: border-box;
-">
-    <h1 id="ending-title" style="margin-bottom: 30px; text-align: center; font-size: 1.2em;">Финальное обращение (тут будет другое видео)</h1>
-    
-    <video id="game-ending-video" width="70%" height="auto" controls preload="metadata" style="max-width: 70%;">
-        <source src="1013.mp4" type="video/mp4">
-        Ваш браузер не поддерживает тег video.
-    </video>
+    <!-- Экран концовки -->
+    <div id="ending-screen" style="display: none;">
+        <h1 id="ending-title">Финальное обращение</h1>
+        
+        <video id="game-ending-video" width="70%" height="auto" controls preload="metadata">
+            <source src="1013.mp4" type="video/mp4">
+            Ваш браузер не поддерживает тег video.
+        </video>
 
-    <!-- НОВАЯ КНОПКА ДЛЯ РУЧНОГО PLAY (скрыта по умолчанию) -->
-    <button id="play-video-btn" class="choice-button" style="display: none; margin-top: 20px; font-size: 1.2em; padding: 15px 30px;">▶ Воспроизвести видео</button>
+        <button id="play-video-btn" class="choice-button" style="display: none; margin-top: 20px;">▶ Воспроизвести видео</button>
 
-    <p id="final-message" style="
-        display: none; 
-        text-align: center; 
-        font-size: 1.2em; 
-        margin-top: 20px;
-    "></p>
-    
-    <button id="ending-restart-button" class="choice-button" style="display: none; margin-top: 30px; font-size: 1.5em; padding: 10px 20px;">Начать заново</button>
-</div>
+        <p id="final-message" style="display: none;"></p>
+        
+        <button id="ending-restart-button" class="choice-button" style="display: none; margin-top: 30px;">Начать заново</button>
+    </div>
+
     <script type="module" src="script.js"></script>
 </body>
 </html>
