@@ -40,37 +40,33 @@ html, body {
     color: var(--text-color);
 }
 
-/* === ГЛАВНОЕ МЕНЮ - ПИКСЕЛНЫЙ СТИЛЬ С ЗВЕЗДАМИ === */
+/* === ГЛАВНОЕ МЕНЮ - С ЭКВАЛАЙЗЕРОМ === */
 #main-menu {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background:
-        radial-gradient(2px 2px at 20% 30%, white, transparent),
-        radial-gradient(2px 2px at 60% 70%, white, transparent),
-        radial-gradient(1px 1px at 50% 50%, white, transparent),
-        radial-gradient(1px 1px at 80% 10%, white, transparent),
-        radial-gradient(2px 2px at 90% 60%, white, transparent),
-        radial-gradient(1px 1px at 15% 80%, white, transparent),
-        radial-gradient(2px 2px at 35% 15%, white, transparent),
-        radial-gradient(1px 1px at 70% 40%, white, transparent),
-        linear-gradient(180deg, #0d1f16 0%, #0A6836 30%, #1a1a2e 70%, #0f0f23 100%);
-    background-size:
-        200% 200%, 200% 200%, 200% 200%, 200% 200%,
-        200% 200%, 200% 200%, 200% 200%, 200% 200%,
-        100% 100%;
-    background-position:
-        0 0, 50% 50%, 25% 75%, 75% 25%,
-        40% 60%, 85% 15%, 10% 90%, 95% 45%,
-        0 0;
+    background: linear-gradient(180deg, #100d1f 0%, #110638 30%, #1a1a2e 70%, #0f0f23 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 10000;
-    animation: menuFadeIn 1s ease-out, starsTwinkle 5s ease-in-out infinite;
+    backdrop-filter: blur(10px);
+    animation: menuFadeIn 1s ease-out;
+    overflow: hidden;
     image-rendering: pixelated;
+}
+
+#equalizer-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.6;
 }
 
 @keyframes menuFadeIn {
@@ -80,11 +76,6 @@ html, body {
     to {
         opacity: 1;
     }
-}
-
-@keyframes starsTwinkle {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.85; }
 }
 
 #menu-container {
@@ -103,6 +94,7 @@ html, body {
     position: relative;
     overflow: visible;
     image-rendering: pixelated;
+    z-index: 10;
 }
 
 .menu-decoration {
@@ -153,7 +145,7 @@ html, body {
 
 #menu-title {
     font-size: 3.5em;
-    color: rgb(223, 222, 222);
+    color: var(--accent-warm);
     margin: 0 0 10px 0;
     /* КРАСИВАЯ ПИКСЕЛНАЯ ТЕНЬ - ПРИВЛЕКАЕТ ВНИМАНИЕ */
     text-shadow:
@@ -172,14 +164,14 @@ html, body {
     0%, 100% {
         text-shadow:
             3px 3px 0 rgba(0, 0, 0, 0.5),
-            0 0 15px rgba(0, 255, 98, 0.4),
+            0 0 15px rgba(229, 255, 0, 0.4),
             0 0 30px rgba(255, 191, 0, 0.2);
     }
     50% {
         text-shadow:
             3px 3px 0 rgba(0, 0, 0, 0.5),
-            0 0 20px rgba(21, 255, 0, 0.6),
-            0 0 40px rgba(255, 191, 0, 0.3);
+            0 0 10px rgba(255, 217, 0, 0.582),
+            0 0 40px rgba(255, 191, 0, 0.781);
     }
 }
 
@@ -1068,6 +1060,8 @@ html, body {
     color: white;
     padding: 20px;
     box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 #ending-title {
@@ -1079,9 +1073,12 @@ html, body {
 }
 
 #game-ending-video {
-    max-width: 70%;
+    max-width: 90%;
+    width: 90%;
+    height: auto;
+    max-height: 70vh;
     border-radius: 15px;
-    box-shadow: 
+    box-shadow:
         var(--shadow-deep),
         0 0 40px rgba(73, 168, 97, 0.3);
     border: 3px solid rgba(73, 168, 97, 0.5);
@@ -1091,7 +1088,7 @@ html, body {
     text-align: center;
     font-size: 1.3em;
     margin-top: 25px;
-    max-width: 800px;
+    max-width: 90%;
     line-height: 1.8;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
 }
@@ -1188,12 +1185,35 @@ html, body {
 
 
     #menu-title {
-        font-size: 2.5em;
+        margin-top: 30vh;
+        font-size: 2.2em;
+        letter-spacing: 2px;
     }
-    
+
+    #menu-subtitle {
+        font-size: 1em;
+    }
+
     #menu-container {
-        padding: 35px 40px;
+        padding: 20px 25px;
+        max-width: 90%;
+        width: 100%;
+        height: 100%;
+        margin-top: 5vh;
+        
+        box-shadow: none;
+        background: rgba(10, 104, 54, 0);
     }
+
+    
+
+    .menu-button {
+        font-size: 1.1em;
+        
+        padding: 24px 30px;
+    }
+
+    
     
     .settings-panel, .achievements-panel, .pause-panel, .history-content {
         padding: 30px 20px;

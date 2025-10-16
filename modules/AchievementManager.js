@@ -47,12 +47,6 @@ export class AchievementManager {
                 desc: 'Посетите все основные сцены',
                 icon: '🗺️',
                 unlocked: false
-            },
-            persistent: {
-                title: 'Настойчивый',
-                desc: 'Сохраните игру 5 раз',
-                icon: '💾',
-                unlocked: false
             }
         };
 

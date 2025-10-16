@@ -9,6 +9,7 @@ export class AudioManager {
         // Создание аудио объектов
         this.typingSound = new Audio('sound/typing.mp3');
         this.transitionSound = new Audio('sound/переход.mp3');
+        this.menuClickSound = new Audio('sound/Menu_Click.mp3');
         this.backgroundMusic = new Audio();
 
         this.init();
@@ -20,6 +21,7 @@ export class AudioManager {
         // Предзагрузка аудио
         this.typingSound.preload = 'auto';
         this.transitionSound.preload = 'auto';
+        this.menuClickSound.preload = 'auto';
         this.backgroundMusic.preload = 'auto';
 
         // Установка начальной громкости
@@ -28,6 +30,7 @@ export class AudioManager {
         // Загрузка файлов
         this.typingSound.load();
         this.transitionSound.load();
+        this.menuClickSound.load();
 
         this.isInitialized = true;
     }
@@ -35,6 +38,7 @@ export class AudioManager {
     updateVolumes() {
         this.typingSound.volume = this.settings.sfxVolume;
         this.transitionSound.volume = this.settings.sfxVolume;
+        this.menuClickSound.volume = this.settings.sfxVolume;
         this.backgroundMusic.volume = this.settings.bgmVolume;
     }
 
@@ -69,6 +73,16 @@ export class AudioManager {
             this.transitionSound.play().catch(e => console.log("Transition sound error:", e));
         } catch (e) {
             console.warn("Failed to play transition sound:", e);
+        }
+    }
+
+    // === MENU CLICK SOUND ===
+    playMenuClick() {
+        try {
+            this.menuClickSound.currentTime = 0;
+            this.menuClickSound.play().catch(e => console.log("Menu click sound error:", e));
+        } catch (e) {
+            console.warn("Failed to play menu click sound:", e);
         }
     }
 
@@ -133,6 +147,7 @@ export class AudioManager {
         this.stopTyping();
         this.typingSound = null;
         this.transitionSound = null;
+        this.menuClickSound = null;
         this.backgroundMusic = null;
     }
 }

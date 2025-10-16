@@ -134,6 +134,8 @@ export class ResourceLoader {
             // Звуки
             'sound/typing.mp3',
             'sound/переход.mp3',
+            'sound/Menu_Click.mp3',
+            'sound/BGmusic.mp3',
             'sound/night.mp3',
             'sound/scene1.mp3',
             'sound/Helynt - Movie Reference.mp3',

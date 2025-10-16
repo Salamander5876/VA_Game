@@ -58,6 +58,14 @@ function showMainMenu() {
     els.gameContainer.style.display = 'none';
     els.mainMenu.style.display = 'flex';
     document.getElementById('continue-game-btn').style.display = gameState.hasSave() ? 'block' : 'none';
+
+    // Останавливаем игровую музыку
+    audio.stopBGM();
+
+    // Запускаем музыку главного меню (если есть)
+    if (window.menuMusic && window.menuMusic.paused) {
+        window.menuMusic.play().catch(e => console.log('Menu music play blocked:', e));
+    }
 }
 
 function showSettings() {
@@ -178,8 +186,8 @@ async function showScene(sceneId) {
     els.transitionOverlay.classList.add('active');
     setTimeout(() => {
         renderSceneContent(sceneId);
-        setTimeout(() => els.transitionOverlay.classList.remove('active'), 50);
-    }, 800);
+        setTimeout(() => els.transitionOverlay.classList.remove('active'), 200);
+    }, 400);
 }
 
 function renderSceneContent(sceneId) {
@@ -358,16 +366,23 @@ function showChoices(scene) {
         if (choice.nextScene === 'return') {
             btn.onclick = () => {
                 if (!gameState.isAdvancing && gameState.isAwaitingChoice) {
+                    audio.playMenuClick();
                     handleChoice(gameState.currentSceneId, idx, false);
                 }
             };
         } else if (gameState.currentSceneId.startsWith('tutorial') ||
                    gameState.currentSceneId.startsWith('ending') ||
                    gameState.currentSceneId === 'welcome_message') {
-            btn.onclick = () => !gameState.isAdvancing && showScene(choice.nextScene);
+            btn.onclick = () => {
+                if (!gameState.isAdvancing) {
+                    audio.playMenuClick();
+                    showScene(choice.nextScene);
+                }
+            };
         } else {
             btn.onclick = () => {
                 if (!gameState.isAdvancing && gameState.isAwaitingChoice) {
+                    audio.playMenuClick();
                     handleChoice(gameState.currentSceneId, idx, false);
                     achievements.unlock('first_choice');
                 }
@@ -554,6 +569,12 @@ function initializeGame(continueMode = false) {
     els.gameContainer.style.display = 'block';
     els.mainMenu.style.display = 'none';
 
+    // Останавливаем музыку главного меню
+    if (window.menuMusic && !window.menuMusic.paused) {
+        window.menuMusic.pause();
+        window.menuMusic.currentTime = 0;
+    }
+
     if (continueMode && gameState.load()) {
         showScene(gameState.currentSceneId);
     } else {
@@ -571,16 +592,29 @@ function initializeGame(continueMode = false) {
 // === СОБЫТИЯ ===
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('new-game-btn').onclick = () => {
+        audio.playMenuClick();
         gameState.reset();
         storage.removeItem('save');
         initializeGame(false);
     };
 
-    document.getElementById('continue-game-btn').onclick = () => initializeGame(true);
-    document.getElementById('settings-btn').onclick = showSettings;
-    document.getElementById('achievements-btn').onclick = showAchievements;
+    document.getElementById('continue-game-btn').onclick = () => {
+        audio.playMenuClick();
+        initializeGame(true);
+    };
+
+    document.getElementById('settings-btn').onclick = () => {
+        audio.playMenuClick();
+        showSettings();
+    };
+
+    document.getElementById('achievements-btn').onclick = () => {
+        audio.playMenuClick();
+        showAchievements();
+    };
 
     document.getElementById('settings-back-btn').onclick = () => {
+        audio.playMenuClick();
         els.settingsScreen.style.display = 'none';
         if (els.gameContainer.style.display === 'none') showMainMenu();
     };
@@ -611,43 +645,57 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     document.getElementById('achievements-back-btn').onclick = () => {
+        audio.playMenuClick();
         els.achievementsScreen.style.display = 'none';
         showMainMenu();
     };
 
     document.getElementById('pause-menu-btn').onclick = () => {
+        audio.playMenuClick();
         els.pauseMenu.style.display = 'flex';
         audio.pauseBGM();
     };
 
     document.getElementById('resume-btn').onclick = () => {
+        audio.playMenuClick();
         els.pauseMenu.style.display = 'none';
         audio.resumeBGM();
     };
 
     document.getElementById('pause-settings-btn').onclick = () => {
+        audio.playMenuClick();
         els.pauseMenu.style.display = 'none';
         showSettings();
     };
 
     document.getElementById('save-game-btn').onclick = () => {
+        audio.playMenuClick();
         gameState.save();
         els.pauseMenu.style.display = 'none';
     };
 
     document.getElementById('main-menu-btn').onclick = () => {
         if (confirm('Вернуться в главное меню? Несохраненный прогресс будет утерян.')) {
+            audio.playMenuClick();
             els.pauseMenu.style.display = 'none';
             gameState.reset();
             showMainMenu();
         }
     };
 
-    document.getElementById('history-btn').onclick = showHistory;
-    document.getElementById('history-close-btn').onclick = () => els.historyPanel.style.display = 'none';
+    document.getElementById('history-btn').onclick = () => {
+        audio.playMenuClick();
+        showHistory();
+    };
+
+    document.getElementById('history-close-btn').onclick = () => {
+        audio.playMenuClick();
+        els.historyPanel.style.display = 'none';
+    };
 
     els.hintButton.onclick = () => {
         if (!gameState.isAdvancing && gameState.isAwaitingChoice) {
+            audio.playMenuClick();
             handleChoice(gameState.currentSceneId, null, true);
         }
     };
@@ -679,6 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('ending-restart-button').onclick = () => {
+        audio.playMenuClick();
         els.endingScreen.style.display = 'none';
         gameState.reset();
         showMainMenu();
@@ -695,16 +744,23 @@ window.onload = async () => {
         els.loadingText.textContent = 'Загрузка ресурсов...';
         await loader.preloadCritical();
 
-        els.loadingText.textContent = 'Загрузка завершена...';
+        els.loadingText.textContent = 'Загрузка завершена!';
         els.progressIndicator.style.width = '100%';
 
-        setTimeout(() => {
+        // Показываем кнопку "Перейти к игре"
+        const startButton = document.getElementById('start-game-button');
+        startButton.style.display = 'block';
+
+        // При клике на кнопку - запускаем музыку и показываем меню
+        startButton.onclick = () => {
+            audio.playMenuClick();
+
             els.loadingOverlay.classList.add('fade-out');
             setTimeout(() => {
                 els.loadingOverlay.style.display = 'none';
                 showMainMenu();
             }, 500);
-        }, 800);
+        };
     } catch (error) {
         console.error('Ошибка загрузки:', error);
         els.loadingText.textContent = 'Ошибка загрузки. Обновите страницу.';
@@ -713,3 +769,260 @@ window.onload = async () => {
 
 window.showNotification = Utils.showNotification;
 console.log('🎮 Камертон 2026 v2.0');
+
+// === ПУЛЬСАЦИЯ ФОНА И МУЗЫКА ДЛЯ ГЛАВНОГО МЕНЮ ===
+// Делаем переменные глобальными для доступа из любого места
+window.menuMusic = null;
+window.audioContext = null;
+window.analyser = null;
+window.dataArray = null;
+window.pulseAnimationId = null;
+
+// Переменные для сглаживания (новые)
+let smoothedBass = 0;
+let smoothedMid = 0;
+let smoothedHue = 180; // Начальный оттенок
+// УВЕЛИЧЕННЫЙ коэффициент сглаживания для замедления всех изменений
+const smoothingFactor = 0.95; 
+
+function initMenuMusicAndPulse() {
+    const canvas = document.getElementById('equalizer-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+
+    // Устанавливаем размер canvas
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Создаем аудио элемент
+    window.menuMusic = new Audio('sound/BGmusic.mp3');
+    window.menuMusic.loop = true;
+    window.menuMusic.volume = userSettings.bgmVolume * 0.5; // Тише чем обычная музыка
+
+    // Функция для запуска музыки и визуализации
+    function startMusicAndVisualizer() {
+        if (!window.audioContext) {
+            // Создаем AudioContext
+            window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            window.analyser = window.audioContext.createAnalyser();
+            const source = window.audioContext.createMediaElementSource(window.menuMusic);
+            source.connect(window.analyser);
+            window.analyser.connect(window.audioContext.destination);
+
+            window.analyser.fftSize = 512; // Больше для лучшего анализа басов
+            const bufferLength = window.analyser.frequencyBinCount;
+            window.dataArray = new Uint8Array(bufferLength);
+        }
+
+        window.menuMusic.play().catch(e => console.log('Menu music autoplay blocked:', e));
+        animatePulse();
+    }
+
+    // Переменные для плавной анимации
+    let time = 0;
+    let colorHue = 180; 
+
+    // Анимация пульсации фона (как в Яндекс.Музыке)
+    function animatePulse() {
+        if (els.mainMenu.style.display === 'none') {
+            return; // Останавливаем анимацию если меню скрыто
+        }
+
+        window.pulseAnimationId = requestAnimationFrame(animatePulse);
+        time += 0.016; // Примерно 60 FPS
+
+        if (!window.analyser || !window.dataArray) {
+            // Если музыка еще не запущена, показываем базовую анимацию
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#0a1a23'); // Очень темный сине-голубой
+            gradient.addColorStop(0.5, '#134045'); // Темный циан/бирюзовый
+            gradient.addColorStop(1, '#0e0e1a'); // Очень темный синий (почти черный)
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            return;
+        }
+
+        window.analyser.getByteFrequencyData(window.dataArray);
+
+        // Вычисляем средний уровень басов (низкие частоты)
+        let bassSum = 0;
+        const bassRange = 30;
+        for (let i = 0; i < bassRange; i++) {
+            bassSum += window.dataArray[i];
+        }
+        const bassAverage = bassSum / bassRange / 255;
+
+        // Вычисляем средний уровень средних частот
+        let midSum = 0;
+        const midStart = 30;
+        const midEnd = 80;
+        for (let i = midStart; i < midEnd; i++) {
+            midSum += window.dataArray[i];
+        }
+        const midAverage = midSum / (midEnd - midStart) / 255;
+        
+        // ===================================
+        // === ПЛАВНОСТЬ (СГЛАЖИВАНИЕ LPF) ===
+        // ===================================
+        const factor = 1 - smoothingFactor;
+        
+        // Сглаживание басов
+        smoothedBass = smoothedBass * smoothingFactor + bassAverage * factor;
+
+        // Сглаживание средних частот
+        smoothedMid = smoothedMid * smoothingFactor + midAverage * factor;
+
+        // Плавно меняем оттенок цвета под музыку
+        // Уменьшаем влияние басов (множитель 0.5 -> 0.2) для более медленной смены цвета
+        colorHue += (smoothedBass * 2 - 1) * 0.2; 
+        // Ограничиваем оттенок диапазоном от темно-зеленого (140) до глубокого синего (200)
+        if (colorHue > 200) colorHue = 140; 
+        if (colorHue < 140) colorHue = 200;
+
+        // Сглаживание изменения оттенка
+        smoothedHue = smoothedHue * smoothingFactor + colorHue * factor;
+        // ===================================
+
+        // Создаем динамический градиент с плавными переливами
+        const gradient = ctx.createRadialGradient(
+            canvas.width / 2,
+            canvas.height / 2,
+            0,
+            canvas.width / 2 + Math.sin(time * 0.5) * 100,
+            canvas.height / 2 + Math.cos(time * 0.5) * 100,
+            // Используем сглаженные басы для размера пульсации
+            canvas.width * (0.7 + smoothedBass * 0.3) 
+        );
+
+        // Цвета плавно пульсируют
+        // Используем сглаженные значения для насыщенности и яркости
+        const saturation = 40 + smoothedMid * 30; // 40-70%
+        const lightness1 = 10 + smoothedBass * 15; // 10-25%
+        const lightness2 = 18 + smoothedMid * 15; // 18-33%
+        const lightness3 = 8 + smoothedBass * 10; // 8-18%
+
+        // Используем сглаженный оттенок (smoothedHue)
+        gradient.addColorStop(0, `hsl(${smoothedHue}, ${saturation}%, ${lightness1}%)`);
+        gradient.addColorStop(0.4, `hsl(${smoothedHue + 15}, ${saturation - 10}%, ${lightness2}%)`);
+        gradient.addColorStop(0.7, `hsl(${smoothedHue - 15}, ${saturation - 20}%, ${lightness3}%)`);
+        gradient.addColorStop(1, 'hsl(210, 20%, 5%)'); 
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Добавляем тонкие световые волны
+        const numWaves = 3;
+        for (let i = 0; i < numWaves; i++) {
+            const waveGradient = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, 0,
+                canvas.width / 2, canvas.height / 2, 
+                // Используем сглаженные басы для размера волн
+                canvas.width * (0.3 + i * 0.2 + smoothedBass * 0.3)
+            );
+            // Используем сглаженный оттенок
+            waveGradient.addColorStop(0, `hsla(${smoothedHue}, 60%, 40%, 0)`);
+            waveGradient.addColorStop(0.5, `hsla(${smoothedHue}, 60%, 40%, ${0.05 + smoothedBass * 0.1})`);
+            waveGradient.addColorStop(1, `hsla(${smoothedHue}, 60%, 40%, 0)`);
+
+            ctx.fillStyle = waveGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Добавляем мягкие звезды
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        for (let i = 0; i < 50; i++) {
+            const sx = (Math.sin(time * 0.2 + i) * 0.5 + 0.5) * canvas.width;
+            const sy = (Math.cos(time * 0.3 + i * 2) * 0.5 + 0.5) * canvas.height;
+            // Используем сглаженные средние частоты для размера звезд
+            const size = 1 + Math.random() * 1.5 * (1 + smoothedMid * 0.5); 
+
+            // Используем сглаженные средние частоты для мерцания
+            ctx.globalAlpha = 0.3 + Math.random() * 0.4 * (1 + smoothedMid); 
+            ctx.fillRect(sx, sy, size, size);
+        }
+        ctx.globalAlpha = 1;
+    }
+   
+
+// initMenuMusicAndPulse(); // Добавьте вызов этой функции в соответствующем месте вашего кода
+
+    // Автоматический запуск при показе меню
+    const observer = new MutationObserver(() => {
+        if (els.mainMenu.style.display !== 'none') {
+            resizeCanvas();
+
+            // ВСЕГДА запускаем анимацию сразу
+            if (!window.pulseAnimationId) {
+                animatePulse();
+            }
+
+            // Пытаемся запустить музыку
+            if (!window.audioContext) {
+                // Первый раз - создаем контекст и пытаемся запустить
+                try {
+                    startMusicAndVisualizer();
+                } catch (e) {
+                    console.log('Waiting for user interaction to start music');
+                    // Запустим при любом взаимодействии
+                    const startOnInteraction = () => {
+                        startMusicAndVisualizer();
+                        document.removeEventListener('click', startOnInteraction);
+                        document.removeEventListener('keydown', startOnInteraction);
+                    };
+                    document.addEventListener('click', startOnInteraction, { once: true });
+                    document.addEventListener('keydown', startOnInteraction, { once: true });
+                }
+            } else {
+                // Контекст уже есть, просто запускаем музыку
+                if (window.menuMusic.paused) {
+                    window.menuMusic.play().catch(() => {
+                        console.log('Music play blocked, waiting for interaction');
+                    });
+                }
+            }
+        } else {
+            // Останавливаем музыку когда меню скрывается
+            if (window.menuMusic && !window.menuMusic.paused) {
+                window.menuMusic.pause();
+                window.menuMusic.currentTime = 0;
+            }
+            if (window.pulseAnimationId) {
+                cancelAnimationFrame(window.pulseAnimationId);
+                window.pulseAnimationId = null;
+            }
+        }
+    });
+
+    observer.observe(els.mainMenu, { attributes: true, attributeFilter: ['style'] });
+
+    // Пытаемся запустить музыку сразу при загрузке страницы (если меню показано)
+    if (els.mainMenu.style.display !== 'none') {
+        setTimeout(() => {
+            try {
+                startMusicAndVisualizer();
+            } catch (e) {
+                console.log('Initial autoplay blocked');
+            }
+        }, 100);
+    }
+
+    // Добавляем глобальный обработчик для первого взаимодействия в меню
+    // Теперь музыка запускается автоматически при открытии меню (после клика на "Перейти к игре")
+    const startMenuMusicOnFirstInteraction = () => {
+        if (els.mainMenu.style.display !== 'none' && window.menuMusic && window.menuMusic.paused) {
+            startMusicAndVisualizer();
+        }
+        document.removeEventListener('click', startMenuMusicOnFirstInteraction);
+        document.removeEventListener('keydown', startMenuMusicOnFirstInteraction);
+    };
+    document.addEventListener('click', startMenuMusicOnFirstInteraction);
+    document.addEventListener('keydown', startMenuMusicOnFirstInteraction);
+}
+
+// Инициализация после загрузки DOM
+document.addEventListener('DOMContentLoaded', initMenuMusicAndPulse);
