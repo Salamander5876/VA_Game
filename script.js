@@ -95,7 +95,7 @@ backgroundMusic.volume = userSettings.bgmVolume;
 const achievements = {
     first_choice: { title: 'Первый выбор', desc: 'Сделайте свой первый выбор', unlocked: false, icon: '🎯' },
     perfect_run: { title: 'Идеальная гармония', desc: 'Пройдите игру без ошибок', unlocked: false, icon: '🏆' },
-    hint_master: { title: 'Мудрый советник', desc: 'Используйте подсказку 3 раза', unlocked: false, icon: '💡' },
+    hint_master: { title: 'Мудрый советник', desc: 'Используйте подсказку 3 раза', unlocked: false, icon: '☯' },
     speed_reader: { title: 'Скоростной читатель', desc: 'Пропустите текст 10 раз', unlocked: false, icon: '⚡' },
     storyteller: { title: 'Хранитель историй', desc: 'Откройте историю диалогов', unlocked: false, icon: '📜' }
 };
