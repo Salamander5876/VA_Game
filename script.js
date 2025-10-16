@@ -172,7 +172,7 @@ async function showScene(sceneId) {
         return renderSceneContent(sceneId);
     }
 
-    await loader.preloadScene(scene);
+    // Убрали lazy loading - все ресурсы уже предзагружены
     if (sceneId !== gameState.currentSceneId) audio.playTransition();
 
     els.transitionOverlay.classList.add('active');
@@ -516,6 +516,9 @@ function generateEnding(sceneId) {
 }
 
 function handleVideoEnding(scene) {
+    // ВАЖНО: Выключаем музыку ПЕРЕД показом видео экрана
+    audio.stopBGM();
+
     els.gameContainer.style.display = 'none';
     els.endingScreen.style.display = 'flex';
 
@@ -523,9 +526,6 @@ function handleVideoEnding(scene) {
     const playBtn = document.getElementById('play-video-btn');
     const finalMsg = document.getElementById('final-message');
     const restartBtn = document.getElementById('ending-restart-button');
-
-    // Выключение музыки в момент запуска видео
-    audio.stopBGM();
 
     finalMsg.style.display = 'none';
     playBtn.style.display = 'none';
@@ -536,11 +536,13 @@ function handleVideoEnding(scene) {
 
     video.play().catch(() => {
         playBtn.style.display = 'block';
-        playBtn.onclick = () => video.play();
+        playBtn.onclick = () => {
+            audio.stopBGM(); // На всякий случай выключаем еще раз при ручном запуске
+            video.play();
+        };
     });
 
     video.onended = () => {
-        audio.stopBGM();
         video.style.display = 'none';
         finalMsg.innerHTML = scene.finalText?.replace(/\*\*/g, '<b>') || 'Игра завершена.';
         finalMsg.style.display = 'block';

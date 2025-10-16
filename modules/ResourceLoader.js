@@ -128,16 +128,69 @@ export class ResourceLoader {
         }
     }
 
-    // Предзагрузить критические ресурсы
+    // Предзагрузить ВСЕ ресурсы игры сразу (полная загрузка вместо lazy loading)
     async preloadCritical() {
-        const criticalAssets = [
+        const allAssets = [
+            // Звуки
             'sound/typing.mp3',
             'sound/переход.mp3',
             'sound/night.mp3',
-            'images/background/night.jpg'
+            'sound/scene1.mp3',
+            'sound/Helynt - Movie Reference.mp3',
+            'sound/Helynt - Potions.mp3',
+            'sound/Midnight Anima - Dead Signal Smile.mp3',
+            'sound/Animal Crossing_ New Leaf - 3PM.mp3',
+            'sound/hint.mp3',
+
+            // Фоны
+            'images/background/night.jpg',
+            'images/background/front_of_the_dining.jpg',
+            'images/background/lab.jpg',
+
+            // Простые спрайты
+            'images/bibikov.png',
+            'images/vitaly.png',
+            'images/sprites/maniken_left.png',
+            'images/sprites/maniken_right.png',
+
+            // Анимированные спрайты Володи (volodya_1)
+            'images/sprites/volodya_1/1.png',
+            'images/sprites/volodya_1/2.png',
+            'images/sprites/volodya_1/3.png',
+            'images/sprites/volodya_1/4.png',
+            'images/sprites/volodya_1/5.png',
+            'images/sprites/volodya_1/6.png',
+
+            // Анимированные спрайты Володи (volodya_2)
+            'images/sprites/volodya_2/1.png',
+            'images/sprites/volodya_2/2.png',
+            'images/sprites/volodya_2/3.png',
+            'images/sprites/volodya_2/4.png',
+            'images/sprites/volodya_2/5.png',
+            'images/sprites/volodya_2/6.png',
+
+            // Анимированные спрайты Володи (volodya_3)
+            'images/sprites/volodya_3/1.png',
+            'images/sprites/volodya_3/2.png',
+            'images/sprites/volodya_3/3.png',
+            'images/sprites/volodya_3/4.png',
+            'images/sprites/volodya_3/5.png',
+            'images/sprites/volodya_3/6.png',
+
+            // Видео
+            '1013.mp4'
         ];
 
-        return this.loadMultiple(criticalAssets);
+        console.log('🔄 Загрузка всех ресурсов игры...');
+        const startTime = performance.now();
+
+        const results = await this.loadMultiple(allAssets);
+
+        const loadTime = ((performance.now() - startTime) / 1000).toFixed(2);
+        console.log(`✅ Все ресурсы загружены за ${loadTime}с`);
+        console.log(`📊 Загружено: ${this.loadedAssets.size}, Ошибок: ${this.failedAssets.size}`);
+
+        return results;
     }
 
     // Получить статистику
