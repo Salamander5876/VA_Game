@@ -524,6 +524,9 @@ function handleVideoEnding(scene) {
     const finalMsg = document.getElementById('final-message');
     const restartBtn = document.getElementById('ending-restart-button');
 
+    // Выключение музыки в момент запуска видео
+    audio.stopBGM();
+
     finalMsg.style.display = 'none';
     playBtn.style.display = 'none';
     restartBtn.style.display = 'none';
