@@ -693,6 +693,7 @@ async function goToNextStoryStep() {
         return;
     }
 
+    // Проверяем флаг и сразу устанавливаем его атомарно
     if (isAdvancing) return;
     isAdvancing = true;
 
@@ -749,12 +750,15 @@ async function goToNextStoryStep() {
                 storyText.innerHTML = step.text;
                 document.getElementById('text-box').classList.add('text-complete');
                 continuePrompt.style.display = 'block';
-                showChoices(scene);
             } else {
                 await typeText(step.text);
+            }
+
+            // Показываем выборы только если еще не ожидаем выбор
+            if (!isAwaitingChoice) {
                 showChoices(scene);
             }
-            
+
             document.getElementById('text-box').onclick = null;
             return;
         }
@@ -804,15 +808,25 @@ function showChoices(scene) {
         const button = document.createElement('button');
         button.textContent = choice.text;
         button.className = 'choice-button';
-        
+
         if (choice.nextScene === 'return') {
-            button.onclick = () => handleChoice(currentSceneId, index, false);
+            button.onclick = () => {
+                if (!isAdvancing && isAwaitingChoice) {
+                    handleChoice(currentSceneId, index, false);
+                }
+            };
         } else if (currentSceneId.startsWith('tutorial') || currentSceneId.startsWith('ending') || currentSceneId === 'welcome_message') {
-            button.onclick = () => showScene(choice.nextScene);
+            button.onclick = () => {
+                if (!isAdvancing) {
+                    showScene(choice.nextScene);
+                }
+            };
         } else {
             button.onclick = () => {
-                handleChoice(currentSceneId, index, false);
-                unlockAchievement('first_choice');
+                if (!isAdvancing && isAwaitingChoice) {
+                    handleChoice(currentSceneId, index, false);
+                    unlockAchievement('first_choice');
+                }
             };
         }
 
@@ -822,7 +836,7 @@ function showChoices(scene) {
     choicesContainer.style.pointerEvents = 'auto';
     choicesContainer.style.opacity = '1';
 
-    if (scene.hint && !scene.isHint && !currentSceneId.startsWith('tutorial') && 
+    if (scene.hint && !scene.isHint && !currentSceneId.startsWith('tutorial') &&
         !currentSceneId.startsWith('ending') && currentSceneId !== 'welcome_message') {
         hintButton.style.display = 'block';
     } else {
@@ -831,12 +845,15 @@ function showChoices(scene) {
 }
 
 function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
+    // Защита от множественных вызовов
+    if (isAdvancing) return;
+
     if (isHintRequest) {
         const currentScene = gameData[sceneId];
         if (!currentScene.hint) return;
 
         currentSceneStack.push(sceneId);
-        
+
         if (gameData['hint']) {
             gameData['hint'].story[0].text = currentScene.hint;
         }
@@ -850,8 +867,11 @@ function handleChoice(sceneId, choiceIndex, isHintRequest = false) {
 
     const scene = gameData[sceneId];
     const choice = scene.choices[choiceIndex];
-    
+
+    // Устанавливаем флаг заранее для предотвращения повторных вызовов
     isAwaitingChoice = false;
+    isAdvancing = true;
+
     choicesContainer.style.pointerEvents = 'none';
     choicesContainer.style.opacity = '0';
     hintButton.style.display = 'none';
@@ -1162,7 +1182,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('history-close-btn').onclick = hideHistory;
 
     // Подсказка
-    hintButton.onclick = () => handleChoice(currentSceneId, null, true);
+    hintButton.onclick = () => {
+        if (!isAdvancing && isAwaitingChoice) {
+            handleChoice(currentSceneId, null, true);
+        }
+    };
 
     // Клавиатура
     document.addEventListener('keydown', (e) => {

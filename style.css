@@ -512,9 +512,16 @@ html, body {
         0 0 10px rgba(73, 168, 97, 0.3);
 }
 
-/* Кнопка истории теперь в меню паузы - скрыта из text-box */
-button#history-btn[title="История"] {
-    display: none;
+/* Кнопка истории теперь только в меню паузы - сброс всех старых стилей */
+.pause-panel #history-btn {
+    /* Переопределяем все возможные старые стили */
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none;
+    margin: 0;
 }
 
 /* ИСПРАВЛЕНИЕ ВЫРАВНИВАНИЯ МЕНЮ ПАУЗЫ */
@@ -535,6 +542,17 @@ button#history-btn[title="История"] {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    white-space: nowrap;
+    /* Сброс любых старых стилей для всех кнопок */
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    bottom: auto;
 }
 
 /* Story Area */
@@ -1188,7 +1206,7 @@ button#history-btn[title="История"] {
         background-position: center;
     }
     
-    /* МОБИЛЬНАЯ ВЕРСИЯ - КНОПКИ ОСТАЮТСЯ В ТОМ ЖЕ МЕСТЕ */
+    /* МОБИЛЬНАЯ ВЕРСИЯ - КНОПКА ПОДСКАЗКИ ОСТАЕТСЯ НАД ТЕКСТОВЫМ ПОЛЕМ */
     #hint-button {
         top: -40px;
         right: 15px;
@@ -1196,13 +1214,15 @@ button#history-btn[title="История"] {
         font-size: 1.4em;
     }
 
-    #history-btn {
-        top: -40px;
-        right: 70px;
-        padding: 10px 18px;
-        font-size: 1.4em;
+    /* Кнопка истории только в меню паузы - никаких дополнительных стилей */
+    .pause-panel #history-btn {
+        /* Явно переопределяем, чтобы не было старых стилей */
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
     }
-    
+
+
     #menu-title {
         font-size: 2.5em;
     }
@@ -1215,12 +1235,22 @@ button#history-btn[title="История"] {
         padding: 30px 20px;
     }
 
-    /* Уменьшаем размер текста кнопок в меню паузы на мобильных */
+    /* Кнопки меню паузы на мобильных - компактные с иконками */
     .pause-panel .menu-button {
-        font-size: 1.05em;
-        padding: 12px 16px;
-        white-space: normal;
-        word-wrap: break-word;
+        font-size: 1em;
+        padding: 12px 14px;
+        white-space: nowrap;
+        gap: 6px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* На очень маленьких экранах можно переносить текст */
+    @media (max-width: 380px) {
+        .pause-panel .menu-button {
+            white-space: normal;
+            word-wrap: break-word;
+        }
     }
 
     /* Мобильная кнопка меню - в правом верхнем углу, полупрозрачная */
