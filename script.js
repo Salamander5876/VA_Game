@@ -187,7 +187,7 @@ async function showScene(sceneId) {
     setTimeout(() => {
         renderSceneContent(sceneId);
         setTimeout(() => els.transitionOverlay.classList.remove('active'), 200);
-    }, 400);
+    }, 600);
 }
 
 function renderSceneContent(sceneId) {
