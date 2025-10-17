@@ -3,7 +3,7 @@
 export const gameData = {
     'welcome_message': {
         location: 'Приветствие',
-        background: 'url(images/background/night.jpg)',
+        background: 'url(images/background/night.webp)',
         bgm: 'sound/night.mp3',
         story: [
             { speaker: 'Система', text: 'Привет! Добро пожаловать в проект <span style="color: #ffbf00; font-weight: bold;">"Камертон 2026"</span>.' },
@@ -20,7 +20,7 @@ export const gameData = {
     
     'tutorial_start': {
         location: 'Парапет (Инструктаж)',
-        background: 'url(images/background/night.jpg)',
+        background: 'url(images/background/night.webp)',
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_1', frames: 6, position: 'center' }],
         bgm: 'sound/night.mp3',
         story: [
@@ -42,7 +42,7 @@ export const gameData = {
     
     'tutorial_choice': {
         location: 'Парапет (Обучение)',
-        background: 'url(images/background/night.jpg)',
+        background: 'url(images/background/night.webp)',
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_2', frames: 6, position: 'center' }],
         bgm: 'sound/night.mp3',
         story: [
@@ -62,7 +62,7 @@ export const gameData = {
     
     'tutorial_end': {
         location: 'Парапет (Обучение завершено)',
-        background: 'url(images/background/night.jpg)',
+        background: 'url(images/background/night.webp)',
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
         bgm: 'sound/night.mp3',
         story: [
@@ -80,11 +80,11 @@ export const gameData = {
 
     'scene1': {
         location: 'Ребенок: Выбор мастерской',
-        background: 'url(images/background/front_of_the_dining.jpg)',
+        background: 'url(images/background/front_of_the_dining.webp)',
         bgm: 'sound/scene1.mp3',
-        sprites: [ 
-            { name: 'Друг', src: 'images/bibikov.png', position: 'left' }, 
-            { name: 'Ты', src: 'images/vitaly.png', position: 'right' }      
+        sprites: [
+            { name: 'Друг', src: 'images/bibikov.webp', position: 'left' },
+            { name: 'Ты', src: 'images/vitaly.webp', position: 'right' }
         ],
         hint: 'Наша смена — про поиск себя и осознанный выбор. Дружба важна, но не должна заглушать твой внутренний голос.',
         story: [
@@ -123,11 +123,11 @@ export const gameData = {
 
     'scene2': {
         location: 'Башня Гильдий',
-        background: 'url(images/background/lab.jpg)',
+        background: 'url(images/background/lab.webp)',
         bgm: 'sound/Helynt - Movie Reference.mp3',
         sprites: [
-            { name: 'Участник 1', src: 'images/sprites/maniken_left.png', position: 'right' },
-            { name: 'Участник 2', src: 'images/sprites/maniken_right.png', position: 'left' }
+            { name: 'Участник 1', src: 'images/sprites/maniken_left.webp', position: 'right' },
+            { name: 'Участник 2', src: 'images/sprites/maniken_right.webp', position: 'left' }
         ],
         hint: 'Смена учит взаимодействовать и доверять. В команде должно царить уважение. Конфликты нужно решать до начала работы.',
         story: [
@@ -154,11 +154,11 @@ export const gameData = {
     
     'scene3': {
         location: 'Поляна Следов (День творчества)',
-        background: 'url(images/background/lab.jpg)',
+        background: 'url(images/background/lab.webp)',
         bgm: 'sound/Helynt - Potions.mp3',
         sprites: [
-            { name: 'Расстроенный Участник', src: 'images/sprites/maniken_left.png', position: 'right' },
-            { name: 'Ты', src: 'images/sprites/maniken_right.png', position: 'left' }
+            { name: 'Расстроенный Участник', src: 'images/sprites/maniken_left.webp', position: 'right' },
+            { name: 'Ты', src: 'images/sprites/maniken_right.webp', position: 'left' }
         ],
         hint: 'Важно, чтобы каждый ребенок чувствовал вклад и гордость за общее дело. Его идеи должны быть услышаны.',
         story: [
@@ -185,9 +185,9 @@ export const gameData = {
     
     'scene4': {
         location: 'Темный зал ("500 Огней")',
-        background: 'url(images/background/lab.jpg)',
+        background: 'url(images/background/lab.webp)',
         bgm: 'sound/Midnight Anima - Dead Signal Smile.mp3',
-        sprite: { name: 'Ведущий', src: 'images/sprites/maniken_left.png', position: 'center' },
+        sprite: { name: 'Ведущий', src: 'images/sprites/maniken_left.webp', position: 'center' },
         hint: 'Смена — безопасное место, где поддерживают твои идеи и чувства. Главное — где каждый может быть услышан. Сбрось свои страхи.',
         story: [
             { speaker: 'Ведущий', text: 'В зале 500 огней. Кто хочет поделиться своей мыслью или чувством?' },
@@ -212,11 +212,11 @@ export const gameData = {
     
     'scene5': {
         location: 'База Бета-тестеров (Финал)',
-        background: 'url(images/background/lab.jpg)',
+        background: 'url(images/background/lab.webp)',
         bgm: 'sound/Animal Crossing_ New Leaf - 3PM.mp3',
         sprites: [
-            { name: 'Инженер', src: 'images/sprites/maniken_left.png', position: 'right' },
-            { name: 'Ты', src: 'images/sprites/maniken_right.png', position: 'left' }
+            { name: 'Инженер', src: 'images/sprites/maniken_left.webp', position: 'right' },
+            { name: 'Ты', src: 'images/sprites/maniken_right.webp', position: 'left' }
         ],
         hint: 'Опыт вторичен, главное — доводить начатое до конца. Команда должна работать слаженно, без перегрузок.',
         story: [
@@ -242,30 +242,30 @@ export const gameData = {
     
     'hint': {
         location: 'Парапет',
-        background: 'url(images/background/night.jpg)',
+        background: 'url(images/background/night.webp)',
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_1', frames: 6, position: 'center' }],
         bgm: 'sound/hint.mp3',
         isHint: true,
         story: [
             { speaker: 'Володя', text: 'Привет! Я Володя Анисимов, кандидат на должность старшего вожатого.' },
             { speaker: 'Володя', text: 'Скажу так, я ценю тех, кто не боится ответственности, готов к диалогу и горит своим делом.' },
-            { 
-                speaker: 'Володя', 
+            {
+                speaker: 'Володя',
                 text: 'Подумай, какой выбор соответствует концепции:',
                 spriteSrc: 'images/sprites/volodya_2'
             },
-            { 
-                speaker: 'Володя', 
+            {
+                speaker: 'Володя',
                 text: '"Жизнь - это увлекательная игра, где ты находишь себя через творчество, приключения и поддержку."',
                 spriteSrc: 'images/sprites/volodya_2'
             },
             {
-                speaker: 'Володя', 
+                speaker: 'Володя',
                 text: 'Самое важное - это то, насколько осознанно ты подходишь к делу.',
                 spriteSrc: 'images/sprites/volodya_3'
             },
             {
-                speaker: 'Володя', 
+                speaker: 'Володя',
                 text: 'Насколько глубоко понимаешь, зачем и ради чего это делаешь. Смело возвращайся к решению!',
                 spriteSrc: 'images/sprites/volodya_3'
             },
@@ -278,7 +278,7 @@ export const gameData = {
     
     'ending_consequences': {
         location: 'Отчет о последствиях (HAPPY END?)',
-        background: 'url(images/background/night.jpg)',
+        background: 'url(images/background/night.webp)',
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
         bgm: 'sound/hint.mp3',
         text: 'Бета-тест завершен. Твои решения сформировали мир игры. Вот что произошло на смене:',
@@ -290,7 +290,7 @@ export const gameData = {
     
     'ending_secret': {
         location: 'Секретная концовка: Тот же Камертон!',
-        background: 'url(images/background/night.jpg)',
+        background: 'url(images/background/night.webp)',
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
         bgm: 'sound/hint.mp3',
         story: [
@@ -311,7 +311,7 @@ export const gameData = {
     
     'final_share': {
         location: 'ФИНАЛ',
-        background: 'url(images/background/night.jpg)',
+        background: 'url(images/background/night.webp)',
         sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
         bgm: 'sound/hint.mp3',
         story: [
@@ -328,7 +328,7 @@ export const gameData = {
     
     'video_ending': {
         location: 'ФИНАЛ: Видеообращение',
-        background: 'url(images/background/night.jpg)',
+        background: 'url(images/background/night.webp)',
         bgm: null,
         isEnding: true,
         isFinalVideo: true,

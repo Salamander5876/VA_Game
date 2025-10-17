@@ -179,8 +179,7 @@ export class ResourceLoader {
             'images/sprites/volodya_3/5.png',
             'images/sprites/volodya_3/6.png',
 
-            // Видео
-            '1013.mp4'
+            
         ];
 
         console.log('🔄 Загрузка всех ресурсов игры...');

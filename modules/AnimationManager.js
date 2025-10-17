@@ -19,7 +19,7 @@ export class AnimationManager {
         sprite.dataset.frames = frames;
         sprite.dataset.currentFrame = 1;
         sprite.dataset.lastFrameUpdate = 0;
-        sprite.src = `${baseSrc}/1.png`;
+        sprite.src = `${baseSrc}/1.webp`;
 
         // Добавляем в активные
         this.activeSprites.add(sprite);
@@ -78,7 +78,7 @@ export class AnimationManager {
 
                 // Обновляем src только если элемент еще в DOM
                 if (sprite.isConnected) {
-                    sprite.src = `${baseSrc}/${currentFrame}.png`;
+                    sprite.src = `${baseSrc}/${currentFrame}.webp`;
                 } else {
                     // Удаляем из активных если не в DOM
                     this.stopAnimation(sprite);

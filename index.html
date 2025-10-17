@@ -128,17 +128,12 @@
     <!-- Экран концовки -->
     <div id="ending-screen" style="display: none;">
         <h1 id="ending-title">Финальное обращение</h1>
-        
-        <video id="game-ending-video" width="70%" height="auto" controls preload="metadata">
-            <source src="1013.mp4" type="video/mp4">
-            Ваш браузер не поддерживает тег video.
-        </video>
 
-        <button id="play-video-btn" class="choice-button" style="display: none; margin-top: 20px;">Воспроизвести видео</button>
+        <iframe id="game-ending-video" src="" width="70%" height="auto" style="aspect-ratio: 16/9; background-color: #000; border-radius: 15px;" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen></iframe>
 
         <p id="final-message" style="display: none;"></p>
-        
-        <button id="ending-restart-button" class="choice-button" style="display: none; margin-top: 30px;">Вернутся в главное меню</button>
+
+        <button id="ending-restart-button" class="choice-button" style="display: none; margin-top: 30px;">Вернуться в главное меню</button>
     </div>
 
     <script type="module" src="script.js"></script>

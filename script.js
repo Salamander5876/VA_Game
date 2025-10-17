@@ -537,32 +537,21 @@ function handleVideoEnding(scene) {
     els.gameContainer.style.display = 'none';
     els.endingScreen.style.display = 'flex';
 
-    const video = document.getElementById('game-ending-video');
-    const playBtn = document.getElementById('play-video-btn');
+    const iframe = document.getElementById('game-ending-video');
     const finalMsg = document.getElementById('final-message');
     const restartBtn = document.getElementById('ending-restart-button');
 
     finalMsg.style.display = 'none';
-    playBtn.style.display = 'none';
     restartBtn.style.display = 'none';
-    video.style.display = 'block';
-    video.src = '1013.mp4';
-    video.load();
+    iframe.style.display = 'block';
 
-    video.play().catch(() => {
-        playBtn.style.display = 'block';
-        playBtn.onclick = () => {
-            audio.stopBGM(); // На всякий случай выключаем еще раз при ручном запуске
-            video.play();
-        };
-    });
+    // Устанавливаем src с autoplay=1 для автоматического запуска
+    iframe.src = 'https://vk.com/video_ext.php?oid=-215581110&id=456239017&hd=4&autoplay=1';
 
-    video.onended = () => {
-        video.style.display = 'none';
-        finalMsg.innerHTML = scene.finalText?.replace(/\*\*/g, '<b>') || 'Игра завершена.';
-        finalMsg.style.display = 'block';
+    // Показываем кнопку возврата в меню через 1 минуту
+    setTimeout(() => {
         restartBtn.style.display = 'block';
-    };
+    }, 60000); // 1 минута = 60000 мс
 }
 
 function initializeGame(continueMode = false) {
