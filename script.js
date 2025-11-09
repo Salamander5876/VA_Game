@@ -65,6 +65,11 @@ function showDisclaimer() {
     disclaimerAudio.volume = userSettings.bgmVolume;
     disclaimerAudio.play().catch(e => console.log('Disclaimer audio blocked:', e));
 
+    // Отслеживаем окончание музыки для достижения
+    disclaimerAudio.onended = () => {
+        achievements.unlock('prank_time');
+    };
+
     // Обработчик кнопки принятия
     acceptBtn.onclick = () => {
         audio.playMenuClick();

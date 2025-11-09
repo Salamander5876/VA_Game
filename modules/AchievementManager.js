@@ -47,6 +47,12 @@ export class AchievementManager {
                 desc: 'Посетите все основные сцены',
                 icon: '🗺️',
                 unlocked: false
+            },
+            prank_time: {
+                title: 'Время Прикола',
+                desc: 'Прослушайте музыку в дисклеймере до конца',
+                icon: '🎵',
+                unlocked: false
             }
         };
 
@@ -144,6 +150,11 @@ export class AchievementManager {
 
     // Показать уведомление о достижении
     _showNotification(achievement) {
+        // Проигрываем звук достижения поверх всех остальных
+        const achievementSound = new Audio('sound/steam-achievement.mp3');
+        achievementSound.volume = 0.5;
+        achievementSound.play().catch(e => console.log('Achievement sound blocked:', e));
+
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
