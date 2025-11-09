@@ -54,6 +54,28 @@ let currentStoryIndex = 0;
 let typingSoundCounter = 0;
 
 // === ФУНКЦИИ UI ===
+function showDisclaimer() {
+    const disclaimerOverlay = document.getElementById('disclaimer-overlay');
+    const disclaimerAudio = document.getElementById('disclaimer-audio');
+    const acceptBtn = document.getElementById('disclaimer-accept-btn');
+
+    disclaimerOverlay.style.display = 'flex';
+
+    // Проигрываем звук один раз
+    disclaimerAudio.volume = userSettings.bgmVolume;
+    disclaimerAudio.play().catch(e => console.log('Disclaimer audio blocked:', e));
+
+    // Обработчик кнопки принятия
+    acceptBtn.onclick = () => {
+        audio.playMenuClick();
+        disclaimerAudio.pause();
+        disclaimerAudio.currentTime = 0;
+
+        disclaimerOverlay.style.display = 'none';
+        showMainMenu();
+    };
+}
+
 function showMainMenu() {
     els.gameContainer.style.display = 'none';
     els.mainMenu.style.display = 'flex';
@@ -217,6 +239,12 @@ function renderSceneContent(sceneId) {
         const img = document.createElement('img');
         img.alt = s.name;
         img.className = `sprite ${s.position}`;
+
+        // Проверяем, нужно ли показывать спрайт сразу или позже
+        if (s.showOnDialogue !== undefined && s.showOnDialogue > 0) {
+            img.style.display = 'none'; // Скрываем спрайт изначально
+        }
+
         if (s.baseSrc && s.frames > 1) {
             animation.startAnimation(img, s.baseSrc, s.frames);
         } else {
@@ -303,6 +331,61 @@ async function goToNextStoryStep() {
         }
 
         const step = scene.story[currentStoryIndex];
+
+        // Обработка смены фона
+        if (step.changeBackground) {
+            els.backgroundImage.style.backgroundImage = step.changeBackground;
+        }
+
+        // Обработка показа спрайтов на определённом диалоге
+        const sprites = scene.sprites || (scene.sprite ? [scene.sprite] : []);
+        sprites.forEach(s => {
+            // Показ спрайта на определённом диалоге
+            if (s.showOnDialogue === currentStoryIndex) {
+                const spriteElement = els.spriteArea.querySelector(`.sprite[alt="${s.name}"]`);
+                if (spriteElement) {
+                    spriteElement.style.display = 'block';
+                    spriteElement.style.animation = 'fadeIn 0.5s ease-in';
+                }
+            }
+
+            // Скрытие спрайта на определённом диалоге
+            if (s.hideOnDialogue === currentStoryIndex) {
+                const spriteElement = els.spriteArea.querySelector(`.sprite[alt="${s.name}"]`);
+                if (spriteElement) {
+                    spriteElement.style.animation = 'fadeOut 0.5s ease-out';
+                    setTimeout(() => {
+                        spriteElement.style.display = 'none';
+                    }, 500);
+                }
+            }
+
+            // Повторное появление спрайта (для второго показа)
+            if (s.showOnDialogue2 === currentStoryIndex) {
+                const spriteElement = els.spriteArea.querySelector(`.sprite[alt="${s.name}"]`);
+                if (spriteElement) {
+                    spriteElement.style.display = 'block';
+                    spriteElement.style.animation = 'fadeIn 0.5s ease-in';
+                }
+            }
+
+            // Перемещение спрайта на определённом диалоге
+            if (s.moveToLeft === currentStoryIndex) {
+                const spriteElement = els.spriteArea.querySelector(`.sprite[alt="${s.name}"]`);
+                if (spriteElement) {
+                    spriteElement.classList.remove('center');
+                    spriteElement.classList.add('left');
+                }
+            }
+
+            if (s.moveToRight === currentStoryIndex) {
+                const spriteElement = els.spriteArea.querySelector(`.sprite[alt="${s.name}"]`);
+                if (spriteElement) {
+                    spriteElement.classList.remove('center');
+                    spriteElement.classList.add('right');
+                }
+            }
+        });
 
         if (step.text && step.action !== 'show_choices') {
             gameState.addToHistory(step.speaker || '', step.text);
@@ -740,14 +823,14 @@ window.onload = async () => {
         const startButton = document.getElementById('start-game-button');
         startButton.style.display = 'block';
 
-        // При клике на кнопку - запускаем музыку и показываем меню
+        // При клике на кнопку - показываем дисклеймер
         startButton.onclick = () => {
             audio.playMenuClick();
 
             els.loadingOverlay.classList.add('fade-out');
             setTimeout(() => {
                 els.loadingOverlay.style.display = 'none';
-                showMainMenu();
+                showDisclaimer();
             }, 500);
         };
     } catch (error) {

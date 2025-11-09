@@ -8,6 +8,51 @@
     <link rel="icon" href="images/ico.png" type="image/png">
 </head>
 <body>
+    <!-- Дисклеймер (НОВОЕ) -->
+    <div id="disclaimer-overlay" style="display: none;">
+        <audio id="disclaimer-audio" src="sound/spiderman-meme-song.mp3"></audio>
+        <div id="disclaimer-content">
+            <h1 style="color: #ffbf00; text-align: center; font-size: 32px; margin-bottom: 20px;">⚠️ ДИСКЛЕЙМЕР ⚠️</h1>
+
+            <p style="text-align: center; font-size: 20px; color: #6abefa; margin-bottom: 25px; font-weight: bold;">Приветствуем, Бета-Тестер!</p>
+
+            <div style="text-align: left; max-width: 800px; margin: 0 auto; line-height: 1.8; font-size: 16px;">
+                <p style="margin-bottom: 20px;">
+                    Этот продукт является <span style="color: #ffbf00; font-weight: bold;">агитационным и обучающим материалом</span>,
+                    созданным кандидатом на должность Старшего Вожатого
+                    <span style="color: #6abefa; font-weight: bold;">Владимиром Анисимовым</span>.
+                </p>
+
+                <p style="margin-bottom: 20px;">
+                    <span style="color: #ffbf00; font-weight: bold;">📋 Цель проекта:</span>
+                    Показать системное видение Смены, продемонстрировать ситации, которые могут возникнуть в лагере и их решение, а также проживание смены глазами разных персонажей,
+                    и обсудить ключевые педагогические ценности.
+                </p>
+
+                <p style="margin-bottom: 20px;">
+                    <span style="color: #ff6b6b; font-weight: bold;">⚠️ Внимание:</span>
+                    Все персонажи, диалоги и сюжетные ситуации являются <span style="font-weight: bold;">вымышленными</span>.
+                    Любые совпадения с реальными людьми (включая сотрудников и детей лагеря) или событиями - абсолютно случайны.
+                </p>
+
+                <p style="margin-bottom: 20px;">
+                    <span style="color: #6abefa; font-weight: bold;">✋ Нет цели оскорбить:</span>
+                    Материал не преследует цель оскорбить чью-либо честь, достоинство или профессиональные качества,
+                    а также не содержит призывов к насилию или дискриминации.
+                </p>
+
+                <p style="margin-bottom: 30px; text-align: center; font-size: 17px;">
+                    Продолжая игру, вы соглашаетесь с тем, что проходите симулятор для
+                    <span style="color: #ffbf00; font-weight: bold;">ознакомления с концепцией Смены</span>.
+                </p>
+            </div>
+
+            <button id="disclaimer-accept-btn" class="menu-button" style="font-size: 18px; padding: 15px 40px;">
+                ✅ Я ознакомился и принимаю условия
+            </button>
+        </div>
+    </div>
+
     <!-- Оверлей загрузки -->
     <div id="loading-overlay">
         <div id="loading-text">Инициализация...</div>
@@ -127,7 +172,7 @@
 
     <!-- Экран концовки -->
     <div id="ending-screen" style="display: none;">
-        <h1 id="ending-title">Финальное обращение</h1>
+        <h1 id="ending-title">Финальное обращение (включи звук)</h1>
 
         <iframe id="game-ending-video" src="" width="70%" height="auto" style="aspect-ratio: 16/9; background-color: #000; border-radius: 15px;" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen></iframe>
 
