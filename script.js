@@ -233,6 +233,11 @@ function renderSceneContent(sceneId) {
     gameState.checkAutoSave();
     updateSceneProgress();
 
+    // Разблокировка достижения при входе в сцену
+    if (scene.unlockAchievement) {
+        achievements.unlock(scene.unlockAchievement);
+    }
+
     if (scene.bgm) audio.playBGM(scene.bgm);
     els.locationText.textContent = scene.location;
     els.backgroundImage.style.backgroundImage = scene.background || 'none';

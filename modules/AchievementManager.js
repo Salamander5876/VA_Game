@@ -6,6 +6,12 @@ export class AchievementManager {
 
         // Определение всех достижений
         this.achievements = {
+            tutorial_complete: {
+                title: 'Новичок в лагере',
+                desc: 'Пройдите обучение',
+                icon: '🎓',
+                unlocked: false
+            },
             first_choice: {
                 title: 'Первый выбор',
                 desc: 'Сделайте свой первый выбор',
@@ -40,12 +46,6 @@ export class AchievementManager {
                 title: 'Финалист',
                 desc: 'Завершите игру',
                 icon: '🎬',
-                unlocked: false
-            },
-            explorer: {
-                title: 'Исследователь',
-                desc: 'Посетите все основные сцены',
-                icon: '🗺️',
                 unlocked: false
             },
             prank_time: {

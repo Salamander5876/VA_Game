@@ -1381,9 +1381,9 @@ html, body {
     }
     
     #choices-container {
-        bottom: calc(var(--text-box-height) + 20px);
+        bottom: calc(var(--text-box-height) + 70px);
         padding: 10px;
-        max-height: calc(100vh - var(--text-box-height) - 100px);
+        max-height: calc(100vh - var(--text-box-height) - 150px);
         overflow-y: auto;
         overflow-x: hidden;
         gap: 10px;
@@ -1428,9 +1428,9 @@ html, body {
 /* Дополнительная адаптация для маленьких экранов */
 @media (max-width: 480px) {
     #choices-container {
-        bottom: calc(var(--text-box-height) + 10px);
+        bottom: calc(var(--text-box-height) + 60px);
         padding: 8px;
-        max-height: calc(100vh - var(--text-box-height) - 80px);
+        max-height: calc(100vh - var(--text-box-height) - 130px);
         gap: 8px;
         width: 98%;
     }
@@ -1446,9 +1446,9 @@ html, body {
 /* Дополнительная адаптация для очень маленьких экранов */
 @media (max-width: 360px) {
     #choices-container {
-        bottom: calc(var(--text-box-height) + 5px);
+        bottom: calc(var(--text-box-height) + 55px);
         padding: 6px;
-        max-height: calc(100vh - var(--text-box-height) - 70px);
+        max-height: calc(100vh - var(--text-box-height) - 120px);
         gap: 6px;
     }
 
