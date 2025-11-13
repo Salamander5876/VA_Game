@@ -401,7 +401,7 @@ choices: [
             { name: 'Лёля', src: 'images/helga.webp', position: 'center', showOnDialogue: 12 , hideOnDialogue: 13 },
             { name: 'Алина 1', src: 'images/Alina10.webp', position: 'left', showOnDialogue: 13, hideOnDialogue: 16 },
             { name: 'Алина 2', src: 'images/AlinaS.webp', position: 'right', showOnDialogue: 14, hideOnDialogue: 16 },
-            { name: 'Лёля', src: 'images/helga.webp', position: 'center', showOnDialogue: 16, hideOnDialogue: 17 },
+            { name: 'Лёля', src: 'images/Helga.webp', position: 'center', showOnDialogue: 16, hideOnDialogue: 17 },
             { name: 'Соня', src: 'images/sonya.webp', position: 'center', showOnDialogue: 17, hideOnDialogue: 18 },
             { name: 'Николь', src: 'images/nicole.webp', position: 'center', showOnDialogue: 18 }
         ],
