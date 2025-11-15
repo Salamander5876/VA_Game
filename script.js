@@ -194,7 +194,7 @@ function updateSpriteEmphasis(speaker) {
 
 function updateSceneProgress() {
     const match = gameState.currentSceneId.match(/scene(\d+)/);
-    els.sceneProgress.textContent = match ? `Сцена ${match[1]}/5` : '';
+    els.sceneProgress.textContent = match ? `Сцена ${match[1]}/9` : '';
 }
 
 async function showScene(sceneId) {
@@ -345,6 +345,11 @@ async function goToNextStoryStep() {
         // Обработка смены фона
         if (step.changeBackground) {
             els.backgroundImage.style.backgroundImage = step.changeBackground;
+        }
+
+        // Обработка динамической смены музыки
+        if (step.bgm) {
+            audio.playBGM(step.bgm);
         }
 
         // Обработка показа спрайтов на определённом диалоге
