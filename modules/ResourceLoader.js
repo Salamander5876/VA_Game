@@ -107,7 +107,7 @@ export class ResourceLoader {
             scene.story.forEach(step => {
                 if (step.spriteSrc) {
                     for (let i = 1; i <= 6; i++) {
-                        urls.push(`${step.spriteSrc}/${i}.png`);
+                        urls.push(`${step.spriteSrc}/${i}.webp`);
                     }
                 }
             });
@@ -121,7 +121,7 @@ export class ResourceLoader {
     _addSpriteUrls(spriteData, urls) {
         if (spriteData.baseSrc && spriteData.frames) {
             for (let i = 1; i <= spriteData.frames; i++) {
-                urls.push(`${spriteData.baseSrc}/${i}.png`);
+                urls.push(`${spriteData.baseSrc}/${i}.webp`);
             }
         } else if (spriteData.src) {
             urls.push(spriteData.src);
@@ -137,49 +137,82 @@ export class ResourceLoader {
             'sound/Menu_Click.mp3',
             'sound/BGmusic.mp3',
             'sound/night.mp3',
-            'sound/scene1.mp3',
-            'sound/Helynt - Movie Reference.mp3',
-            'sound/Helynt - Potions.mp3',
-            'sound/Midnight Anima - Dead Signal Smile.mp3',
-            'sound/Animal Crossing_ New Leaf - 3PM.mp3',
             'sound/hint.mp3',
 
+            // Музыка для сцен
+            'sound/scene1/part1.mp3',
+            'sound/scene1/part2.mp3',
+            'sound/scene1/part3.mp3',
+            'sound/scene2/part1.mp3',
+            'sound/scene2/part2.mp3',
+            'sound/scene2/part3.mp3',
+            'sound/scene3/part1.mp3',
+            'sound/scene4/part1.mp3',
+            'sound/scene5/part1.mp3',
+            'sound/scene6/part1.mp3',
+            'sound/scene7/part1.mp3',
+            'sound/scene8/part1.mp3',
+            'sound/scene9/part1.mp3',
+            'sound/scene9/part2.mp3',
+            'sound/scene9/part3.mp3',
+            'sound/scene9/part4.mp3',
+            'sound/scene9/part5.mp3',
+
+            // Музыка для финала
+            'sound/sceneEnd/part1.mp3',
+            'sound/sceneEnd/part2.mp3',
+            'sound/sceneEnd/part3.mp3',
+
             // Фоны
-            'images/background/night.jpg',
-            'images/background/front_of_the_dining.jpg',
-            'images/background/lab.jpg',
+            'images/background/night.webp',
+            'images/background/front_of_the_dining.webp',
+            'images/background/lab.webp',
 
             // Простые спрайты
-            'images/bibikov.png',
-            'images/vitaly.png',
-            'images/sprites/maniken_left.png',
-            'images/sprites/maniken_right.png',
+            'images/bibikov.webp',
+            'images/vitaly.webp',
 
             // Анимированные спрайты Володи (volodya_1)
-            'images/sprites/volodya_1/1.png',
-            'images/sprites/volodya_1/2.png',
-            'images/sprites/volodya_1/3.png',
-            'images/sprites/volodya_1/4.png',
-            'images/sprites/volodya_1/5.png',
-            'images/sprites/volodya_1/6.png',
+            'images/sprites/volodya_1/1.webp',
+            'images/sprites/volodya_1/2.webp',
+            'images/sprites/volodya_1/3.webp',
+            'images/sprites/volodya_1/4.webp',
+            'images/sprites/volodya_1/5.webp',
+            'images/sprites/volodya_1/6.webp',
 
             // Анимированные спрайты Володи (volodya_2)
-            'images/sprites/volodya_2/1.png',
-            'images/sprites/volodya_2/2.png',
-            'images/sprites/volodya_2/3.png',
-            'images/sprites/volodya_2/4.png',
-            'images/sprites/volodya_2/5.png',
-            'images/sprites/volodya_2/6.png',
+            'images/sprites/volodya_2/1.webp',
+            'images/sprites/volodya_2/2.webp',
+            'images/sprites/volodya_2/3.webp',
+            'images/sprites/volodya_2/4.webp',
+            'images/sprites/volodya_2/5.webp',
+            'images/sprites/volodya_2/6.webp',
 
             // Анимированные спрайты Володи (volodya_3)
-            'images/sprites/volodya_3/1.png',
-            'images/sprites/volodya_3/2.png',
-            'images/sprites/volodya_3/3.png',
-            'images/sprites/volodya_3/4.png',
-            'images/sprites/volodya_3/5.png',
-            'images/sprites/volodya_3/6.png',
+            'images/sprites/volodya_3/1.webp',
+            'images/sprites/volodya_3/2.webp',
+            'images/sprites/volodya_3/3.webp',
+            'images/sprites/volodya_3/4.webp',
+            'images/sprites/volodya_3/5.webp',
+            'images/sprites/volodya_3/6.webp',
 
-            
+            // Анимированные спрайты для финала (volodya_bye)
+            'images/sprites/volodya_bye/1.webp',
+            'images/sprites/volodya_bye/2.webp',
+            'images/sprites/volodya_bye/3.webp',
+            'images/sprites/volodya_bye/4.webp',
+            'images/sprites/volodya_bye/5.webp',
+            'images/sprites/volodya_bye/6.webp',
+
+            // Анимированные спрайты для финала (volodya_bye2)
+            'images/sprites/volodya_bye2/1.webp',
+            'images/sprites/volodya_bye2/2.webp',
+            'images/sprites/volodya_bye2/3.webp',
+            'images/sprites/volodya_bye2/4.webp',
+            'images/sprites/volodya_bye2/5.webp',
+            'images/sprites/volodya_bye2/6.webp',
+
+
         ];
 
         console.log('🔄 Загрузка всех ресурсов игры...');

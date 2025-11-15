@@ -1,6 +1,7 @@
 // script.js - Главный файл игры "Камертон 2026" v2.0
 
 import { gameData } from './gameData.js';
+import { credits } from './credits.js';
 import {
     AudioManager, StorageManager, AnimationManager,
     ResourceLoader, GameState, AchievementManager, Utils
@@ -272,7 +273,10 @@ function renderSceneContent(sceneId) {
 
     const textBox = document.getElementById('text-box');
 
-    if (scene.isEnding) {
+    if (scene.isAnimationSequence) {
+        playAnimationSequence();
+        textBox.onclick = null;
+    } else if (scene.isEnding) {
         updateSpriteEmphasis(null);
         generateEnding(sceneId);
         textBox.onclick = null;
@@ -319,10 +323,16 @@ async function goToNextStoryStep() {
 
         if (gameState.isAwaitingConsequenceClick) {
             updateSpriteEmphasis(null);
-            const nextId = 'scene' + (gameState.totalScenes + 1);
             gameState.setAwaitingConsequence(false);
             gameState.setAdvancing(false);
-            gameData[nextId] ? showScene(nextId) : checkEnding();
+
+            // Специальная проверка: если текущая сцена scene9, переходим к scene9_ending
+            if (gameState.currentSceneId === 'scene9') {
+                showScene('scene9_ending');
+            } else {
+                const nextId = 'scene' + (gameState.totalScenes + 1);
+                gameData[nextId] ? showScene(nextId) : checkEnding();
+            }
             return;
         }
 
@@ -564,6 +574,248 @@ function checkEnding() {
     } else {
         showScene('ending_consequences');
     }
+}
+
+async function playAnimationSequence() {
+    try {
+        // Получаем текстовое поле
+        const textBox = document.getElementById('text-box');
+
+        els.storyText.textContent = '';
+        els.speakerName.style.display = 'none';
+        els.continuePrompt.style.display = 'none';
+
+        // Получаем спрайт Володи
+        const volodyaSprite = els.spriteArea.querySelector('.sprite[alt="Володя"]');
+
+        // Part 1: volodya_bye (5 кадров) + part1.mp3 (7 секунд)
+        if (volodyaSprite) {
+            animation.startAnimation(volodyaSprite, 'images/sprites/volodya_bye', 5);
+        }
+        try {
+            audio.playBGM('sound/sceneEnd/part1.mp3');
+        } catch (e) {
+            console.log('Part1 audio error:', e);
+        }
+        await new Promise(resolve => setTimeout(resolve, 7000));
+
+        // Part 2: volodya_bye2 (5 кадров) + part2.mp3 (2 секунды)
+        if (volodyaSprite) {
+            animation.startAnimation(volodyaSprite, 'images/sprites/volodya_bye2', 5);
+        }
+        try {
+            audio.playBGM('sound/sceneEnd/part2.mp3');
+        } catch (e) {
+            console.log('Part2 audio error:', e);
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Part 3: part3.mp3 (без анимации)
+        // Черный экран с надписью "КОНЕЦ" появляются СРАЗУ
+        try {
+            audio.playBGM('sound/sceneEnd/part3.mp3');
+        } catch (e) {
+            console.log('Part3 audio error:', e);
+        }
+
+        // Скрываем спрайт
+        if (volodyaSprite) {
+            volodyaSprite.style.display = 'none';
+        }
+
+        // Очищаем область спрайтов
+        els.spriteArea.innerHTML = '';
+
+        // Черный фон на весь экран
+        els.backgroundImage.style.backgroundImage = 'none';
+        els.backgroundImage.style.backgroundColor = '#000';
+        els.backgroundImage.style.height = '100vh';
+        els.backgroundImage.style.width = '100vw';
+        els.backgroundImage.style.position = 'fixed';
+        els.backgroundImage.style.top = '0';
+        els.backgroundImage.style.left = '0';
+        els.backgroundImage.style.zIndex = '1';
+
+        // СКРЫВАЕМ текстовое поле добавлением класса
+        if (textBox) {
+            textBox.classList.add('hidden');
+        }
+
+        // СКРЫВАЕМ header
+        const header = document.getElementById('header');
+        if (header) {
+            header.style.display = 'none';
+        }
+
+        // Создаем элемент для надписи "КОНЕЦ" по центру экрана
+        const endingTitle = document.createElement('div');
+        endingTitle.id = 'ending-title';
+        endingTitle.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            z-index: 1000;
+        `;
+        endingTitle.textContent = 'КОНЕЦ';
+        document.body.appendChild(endingTitle);
+
+        // Ждем 3 секунды
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        // Убираем надпись "КОНЕЦ"
+        if (endingTitle && endingTitle.parentNode) {
+            endingTitle.remove();
+        }
+
+        // Показываем титры
+        await showCredits();
+
+        // После титров показываем кнопку "Продолжить"
+        els.choicesContainer.innerHTML = '';
+        const continueBtn = document.createElement('button');
+        continueBtn.textContent = 'Продолжить';
+        continueBtn.className = 'choice-button';
+        continueBtn.onclick = () => {
+            audio.playMenuClick();
+            // Возвращаем фон к исходному состоянию
+            els.backgroundImage.style.backgroundColor = '';
+            els.backgroundImage.style.height = '';
+            els.backgroundImage.style.width = '';
+            els.backgroundImage.style.position = '';
+            els.backgroundImage.style.top = '';
+            els.backgroundImage.style.left = '';
+            els.backgroundImage.style.zIndex = '';
+            // Показываем текстовое поле обратно
+            if (textBox) {
+                textBox.classList.remove('hidden');
+            }
+            // Показываем header обратно
+            const header = document.getElementById('header');
+            if (header) {
+                header.style.display = '';
+            }
+            checkEnding();
+        };
+        els.choicesContainer.appendChild(continueBtn);
+        els.choicesContainer.style.pointerEvents = 'auto';
+        els.choicesContainer.style.opacity = '1';
+    } catch (error) {
+        console.error('Animation sequence error:', error);
+        // В случае ошибки показываем кнопку для продолжения
+        els.choicesContainer.innerHTML = '';
+        const continueBtn = document.createElement('button');
+        continueBtn.textContent = 'Продолжить';
+        continueBtn.className = 'choice-button';
+        continueBtn.onclick = () => {
+            audio.playMenuClick();
+            // Возвращаем фон к исходному состоянию
+            els.backgroundImage.style.backgroundColor = '';
+            els.backgroundImage.style.height = '';
+            els.backgroundImage.style.width = '';
+            els.backgroundImage.style.position = '';
+            els.backgroundImage.style.top = '';
+            els.backgroundImage.style.left = '';
+            els.backgroundImage.style.zIndex = '';
+            // Показываем текстовое поле обратно
+            const textBox = document.getElementById('text-box');
+            if (textBox) {
+                textBox.classList.remove('hidden');
+            }
+            // Показываем header обратно
+            const header = document.getElementById('header');
+            if (header) {
+                header.style.display = '';
+            }
+            checkEnding();
+        };
+        els.choicesContainer.appendChild(continueBtn);
+        els.choicesContainer.style.pointerEvents = 'auto';
+        els.choicesContainer.style.opacity = '1';
+    }
+}
+
+async function showCredits() {
+    // Создаем контейнер для титров
+    const creditsContainer = document.createElement('div');
+    creditsContainer.id = 'credits-container';
+    creditsContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        z-index: 999;
+    `;
+    document.body.appendChild(creditsContainer);
+
+    // Разбиваем титры на группы по 8
+    const creditsPerPage = 8;
+    const pages = [];
+    for (let i = 0; i < credits.length; i += creditsPerPage) {
+        pages.push(credits.slice(i, i + creditsPerPage));
+    }
+
+    // Показываем каждую страницу титров
+    for (const page of pages) {
+        // Очищаем контейнер
+        creditsContainer.innerHTML = '';
+
+        // Добавляем титры на страницу
+        for (const credit of page) {
+            const creditItem = document.createElement('div');
+            creditItem.style.cssText = `
+                text-align: center;
+                margin-bottom: 1.5rem;
+                opacity: 0;
+                transition: opacity 0.8s ease-in;
+            `;
+
+            const roleEl = document.createElement('div');
+            roleEl.style.cssText = `
+                font-size: 1.2rem;
+                color: #aaa;
+                margin-bottom: 0.5rem;
+            `;
+            roleEl.textContent = credit.role;
+
+            const nameEl = document.createElement('div');
+            nameEl.style.cssText = `
+                font-size: 1.8rem;
+                color: white;
+                font-weight: bold;
+            `;
+            nameEl.textContent = credit.name;
+
+            creditItem.appendChild(roleEl);
+            creditItem.appendChild(nameEl);
+            creditsContainer.appendChild(creditItem);
+        }
+
+        // Плавное появление всех титров на странице
+        await new Promise(resolve => setTimeout(resolve, 200));
+        const items = creditsContainer.querySelectorAll('div');
+        items.forEach(item => item.style.opacity = '1');
+
+        // Держим страницу на экране 6 секунд
+        await new Promise(resolve => setTimeout(resolve, 6000));
+
+        // Плавное исчезновение
+        items.forEach(item => item.style.opacity = '0');
+        await new Promise(resolve => setTimeout(resolve, 800));
+    }
+
+    // Убираем контейнер титров
+    creditsContainer.remove();
 }
 
 function generateEnding(sceneId) {

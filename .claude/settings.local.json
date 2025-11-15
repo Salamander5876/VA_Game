@@ -4,7 +4,8 @@
       "Bash(tree:*)",
       "Bash(python -m http.server:*)",
       "Bash(timeout 3 cmd /c \"start http://localhost:8000\")",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(nul)"
     ],
     "deny": [],
     "ask": []

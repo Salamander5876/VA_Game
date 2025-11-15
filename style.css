@@ -609,6 +609,13 @@ html, body {
     image-rendering: pixelated;
 }
 
+/* Класс для полного скрытия текстового поля */
+#text-box.hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
 #text-box::before {
     content: '';
     position: absolute;
@@ -935,7 +942,7 @@ html, body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 98%;
     height: 100%;
     background: linear-gradient(135deg, #0d1f16 0%, #1a3329 50%, #0d1f16 100%);
     color: #f0f0f0;
