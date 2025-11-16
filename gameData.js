@@ -398,7 +398,7 @@ choices: [
         bgm: 'sound/scene6/part1.mp3',
         sprites: [
             { name: 'Андрей', src: 'images/andry.webp', position: 'center', showOnDialogue: 10, hideOnDialogue: 12 },
-            { name: 'Лёля', src: 'images/helga.webp', position: 'center', showOnDialogue: 12 , hideOnDialogue: 13 },
+            { name: 'Лёля', src: 'images/Helga.webp', position: 'center', showOnDialogue: 12 , hideOnDialogue: 13 },
             { name: 'Алина 1', src: 'images/Alina10.webp', position: 'left', showOnDialogue: 13, hideOnDialogue: 16 },
             { name: 'Алина 2', src: 'images/AlinaS.webp', position: 'right', showOnDialogue: 14, hideOnDialogue: 16 },
             { name: 'Лёля', src: 'images/Helga.webp', position: 'center', showOnDialogue: 16, hideOnDialogue: 17 },
@@ -724,9 +724,8 @@ choices: [
     
     'ending_consequences': {
         location: 'Отчет о последствиях (HAPPY END?)',
-        background: 'url(images/background/night.webp)',
-        sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
-        bgm: 'sound/hint.mp3',
+        background: 'url(images/background/duvet.webp)',
+        bgm: 'sound/duvet.mp3',
         text: 'Бета-тест завершен. Твои решения сформировали мир игры. Вот что произошло на смене:',
         isEnding: true,
         choices: [
@@ -736,8 +735,7 @@ choices: [
     
     'ending_secret': {
         location: 'Секретная концовка: Тот же Камертон!',
-        background: 'url(images/background/night.webp)',
-        sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
+        background: 'url(images/background/duvet.webp)',
         bgm: 'sound/duvet.mp3',
         story: [
             { speaker: 'Володя', text: 'Ты настроил свой Камертон на ту же частоту, что и я.\n<span style="color: #ffbf00; font-weight: bold;">Именно такое видение Смены я хочу воплотить.</span>\nВозможно тебе стоит проголосовать за меня на выборах. Ахахаха\nМы с тобой создали идеальную смену, основанную на развитии, доверии и творчестве.\nСмену, где каждый вожатый и ребенок чувствует себя на своем месте.\nСчастливая концовка: ГАРМОНИЯ ДОСТИГНУТА!' }
@@ -750,8 +748,6 @@ choices: [
     
     'final_share': {
         location: 'ФИНАЛ',
-        background: 'url(images/background/night.webp)',
-        sprites: [{ name: 'Володя', baseSrc: 'images/sprites/volodya_3', frames: 6, position: 'center' }],
         bgm: 'sound/duvet.mp3',
         story: [
             { speaker: '', text: 'Спасибо за игру! Твои решения показали, какая смена может получиться в результате действий каждого.\nЕсли тебе откликается эта философия и ты хочешь, чтобы Смена "Камертон 2026" стала такой в реальности...\n<span style="color: #ffbf00; font-weight: bold;">То твой голос на выборах Старших Вожатых имеет значение!</span>\nДо скорой встречи - уже на настоящем Камертоне!' },
@@ -764,7 +760,6 @@ choices: [
     
     'video_ending': {
         location: 'ФИНАЛ: Видеообращение',
-        background: 'url(images/background/night.webp)',
         bgm: null,
         isEnding: true,
         isFinalVideo: true,
