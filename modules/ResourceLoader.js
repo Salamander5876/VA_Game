@@ -197,20 +197,8 @@ export class ResourceLoader {
             'images/sprites/volodya_3/6.webp',
 
             // Анимированные спрайты для финала (volodya_bye)
-            'images/sprites/volodya_bye/1.webp',
-            'images/sprites/volodya_bye/2.webp',
-            'images/sprites/volodya_bye/3.webp',
-            'images/sprites/volodya_bye/4.webp',
-            'images/sprites/volodya_bye/5.webp',
-            'images/sprites/volodya_bye/6.webp',
-
-            // Анимированные спрайты для финала (volodya_bye2)
-            'images/sprites/volodya_bye2/1.webp',
-            'images/sprites/volodya_bye2/2.webp',
-            'images/sprites/volodya_bye2/3.webp',
-            'images/sprites/volodya_bye2/4.webp',
-            'images/sprites/volodya_bye2/5.webp',
-            'images/sprites/volodya_bye2/6.webp',
+            'images/sprites/volodya_bye/volodya_bye.gif',
+            
 
 
         ];

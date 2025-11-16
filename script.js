@@ -630,13 +630,10 @@ async function playAnimationSequence() {
 
         els.continuePrompt.style.display = 'none';
 
-        // Получаем спрайт Володи
+        // Получаем спрайт Володи (GIF уже загружен из gameData)
         const volodyaSprite = els.spriteArea.querySelector('.sprite[alt="Володя"]');
 
-        // Part 1: volodya_bye (5 кадров) + part1.mp3 (7 секунд)
-        if (volodyaSprite) {
-            animation.startAnimation(volodyaSprite, 'images/sprites/volodya_bye', 5);
-        }
+        // Part 1: GIF анимация проигрывается + part1.mp3 (7 секунд)
         try {
             audio.playBGM('sound/sceneEnd/part1.mp3');
         } catch (e) {
@@ -650,10 +647,7 @@ async function playAnimationSequence() {
 
         await new Promise(resolve => setTimeout(resolve, 7000));
 
-        // Part 2: volodya_bye2 (5 кадров) + part2.mp3 (2 секунды)
-        if (volodyaSprite) {
-            animation.startAnimation(volodyaSprite, 'images/sprites/volodya_bye2', 5);
-        }
+        // Part 2: GIF продолжает проигрываться + part2.mp3 (2 секунды)
         try {
             audio.playBGM('sound/sceneEnd/part2.mp3');
         } catch (e) {
@@ -828,7 +822,7 @@ function showReport(scene) {
         summaryDiv.style.cssText = 'margin-top: 20px; padding: 15px; background-color: rgba(10, 104, 54, 0.2); border-left: 4px solid var(--light-green); border-radius: 4px;';
         summaryDiv.innerHTML = `
             <h3 style="margin: 0 0 10px 0; color: var(--light-green);">Общий итог</h3>
-            <p style="margin: 10px 0 0 0;">Жизнь — это игра, в которой ты учишься. Спасибо за твой выбор!</p>
+            <p style="margin: 10px 0 0 0; text-align: center;">Жизнь — это игра, в которой ты учишься. Спасибо за твой выбор!</p>
         `;
         reportContent.appendChild(summaryDiv);
 
@@ -880,7 +874,9 @@ function showReport(scene) {
             if (step.text) {
                 const text = document.createElement('div');
                 text.className = 'report-story-text';
-                text.innerHTML = step.text;
+                // Обрабатываем переносы строк для final_share
+                const formattedText = step.text.replace(/\n/g, '<br><br>');
+                text.innerHTML = formattedText;
                 section.appendChild(text);
             }
 
@@ -896,6 +892,12 @@ function showReport(scene) {
         continueBtn.id = 'report-continue-btn';
         continueBtn.className = 'choice-button';
         continueBtn.textContent = scene.choices[0].text;
+
+        // Для final_share делаем кнопку особенной
+        if (gameState.currentSceneId === 'final_share') {
+            continueBtn.classList.add('final-video-btn');
+        }
+
         continueBtn.onclick = () => {
             audio.playMenuClick();
             reportScreen.remove();

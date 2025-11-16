@@ -623,333 +623,454 @@ html, body {
     left: 0;
     width: 100%;
     height: 100vh;
-    background: linear-gradient(135deg, #0a1612 0%, #1a3329 50%, #0a1612 100%);
+    background: linear-gradient(180deg, #0a1612 0%, #0d1f16 50%, #0a1612 100%);
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 10000;
-    padding: 60px 40px 40px 40px;
+    padding: 50px 20px 80px 20px;
     box-sizing: border-box;
 }
 
 #report-screen #report-content {
-    max-width: 1400px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
 #report-title {
     color: var(--accent-warm);
     text-align: center;
-    font-size: 2.8em;
-    margin-bottom: 40px;
-    text-shadow: var(--glow-gold);
+    font-size: 3em;
+    margin-bottom: 20px;
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
     font-weight: bold;
+    letter-spacing: 2px;
 }
 
 #report-text {
     color: var(--text-color);
-    font-size: 1.3em;
-    line-height: 1.9;
-    margin-bottom: 40px;
+    font-size: 1.2em;
+    line-height: 1.8;
+    margin-bottom: 60px;
     text-align: center;
+    opacity: 0.9;
 }
 
 #report-screen h3 {
     color: var(--accent-warm);
-    text-shadow: var(--glow-gold);
-    margin-top: 50px;
-    margin-bottom: 25px;
-    font-size: 2em;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    margin-top: 60px;
+    margin-bottom: 30px;
+    font-size: 1.8em;
     text-align: center;
+    font-weight: 600;
+    letter-spacing: 1px;
 }
 
-/* Карточки последствий */
+/* Убираем лишние рамки */
 #report-screen > div > div {
-    background: rgba(13, 31, 22, 0.6);
-    border: 2px solid var(--accent-warm);
-    border-radius: 12px;
-    padding: 30px;
-    margin-bottom: 30px;
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 0;
+    box-shadow: none;
 }
 
 .report-section {
-    background: rgba(13, 31, 22, 0.5);
-    border-left: 4px solid var(--accent-warm);
-    padding: 25px;
-    margin-bottom: 30px;
-    border-radius: 8px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 60px 0;
+    border-radius: 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
 }
 
 .report-speaker {
     color: var(--accent-warm);
-    font-weight: bold;
-    font-size: 1.5em;
-    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 1.6em;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
 }
 
 .report-story-text {
     color: var(--text-color);
-    font-size: 1.2em;
-    line-height: 1.8;
+    font-size: 1.5em;
+    line-height: 2.4;
+    opacity: 0.95;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    background: transparent;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    text-align: center;
+}
+
+.report-story-text br {
+    display: block;
+    content: "";
+    margin-top: 10px;
 }
 
 /* Контейнер карточек последствий */
 .consequences-container {
     display: flex;
     flex-direction: column;
-    gap: 25px;
-    margin-top: 20px;
-    margin-bottom: 40px;
+    gap: 40px;
+    margin-top: 40px;
+    margin-bottom: 60px;
 }
 
 .consequence-card {
-    background: rgba(13, 31, 22, 0.6);
-    border: 2px solid rgba(212, 175, 55, 0.4);
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    transition: opacity 0.3s ease;
 }
 
 .consequence-card:hover {
-    border-color: rgba(212, 175, 55, 0.7);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.2);
-    transform: translateY(-2px);
+    opacity: 1;
 }
 
 .consequence-field {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .consequence-field:last-child {
     margin-bottom: 0;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.consequence-card:last-child .consequence-field:last-child {
+    border-bottom: none;
 }
 
 .consequence-label {
-    display: block;
+    display: inline-block;
     color: var(--accent-warm);
-    font-weight: bold;
-    font-size: 1em;
+    font-weight: 600;
+    font-size: 0.85em;
     margin-bottom: 8px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.5px;
+    opacity: 0.8;
 }
 
 .consequence-value {
     color: var(--text-color);
-    font-size: 1.1em;
-    line-height: 1.6;
-    padding: 12px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
+    font-size: 1.15em;
+    line-height: 1.8;
+    padding: 0;
+    padding-left: 15px;
+    background: transparent;
+    border-radius: 0;
     border-left: 3px solid transparent;
 }
 
 .consequence-value.situation {
-    font-weight: bold;
+    font-weight: 600;
     color: var(--accent-warm);
     border-left-color: var(--accent-warm);
-    font-size: 1.2em;
+    font-size: 1.4em;
+    padding-left: 0;
+    border-left: none;
+    margin-bottom: 5px;
 }
 
 .consequence-value.choice {
     border-left-color: var(--light-green);
-    font-style: italic;
+    font-style: normal;
+    opacity: 0.95;
 }
 
 .consequence-value.result {
     border-left-color: #6abefa;
+    opacity: 0.9;
 }
 
 #report-screen #report-continue-btn {
     display: block;
-    margin: 40px auto 60px;
-    padding: 18px 70px;
-    font-size: 1.4em;
-    background: var(--accent-warm);
-    color: #0d1f16;
-    border: none;
-    border-radius: 12px;
+    margin: 80px auto 40px;
+    padding: 16px 60px;
+    font-size: 1.1em;
+    background: transparent;
+    color: var(--accent-warm);
+    border: 2px solid var(--accent-warm);
+    border-radius: 50px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+    box-shadow: none;
     font-family: var(--font-family);
     position: sticky;
-    bottom: 20px;
+    bottom: 30px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 #report-screen #report-continue-btn:hover {
-    background: #ffd700;
-    box-shadow: 0 0 40px rgba(212, 175, 55, 0.9);
+    background: var(--accent-warm);
+    color: #0d1f16;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Специальная кнопка для финального видео */
+#report-screen #report-continue-btn.final-video-btn {
+    background: linear-gradient(135deg, var(--accent-warm) 0%, #ffd700 100%);
+    color: #0d1f16;
+    border: none;
+    font-size: 1.3em;
+    padding: 20px 70px;
+    margin: 100px auto 60px;
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.8);
+    animation: pulse 2s infinite;
+    text-transform: none;
+    letter-spacing: 0.5px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 40px rgba(212, 175, 55, 0.8);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 60px rgba(212, 175, 55, 1);
+        transform: scale(1.02);
+    }
+}
+
+#report-screen #report-continue-btn.final-video-btn:hover {
+    background: linear-gradient(135deg, #ffd700 0%, var(--accent-warm) 100%);
+    box-shadow: 0 0 50px rgba(255, 215, 0, 1);
     transform: scale(1.05);
+    animation: none;
 }
 
 /* Адаптация для планшетов */
 @media (max-width: 1024px) {
     #report-screen {
-        padding: 40px 30px 30px 30px;
+        padding: 40px 25px 60px 25px;
     }
 
     #report-title {
-        font-size: 2.2em;
-        margin-bottom: 30px;
+        font-size: 2.4em;
+        margin-bottom: 15px;
     }
 
     #report-text {
         font-size: 1.1em;
+        margin-bottom: 50px;
     }
 
     #report-screen h3 {
         font-size: 1.6em;
-        margin-top: 40px;
+        margin-top: 50px;
+        margin-bottom: 25px;
     }
 
-    .consequence-card {
-        padding: 20px;
+    .consequences-container {
+        gap: 35px;
     }
 
     .consequence-value {
-        font-size: 1em;
+        font-size: 1.05em;
     }
 
     .consequence-value.situation {
-        font-size: 1.1em;
+        font-size: 1.3em;
+    }
+
+    #report-screen #report-continue-btn {
+        margin: 60px auto 30px;
+        padding: 14px 50px;
+        font-size: 1em;
+    }
+
+    #report-screen #report-continue-btn.final-video-btn {
+        font-size: 1.15em;
+        padding: 18px 55px;
+        margin: 80px auto 40px;
     }
 }
 
 /* Адаптация для мобильных */
 @media (max-width: 768px) {
     #report-screen {
-        padding: 25px 15px 20px 15px;
+        padding: 30px 20px 50px 20px;
     }
 
     #report-title {
-        font-size: 1.8em;
-        margin-bottom: 25px;
+        font-size: 2em;
+        margin-bottom: 15px;
+        letter-spacing: 1px;
     }
 
     #report-text {
         font-size: 1em;
-        line-height: 1.6;
+        line-height: 1.7;
+        margin-bottom: 40px;
     }
 
     #report-screen h3 {
         font-size: 1.4em;
-        margin-top: 30px;
+        margin-top: 40px;
         margin-bottom: 20px;
     }
 
     .report-section {
-        padding: 18px;
-        margin-bottom: 20px;
+        margin: 40px 0;
     }
 
     .report-speaker {
-        font-size: 1.2em;
-        margin-bottom: 12px;
+        font-size: 1.3em;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
     }
 
     .report-story-text {
-        font-size: 1em;
-        line-height: 1.6;
+        font-size: 1.15em;
+        line-height: 2.2;
+        padding: 30px 20px;
+        max-width: 100%;
+    }
+
+    .report-section {
+        min-height: 40vh;
     }
 
     .consequences-container {
-        gap: 20px;
+        gap: 30px;
+        margin-top: 30px;
     }
 
-    .consequence-card {
-        padding: 18px;
+    .consequence-field {
+        margin-bottom: 15px;
     }
 
     .consequence-label {
-        font-size: 0.9em;
+        font-size: 0.8em;
     }
 
     .consequence-value {
-        font-size: 0.95em;
-        padding: 10px;
+        font-size: 1em;
+        padding-left: 12px;
     }
 
     .consequence-value.situation {
-        font-size: 1.05em;
+        font-size: 1.2em;
     }
 
     #report-screen #report-continue-btn {
-        padding: 14px 40px;
-        font-size: 1.1em;
-        margin: 30px auto 50px;
-        bottom: 15px;
+        padding: 12px 40px;
+        font-size: 0.95em;
+        margin: 50px auto 30px;
+        bottom: 20px;
+    }
+
+    #report-screen #report-continue-btn.final-video-btn {
+        font-size: 1.05em;
+        padding: 16px 45px;
+        margin: 60px auto 35px;
     }
 }
 
 /* Адаптация для маленьких телефонов */
 @media (max-width: 480px) {
     #report-screen {
-        padding: 20px 10px 15px 10px;
+        padding: 25px 15px 40px 15px;
     }
 
     #report-title {
-        font-size: 1.4em;
-        margin-bottom: 20px;
+        font-size: 1.6em;
+        margin-bottom: 12px;
+        letter-spacing: 0.5px;
     }
 
     #report-text {
-        font-size: 0.9em;
-        line-height: 1.5;
-        margin-bottom: 25px;
+        font-size: 0.95em;
+        line-height: 1.6;
+        margin-bottom: 35px;
     }
 
     #report-screen h3 {
-        font-size: 1.2em;
-        margin-top: 25px;
+        font-size: 1.25em;
+        margin-top: 35px;
         margin-bottom: 15px;
     }
 
     .report-section {
-        padding: 15px;
-        margin-bottom: 15px;
-        border-left-width: 3px;
+        margin: 30px 0;
     }
 
     .report-speaker {
-        font-size: 1.1em;
-        margin-bottom: 10px;
+        font-size: 1.15em;
+        margin-bottom: 15px;
+        letter-spacing: 0.5px;
     }
 
     .report-story-text {
-        font-size: 0.95em;
-        line-height: 1.5;
+        font-size: 1.05em;
+        line-height: 2;
+        padding: 30px 18px;
+        max-width: 100%;
+    }
+
+    .report-section {
+        min-height: 35vh;
+        margin: 40px 0;
     }
 
     .consequences-container {
-        gap: 15px;
+        gap: 25px;
+        margin-top: 25px;
     }
 
-    .consequence-card {
-        padding: 15px;
+    .consequence-field {
+        margin-bottom: 12px;
+    }
+
+    .consequence-field:last-child {
+        padding-bottom: 20px;
     }
 
     .consequence-label {
-        font-size: 0.85em;
-        margin-bottom: 6px;
+        font-size: 0.75em;
+        margin-bottom: 5px;
+        letter-spacing: 1px;
     }
 
     .consequence-value {
-        font-size: 0.9em;
-        padding: 8px;
+        font-size: 0.95em;
+        padding-left: 10px;
     }
 
     .consequence-value.situation {
-        font-size: 1em;
+        font-size: 1.1em;
+        padding-left: 0;
     }
 
     #report-screen #report-continue-btn {
-        padding: 12px 30px;
-        font-size: 1em;
-        margin: 25px auto 40px;
-        bottom: 10px;
+        padding: 11px 35px;
+        font-size: 0.9em;
+        margin: 40px auto 25px;
+        bottom: 15px;
+    }
+
+    #report-screen #report-continue-btn.final-video-btn {
+        font-size: 0.95em;
+        padding: 14px 40px;
+        margin: 50px auto 30px;
     }
 }
 
