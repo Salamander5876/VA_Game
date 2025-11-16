@@ -5,7 +5,8 @@
       "Bash(python -m http.server:*)",
       "Bash(timeout 3 cmd /c \"start http://localhost:8000\")",
       "Bash(dir:*)",
-      "Bash(nul)"
+      "Bash(nul)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

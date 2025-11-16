@@ -616,6 +616,741 @@ html, body {
     opacity: 0 !important;
 }
 
+/* Экран отчёта о прохождении */
+#report-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #0a1612 0%, #1a3329 50%, #0a1612 100%);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 10000;
+    padding: 60px 40px 40px 40px;
+    box-sizing: border-box;
+}
+
+#report-screen #report-content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+#report-title {
+    color: var(--accent-warm);
+    text-align: center;
+    font-size: 2.8em;
+    margin-bottom: 40px;
+    text-shadow: var(--glow-gold);
+    font-weight: bold;
+}
+
+#report-text {
+    color: var(--text-color);
+    font-size: 1.3em;
+    line-height: 1.9;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+#report-screen h3 {
+    color: var(--accent-warm);
+    text-shadow: var(--glow-gold);
+    margin-top: 50px;
+    margin-bottom: 25px;
+    font-size: 2em;
+    text-align: center;
+}
+
+/* Карточки последствий */
+#report-screen > div > div {
+    background: rgba(13, 31, 22, 0.6);
+    border: 2px solid var(--accent-warm);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.report-section {
+    background: rgba(13, 31, 22, 0.5);
+    border-left: 4px solid var(--accent-warm);
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+}
+
+.report-speaker {
+    color: var(--accent-warm);
+    font-weight: bold;
+    font-size: 1.5em;
+    margin-bottom: 15px;
+}
+
+.report-story-text {
+    color: var(--text-color);
+    font-size: 1.2em;
+    line-height: 1.8;
+}
+
+/* Контейнер карточек последствий */
+.consequences-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.consequence-card {
+    background: rgba(13, 31, 22, 0.6);
+    border: 2px solid rgba(212, 175, 55, 0.4);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.consequence-card:hover {
+    border-color: rgba(212, 175, 55, 0.7);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.2);
+    transform: translateY(-2px);
+}
+
+.consequence-field {
+    margin-bottom: 15px;
+}
+
+.consequence-field:last-child {
+    margin-bottom: 0;
+}
+
+.consequence-label {
+    display: block;
+    color: var(--accent-warm);
+    font-weight: bold;
+    font-size: 1em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.consequence-value {
+    color: var(--text-color);
+    font-size: 1.1em;
+    line-height: 1.6;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+}
+
+.consequence-value.situation {
+    font-weight: bold;
+    color: var(--accent-warm);
+    border-left-color: var(--accent-warm);
+    font-size: 1.2em;
+}
+
+.consequence-value.choice {
+    border-left-color: var(--light-green);
+    font-style: italic;
+}
+
+.consequence-value.result {
+    border-left-color: #6abefa;
+}
+
+#report-screen #report-continue-btn {
+    display: block;
+    margin: 40px auto 60px;
+    padding: 18px 70px;
+    font-size: 1.4em;
+    background: var(--accent-warm);
+    color: #0d1f16;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+    font-family: var(--font-family);
+    position: sticky;
+    bottom: 20px;
+}
+
+#report-screen #report-continue-btn:hover {
+    background: #ffd700;
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.9);
+    transform: scale(1.05);
+}
+
+/* Адаптация для планшетов */
+@media (max-width: 1024px) {
+    #report-screen {
+        padding: 40px 30px 30px 30px;
+    }
+
+    #report-title {
+        font-size: 2.2em;
+        margin-bottom: 30px;
+    }
+
+    #report-text {
+        font-size: 1.1em;
+    }
+
+    #report-screen h3 {
+        font-size: 1.6em;
+        margin-top: 40px;
+    }
+
+    .consequence-card {
+        padding: 20px;
+    }
+
+    .consequence-value {
+        font-size: 1em;
+    }
+
+    .consequence-value.situation {
+        font-size: 1.1em;
+    }
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    #report-screen {
+        padding: 25px 15px 20px 15px;
+    }
+
+    #report-title {
+        font-size: 1.8em;
+        margin-bottom: 25px;
+    }
+
+    #report-text {
+        font-size: 1em;
+        line-height: 1.6;
+    }
+
+    #report-screen h3 {
+        font-size: 1.4em;
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+
+    .report-section {
+        padding: 18px;
+        margin-bottom: 20px;
+    }
+
+    .report-speaker {
+        font-size: 1.2em;
+        margin-bottom: 12px;
+    }
+
+    .report-story-text {
+        font-size: 1em;
+        line-height: 1.6;
+    }
+
+    .consequences-container {
+        gap: 20px;
+    }
+
+    .consequence-card {
+        padding: 18px;
+    }
+
+    .consequence-label {
+        font-size: 0.9em;
+    }
+
+    .consequence-value {
+        font-size: 0.95em;
+        padding: 10px;
+    }
+
+    .consequence-value.situation {
+        font-size: 1.05em;
+    }
+
+    #report-screen #report-continue-btn {
+        padding: 14px 40px;
+        font-size: 1.1em;
+        margin: 30px auto 50px;
+        bottom: 15px;
+    }
+}
+
+/* Адаптация для маленьких телефонов */
+@media (max-width: 480px) {
+    #report-screen {
+        padding: 20px 10px 15px 10px;
+    }
+
+    #report-title {
+        font-size: 1.4em;
+        margin-bottom: 20px;
+    }
+
+    #report-text {
+        font-size: 0.9em;
+        line-height: 1.5;
+        margin-bottom: 25px;
+    }
+
+    #report-screen h3 {
+        font-size: 1.2em;
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+
+    .report-section {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left-width: 3px;
+    }
+
+    .report-speaker {
+        font-size: 1.1em;
+        margin-bottom: 10px;
+    }
+
+    .report-story-text {
+        font-size: 0.95em;
+        line-height: 1.5;
+    }
+
+    .consequences-container {
+        gap: 15px;
+    }
+
+    .consequence-card {
+        padding: 15px;
+    }
+
+    .consequence-label {
+        font-size: 0.85em;
+        margin-bottom: 6px;
+    }
+
+    .consequence-value {
+        font-size: 0.9em;
+        padding: 8px;
+    }
+
+    .consequence-value.situation {
+        font-size: 1em;
+    }
+
+    #report-screen #report-continue-btn {
+        padding: 12px 30px;
+        font-size: 1em;
+        margin: 25px auto 40px;
+        bottom: 10px;
+    }
+}
+
+/* Модальное окно отчёта о прохождении */
+#report-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 20000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#report-modal.show {
+    display: flex;
+}
+
+#report-content {
+    background: linear-gradient(135deg, #1a3329 0%, #0d1f16 50%, #1a3329 100%);
+    border: 3px solid var(--accent-warm);
+    border-radius: 15px;
+    padding: 50px 40px;
+    max-width: 1200px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+    position: relative;
+    animation: reportAppear 0.4s ease-out;
+}
+
+@keyframes reportAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+#report-text {
+    font-size: 1.1em;
+    color: var(--text-color);
+    line-height: 1.8;
+}
+
+#report-text h3 {
+    color: var(--accent-warm);
+    text-shadow: var(--glow-gold);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+#report-text table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.95em;
+}
+
+#report-text th {
+    background-color: rgba(10, 104, 54, 0.5);
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--light-green);
+    color: var(--white);
+    font-weight: bold;
+}
+
+#report-text td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#report-text tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+#report-continue-btn {
+    display: block;
+    margin: 40px auto 0;
+    padding: 15px 50px;
+    font-size: 1.2em;
+}
+
+/* Стилизация скроллбара для отчёта */
+#report-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+#report-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+#report-content::-webkit-scrollbar-thumb {
+    background: var(--accent-warm);
+    border-radius: 10px;
+}
+
+#report-content::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+}
+
+/* Адаптация для планшетов */
+@media (max-width: 1024px) {
+    #report-content {
+        padding: 35px 30px;
+        max-width: 95%;
+    }
+
+    #report-text {
+        font-size: 1em;
+    }
+
+    #report-text h3 {
+        font-size: 1.3em;
+    }
+
+    #report-text table {
+        font-size: 0.9em;
+    }
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    #report-modal {
+        padding: 10px;
+    }
+
+    #report-content {
+        padding: 25px 20px;
+        max-width: 98%;
+        max-height: 92vh;
+    }
+
+    #report-text {
+        font-size: 0.9em;
+        line-height: 1.6;
+    }
+
+    #report-text h3 {
+        font-size: 1.2em;
+        margin-top: 20px;
+    }
+
+    #report-text table {
+        font-size: 0.75em;
+    }
+
+    #report-text th,
+    #report-text td {
+        padding: 8px 5px;
+    }
+
+    #report-continue-btn {
+        padding: 12px 35px;
+        font-size: 1em;
+        margin-top: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    #report-content {
+        padding: 20px 15px;
+        border-width: 2px;
+    }
+
+    #report-text {
+        font-size: 0.85em;
+    }
+
+    #report-text h3 {
+        font-size: 1.1em;
+    }
+
+    #report-text table {
+        font-size: 0.7em;
+    }
+
+    #report-text th,
+    #report-text td {
+        padding: 6px 4px;
+    }
+
+    #report-continue-btn {
+        padding: 10px 30px;
+        font-size: 0.95em;
+    }
+}
+
+/* Модальное окно для последствий выбора */
+#consequence-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 15000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#consequence-modal.show {
+    display: flex;
+}
+
+#consequence-content {
+    background: linear-gradient(135deg, #1a3329 0%, #0d1f16 50%, #1a3329 100%);
+    border: 3px solid var(--accent-warm);
+    border-radius: 15px;
+    padding: 40px 35px;
+    max-width: 800px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+    position: relative;
+    animation: consequenceAppear 0.3s ease-out;
+}
+
+@keyframes consequenceAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#consequence-title {
+    font-size: 1.8em;
+    color: var(--accent-warm);
+    text-align: center;
+    margin-bottom: 25px;
+    text-shadow: var(--glow-gold);
+    font-weight: bold;
+}
+
+#consequence-text {
+    font-size: 1.2em;
+    color: var(--text-color);
+    line-height: 1.9;
+    margin-bottom: 35px;
+    text-align: left;
+    padding: 25px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+#consequence-text p {
+    margin-bottom: 15px;
+    line-height: 1.9;
+}
+
+#consequence-text p:last-child {
+    margin-bottom: 0;
+}
+
+#consequence-text b {
+    color: var(--accent-warm);
+    font-weight: bold;
+}
+
+/* Стилизация скроллбара для модального окна */
+#consequence-content::-webkit-scrollbar,
+#consequence-text::-webkit-scrollbar {
+    width: 8px;
+}
+
+#consequence-content::-webkit-scrollbar-track,
+#consequence-text::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+#consequence-content::-webkit-scrollbar-thumb,
+#consequence-text::-webkit-scrollbar-thumb {
+    background: var(--accent-warm);
+    border-radius: 10px;
+}
+
+#consequence-content::-webkit-scrollbar-thumb:hover,
+#consequence-text::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+}
+
+#consequence-continue-btn {
+    display: block;
+    margin: 0 auto;
+    padding: 15px 50px;
+    font-size: 1.2em;
+    font-family: var(--font-family);
+    background: var(--accent-warm);
+    color: #0d1f16;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+}
+
+#consequence-continue-btn:hover {
+    background: #ffd700;
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.7);
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    #consequence-modal {
+        padding: 15px;
+    }
+
+    #consequence-content {
+        padding: 25px 20px;
+        max-width: 95%;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+
+    #consequence-title {
+        font-size: 1.4em;
+        margin-bottom: 20px;
+    }
+
+    #consequence-text {
+        font-size: 1em;
+        line-height: 1.7;
+        margin-bottom: 25px;
+        text-align: left;
+        padding: 18px;
+        max-height: 55vh;
+    }
+
+    #consequence-text p {
+        margin-bottom: 12px;
+        line-height: 1.7;
+    }
+
+    #consequence-continue-btn {
+        padding: 12px 30px;
+        font-size: 0.95em;
+    }
+}
+
+@media (max-width: 480px) {
+    #consequence-modal {
+        padding: 10px;
+    }
+
+    #consequence-content {
+        padding: 20px 15px;
+        max-width: 98%;
+        max-height: 90vh;
+        border-width: 2px;
+    }
+
+    #consequence-title {
+        font-size: 1.2em;
+        margin-bottom: 15px;
+    }
+
+    #consequence-text {
+        font-size: 0.9em;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        padding: 15px;
+        max-height: 50vh;
+    }
+
+    #consequence-text p {
+        margin-bottom: 10px;
+        line-height: 1.6;
+        font-size: 0.95em;
+    }
+
+    #consequence-continue-btn {
+        padding: 10px 25px;
+        font-size: 0.9em;
+    }
+}
+
 #text-box::before {
     content: '';
     position: absolute;

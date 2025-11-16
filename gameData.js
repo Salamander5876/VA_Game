@@ -596,9 +596,9 @@ choices: [
         background: 'url(images/background/coda.webp)',
         bgm: 'sound/scene9/part1.mp3',
         sprites: [
-            { name: 'Мира', src: 'images/mira2.webp', position: 'left', showOnDialogue: 15, hideOnDialogue: 23 },
-            { name: 'Ваня', src: 'images/ivan2.webp', position: 'right', showOnDialogue: 15, hideOnDialogue: 23 },
-            { name: 'Мальчик', src: 'images/vitaly2.webp', position: 'center', showOnDialogue: 15, hideOnDialogue: 23 },
+            { name: 'Мира', src: 'images/mira2.webp', position: 'center', showOnDialogue: 15, hideOnDialogue: 18 },
+            { name: 'Ваня', src: 'images/ivan2.webp', position: 'center', showOnDialogue: 18, hideOnDialogue: 20 },
+            { name: 'Мальчик', src: 'images/vitaly2.webp', position: 'center', showOnDialogue: 20, hideOnDialogue: 23 },
             { name: 'Володя', baseSrc: 'images/sprites/volodya_1', frames: 6, position: 'center', showOnDialogue: 30 }
         ],
         hint: 'Это кульминация смены. Любой выбор правильный - главное, чтобы он шёл от сердца.',

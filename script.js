@@ -42,7 +42,11 @@ const els = {
     achievementsScreen: document.getElementById('achievements-screen'),
     pauseMenu: document.getElementById('pause-menu'),
     historyPanel: document.getElementById('history-panel'),
-    sceneProgress: document.getElementById('scene-progress')
+    sceneProgress: document.getElementById('scene-progress'),
+    consequenceModal: document.getElementById('consequence-modal'),
+    consequenceTitle: document.getElementById('consequence-title'),
+    consequenceText: document.getElementById('consequence-text'),
+    consequenceContinueBtn: document.getElementById('consequence-continue-btn')
 };
 
 // Константы
@@ -275,6 +279,9 @@ function renderSceneContent(sceneId) {
 
     if (scene.isAnimationSequence) {
         playAnimationSequence();
+        textBox.onclick = null;
+    } else if (scene.isReport) {
+        showReport(scene);
         textBox.onclick = null;
     } else if (scene.isEnding) {
         updateSpriteEmphasis(null);
@@ -557,14 +564,53 @@ function handleChoice(sceneId, choiceIdx, isHint = false) {
     if (choice.correct === true) gameState.incrementCorrectChoices();
     gameState.addConsequence(scene.location, choice.text, consequenceText, choice.correct);
 
-    els.speakerName.textContent = 'ИТОГ';
-    els.speakerName.style.display = 'block';
-    els.storyText.innerHTML = consequenceText.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>');
+    // Показываем модальное окно с последствиями
+    showConsequenceModal(consequenceText);
 
     gameState.setAdvancing(false);
     gameState.setAwaitingConsequence(true);
-    document.getElementById('text-box').onclick = goToNextStoryStep;
-    els.continuePrompt.style.display = 'block';
+}
+
+// Функция показа модального окна с последствиями
+function showConsequenceModal(consequenceText) {
+    els.consequenceTitle.textContent = 'Последствия выбора';
+
+    // Форматируем текст: разбиваем на абзацы по точкам и переносам строк
+    let formattedText = consequenceText
+        .replace(/\*\*/g, '<b>')
+        .replace(/\*\*/g, '</b>')
+        .replace(/\n/g, '<br><br>') // Двойные переносы для абзацев
+        .split('. ')
+        .map(sentence => sentence.trim())
+        .filter(sentence => sentence.length > 0)
+        .map(sentence => {
+            // Добавляем точку обратно, если её нет
+            if (!sentence.endsWith('.') && !sentence.endsWith('!') && !sentence.endsWith('?') && !sentence.endsWith('<br>')) {
+                sentence += '.';
+            }
+            return `<p style="margin-bottom: 15px; line-height: 1.8;">${sentence}</p>`;
+        })
+        .join('');
+
+    els.consequenceText.innerHTML = formattedText;
+    els.consequenceModal.classList.add('show');
+
+    // Обработчик кнопки "Продолжить"
+    const handleContinue = () => {
+        audio.playMenuClick();
+        els.consequenceModal.classList.remove('show');
+        els.consequenceModal.onclick = null; // Убираем обработчик
+        goToNextStoryStep();
+    };
+
+    els.consequenceContinueBtn.onclick = handleContinue;
+
+    // Закрытие по клику на фон (но не на контент)
+    els.consequenceModal.onclick = (e) => {
+        if (e.target === els.consequenceModal) {
+            handleContinue();
+        }
+    };
 }
 
 function checkEnding() {
@@ -578,11 +624,10 @@ function checkEnding() {
 
 async function playAnimationSequence() {
     try {
-        // Получаем текстовое поле
+        // Получаем текстовое поле и header
         const textBox = document.getElementById('text-box');
+        const header = document.getElementById('header');
 
-        els.storyText.textContent = '';
-        els.speakerName.style.display = 'none';
         els.continuePrompt.style.display = 'none';
 
         // Получаем спрайт Володи
@@ -597,6 +642,12 @@ async function playAnimationSequence() {
         } catch (e) {
             console.log('Part1 audio error:', e);
         }
+
+        // Показываем первый текст во время part1 (7 секунд)
+        els.speakerName.textContent = 'Володя';
+        els.speakerName.style.display = 'block';
+        els.storyText.textContent = 'Ну что ж, вот мы и подошли к тому моменту, когда пора прощаться...';
+
         await new Promise(resolve => setTimeout(resolve, 7000));
 
         // Part 2: volodya_bye2 (5 кадров) + part2.mp3 (2 секунды)
@@ -608,6 +659,10 @@ async function playAnimationSequence() {
         } catch (e) {
             console.log('Part2 audio error:', e);
         }
+
+        // Меняем текст во время part2 (2 секунды)
+        els.storyText.textContent = 'Спасибо за смену, друг!';
+
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         // Part 3: part3.mp3 (без анимации)
@@ -626,6 +681,10 @@ async function playAnimationSequence() {
         // Очищаем область спрайтов
         els.spriteArea.innerHTML = '';
 
+        // Очищаем текст перед скрытием
+        els.storyText.textContent = '';
+        els.speakerName.style.display = 'none';
+
         // Черный фон на весь экран
         els.backgroundImage.style.backgroundImage = 'none';
         els.backgroundImage.style.backgroundColor = '#000';
@@ -642,7 +701,6 @@ async function playAnimationSequence() {
         }
 
         // СКРЫВАЕМ header
-        const header = document.getElementById('header');
         if (header) {
             header.style.display = 'none';
         }
@@ -675,35 +733,28 @@ async function playAnimationSequence() {
         // Показываем титры
         await showCredits();
 
-        // После титров показываем кнопку "Продолжить"
-        els.choicesContainer.innerHTML = '';
-        const continueBtn = document.createElement('button');
-        continueBtn.textContent = 'Продолжить';
-        continueBtn.className = 'choice-button';
-        continueBtn.onclick = () => {
-            audio.playMenuClick();
-            // Возвращаем фон к исходному состоянию
-            els.backgroundImage.style.backgroundColor = '';
-            els.backgroundImage.style.height = '';
-            els.backgroundImage.style.width = '';
-            els.backgroundImage.style.position = '';
-            els.backgroundImage.style.top = '';
-            els.backgroundImage.style.left = '';
-            els.backgroundImage.style.zIndex = '';
-            // Показываем текстовое поле обратно
-            if (textBox) {
-                textBox.classList.remove('hidden');
-            }
-            // Показываем header обратно
-            const header = document.getElementById('header');
-            if (header) {
-                header.style.display = '';
-            }
-            checkEnding();
-        };
-        els.choicesContainer.appendChild(continueBtn);
-        els.choicesContainer.style.pointerEvents = 'auto';
-        els.choicesContainer.style.opacity = '1';
+        // После титров автоматически переходим к концовке
+        // Возвращаем фон к исходному состоянию
+        els.backgroundImage.style.backgroundColor = '';
+        els.backgroundImage.style.height = '';
+        els.backgroundImage.style.width = '';
+        els.backgroundImage.style.position = '';
+        els.backgroundImage.style.top = '';
+        els.backgroundImage.style.left = '';
+        els.backgroundImage.style.zIndex = '';
+
+        // Показываем текстовое поле обратно
+        if (textBox) {
+            textBox.classList.remove('hidden');
+        }
+
+        // Показываем header обратно
+        if (header) {
+            header.style.display = '';
+        }
+
+        // Автоматический переход к концовке
+        checkEnding();
     } catch (error) {
         console.error('Animation sequence error:', error);
         // В случае ошибки показываем кнопку для продолжения
@@ -737,6 +788,134 @@ async function playAnimationSequence() {
         els.choicesContainer.style.pointerEvents = 'auto';
         els.choicesContainer.style.opacity = '1';
     }
+}
+
+function showReport(scene) {
+    // Скрываем игровой интерфейс
+    document.getElementById('header').style.display = 'none';
+    document.getElementById('text-box').style.display = 'none';
+    document.getElementById('sprite-area').style.display = 'none';
+    document.getElementById('background-image').style.display = 'none';
+
+    // Создаем экран отчета
+    const reportScreen = document.createElement('div');
+    reportScreen.id = 'report-screen';
+
+    const reportContent = document.createElement('div');
+    reportContent.id = 'report-content';
+
+    // Заголовок
+    const title = document.createElement('h1');
+    title.id = 'report-title';
+    title.textContent = scene.location;
+    reportContent.appendChild(title);
+
+    // Вступительный текст (если есть)
+    if (scene.text) {
+        const introText = document.createElement('div');
+        introText.id = 'report-text';
+        introText.innerHTML = scene.text;
+        reportContent.appendChild(introText);
+    }
+
+    // Специальная обработка для ending_consequences - показываем таблицу с последствиями
+    if (gameState.currentSceneId === 'ending_consequences') {
+        const progress = gameState.getProgress();
+        const consequences = gameState.getConsequences();
+
+        // Общий итог
+        const summaryDiv = document.createElement('div');
+        summaryDiv.style.cssText = 'margin-top: 20px; padding: 15px; background-color: rgba(10, 104, 54, 0.2); border-left: 4px solid var(--light-green); border-radius: 4px;';
+        summaryDiv.innerHTML = `
+            <h3 style="margin: 0 0 10px 0; color: var(--light-green);">Общий итог</h3>
+            <p style="margin: 10px 0 0 0;">Жизнь — это игра, в которой ты учишься. Спасибо за твой выбор!</p>
+        `;
+        reportContent.appendChild(summaryDiv);
+
+        // Детальный отчет
+        const reportHeader = document.createElement('h3');
+        reportHeader.style.cssText = 'margin: 30px 0 20px 0; color: var(--accent-warm); text-align: center;';
+        reportHeader.textContent = 'Детальный отчет';
+        reportContent.appendChild(reportHeader);
+
+        // Каждая ситуация как отдельная карточка
+        const consequencesContainer = document.createElement('div');
+        consequencesContainer.className = 'consequences-container';
+
+        consequences.forEach((r, i) => {
+            const card = document.createElement('div');
+            card.className = 'consequence-card';
+            card.innerHTML = `
+                <div class="consequence-field">
+                    <span class="consequence-label">Ситуация</span>
+                    <div class="consequence-value situation">${i + 1}. ${r.scene}</div>
+                </div>
+                <div class="consequence-field">
+                    <span class="consequence-label">Выбор</span>
+                    <div class="consequence-value choice">"${r.choice}"</div>
+                </div>
+                <div class="consequence-field">
+                    <span class="consequence-label">Последствие</span>
+                    <div class="consequence-value result">${r.consequence.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}</div>
+                </div>
+            `;
+            consequencesContainer.appendChild(card);
+        });
+
+        reportContent.appendChild(consequencesContainer);
+    }
+    // История (если есть)
+    else if (scene.story && scene.story.length > 0) {
+        scene.story.forEach(step => {
+            const section = document.createElement('div');
+            section.className = 'report-section';
+
+            if (step.speaker && step.speaker !== 'Рассказчик') {
+                const speaker = document.createElement('div');
+                speaker.className = 'report-speaker';
+                speaker.textContent = step.speaker;
+                section.appendChild(speaker);
+            }
+
+            if (step.text) {
+                const text = document.createElement('div');
+                text.className = 'report-story-text';
+                text.innerHTML = step.text;
+                section.appendChild(text);
+            }
+
+            reportContent.appendChild(section);
+        });
+    }
+
+    reportScreen.appendChild(reportContent);
+
+    // Кнопка "Продолжить"
+    if (scene.choices && scene.choices.length > 0) {
+        const continueBtn = document.createElement('button');
+        continueBtn.id = 'report-continue-btn';
+        continueBtn.className = 'choice-button';
+        continueBtn.textContent = scene.choices[0].text;
+        continueBtn.onclick = () => {
+            audio.playMenuClick();
+            reportScreen.remove();
+            // Показываем игровой интерфейс обратно
+            document.getElementById('header').style.display = '';
+            document.getElementById('text-box').style.display = '';
+            document.getElementById('sprite-area').style.display = '';
+            document.getElementById('background-image').style.display = '';
+
+            if (scene.choices[0].nextScene) {
+                showScene(scene.choices[0].nextScene);
+            }
+        };
+        reportScreen.appendChild(continueBtn);
+    }
+
+    document.body.appendChild(reportScreen);
+
+    // Прокручиваем наверх
+    reportScreen.scrollTop = 0;
 }
 
 async function showCredits() {
@@ -806,8 +985,9 @@ async function showCredits() {
         const items = creditsContainer.querySelectorAll('div');
         items.forEach(item => item.style.opacity = '1');
 
-        // Держим страницу на экране 6 секунд
-        await new Promise(resolve => setTimeout(resolve, 6000));
+        // Держим страницу на экране: 2 секунды × количество людей
+        const displayTime = page.length * 1400; // 1.4 секунды на каждого человека
+        await new Promise(resolve => setTimeout(resolve, displayTime));
 
         // Плавное исчезновение
         items.forEach(item => item.style.opacity = '0');
@@ -826,47 +1006,16 @@ function generateEnding(sceneId) {
         return;
     }
 
-    const progress = gameState.getProgress();
-    const consequences = gameState.getConsequences();
-    let html = '';
+    // Для концовок с отчётами используем специальный экран
+    if (sceneId === 'ending_consequences' || sceneId === 'ending_secret' || sceneId === 'final_share') {
+        showReport(scene);
+        achievements.unlock('completionist');
+        return;
+    }
 
-    if (sceneId === 'ending_consequences') {
-        html = scene.text.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>');
-        html += `
-            <div style="margin-top: 20px; padding: 15px; background-color: rgba(10, 104, 54, 0.2); border-left: 4px solid var(--light-green); border-radius: 4px;">
-                <h3 style="margin: 0 0 10px 0; color: var(--light-green);">Общий итог</h3>
-                <p style="margin: 0;">Ты принял <b>${progress.correctChoices} из ${progress.totalScenes}</b> решений, соответствующих духу смены.</p>
-                <p style="margin: 10px 0 0 0;">Жизнь — это игра, в которой ты учишься. Спасибо за твой выбор!</p>
-            </div>
-            <div style="margin-top: 30px;">
-                <h3 style="margin: 0 0 15px 0; color: var(--accent-warm);">Детальный отчет</h3>
-                <table style="width: 100%; border-collapse: collapse; background-color: rgba(0, 0, 0, 0.3); border-radius: 4px; overflow: hidden;">
-                    <thead>
-                        <tr style="background-color: rgba(10, 104, 54, 0.5);">
-                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--light-green); color: var(--white);">Ситуация</th>
-                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--light-green); color: var(--white);">Выбор</th>
-                            <th style="padding: 10px; text-align: center; border-bottom: 1px solid var(--light-green); color: var(--white);">Статус</th>
-                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid var(--light-green); color: var(--white);">Последствие</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${consequences.map((r, i) => {
-                            const status = r.isCorrect ? '✅ ВЕРНО' : '❌ ОШИБКА';
-                            const color = r.isCorrect ? '#49a861' : '#ff4444';
-                            return `
-                                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-                                    <td style="padding: 10px; font-weight: bold;">${i + 1}. ${r.scene}</td>
-                                    <td style="padding: 10px;">"${r.choice}"</td>
-                                    <td style="padding: 10px; text-align: center; font-weight: bold; color: ${color};">${status}</td>
-                                    <td style="padding: 10px;">${r.consequence.replace(/\*\*/g, '<b>').replace(/\*\*/g, '</b>')}</td>
-                                </tr>
-                            `;
-                        }).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-    } else if (scene.story) {
+    // Для других концовок показываем обычный текст
+    let html = '';
+    if (scene.story) {
         html = scene.story.map(s =>
             s.speaker ? `<p><b>${s.speaker}:</b> ${s.text.replace(/\*\*/g, '<b>')}</p>`
                       : `<p>${s.text.replace(/\*\*/g, '<b>')}</p>`
