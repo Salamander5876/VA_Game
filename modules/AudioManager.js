@@ -6,10 +6,13 @@ export class AudioManager {
         this.currentBGM = null;
         this.isInitialized = false;
 
+        // Множитель громкости для звука печати (0.0 - 1.0)
+        this.typingVolumeMultiplier = 0.3;
+
         // Создание аудио объектов
         this.typingSound = new Audio('sound/typing.mp3');
-        this.transitionSound = new Audio('sound/переход.mp3');
-        this.menuClickSound = new Audio('sound/Menu_Click.mp3');
+        this.transitionSound = new Audio('sound/переход.opus');
+        this.menuClickSound = new Audio('sound/Menu_Click.opus');
         this.backgroundMusic = new Audio();
 
         this.init();
@@ -36,7 +39,7 @@ export class AudioManager {
     }
 
     updateVolumes() {
-        this.typingSound.volume = this.settings.sfxVolume;
+        this.typingSound.volume = this.settings.sfxVolume * this.typingVolumeMultiplier;
         this.transitionSound.volume = this.settings.sfxVolume;
         this.menuClickSound.volume = this.settings.sfxVolume;
         this.backgroundMusic.volume = this.settings.bgmVolume;
@@ -44,6 +47,12 @@ export class AudioManager {
 
     updateSettings(newSettings) {
         this.settings = { ...this.settings, ...newSettings };
+        this.updateVolumes();
+    }
+
+    // Установить множитель громкости для звука печати (0.0 - 1.0)
+    setTypingVolume(multiplier) {
+        this.typingVolumeMultiplier = Math.max(0, Math.min(1, multiplier));
         this.updateVolumes();
     }
 

@@ -633,9 +633,9 @@ async function playAnimationSequence() {
         // Получаем спрайт Володи (GIF уже загружен из gameData)
         const volodyaSprite = els.spriteArea.querySelector('.sprite[alt="Володя"]');
 
-        // Part 1: GIF анимация проигрывается + part1.mp3 (7 секунд)
+        // Part 1: GIF анимация проигрывается + part1.opus (7 секунд)
         try {
-            audio.playBGM('sound/sceneEnd/part1.mp3');
+            audio.playBGM('sound/sceneEnd/part1.opus');
         } catch (e) {
             console.log('Part1 audio error:', e);
         }
@@ -647,9 +647,9 @@ async function playAnimationSequence() {
 
         await new Promise(resolve => setTimeout(resolve, 7000));
 
-        // Part 2: GIF продолжает проигрываться + part2.mp3 (2 секунды)
+        // Part 2: GIF продолжает проигрываться + part2.opus (2 секунды)
         try {
-            audio.playBGM('sound/sceneEnd/part2.mp3');
+            audio.playBGM('sound/sceneEnd/part2.opus');
         } catch (e) {
             console.log('Part2 audio error:', e);
         }
@@ -659,10 +659,10 @@ async function playAnimationSequence() {
 
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Part 3: part3.mp3 (без анимации)
+        // Part 3: part3.opus (без анимации)
         // Черный экран с надписью "КОНЕЦ" появляются СРАЗУ
         try {
-            audio.playBGM('sound/sceneEnd/part3.mp3');
+            audio.playBGM('sound/sceneEnd/part3.opus');
         } catch (e) {
             console.log('Part3 audio error:', e);
         }
@@ -1038,16 +1038,17 @@ function handleVideoEnding(scene) {
     els.gameContainer.style.display = 'none';
     els.endingScreen.style.display = 'flex';
 
-    const iframe = document.getElementById('game-ending-video');
+    const video = document.getElementById('game-ending-video');
     const finalMsg = document.getElementById('final-message');
     const restartBtn = document.getElementById('ending-restart-button');
 
     finalMsg.style.display = 'none';
     restartBtn.style.display = 'none';
-    iframe.style.display = 'block';
+    video.style.display = 'block';
 
-    // Устанавливаем src с autoplay=1 для автоматического запуска
-    iframe.src = 'https://vk.com/video_ext.php?oid=-215581110&id=456239017&hd=4&autoplay=1';
+    // Устанавливаем локальное видео с автозапуском
+    video.src = 'final.mp4';
+    video.play();
 
     // Показываем кнопку возврата в меню через 1 минуту
     setTimeout(() => {
@@ -1290,7 +1291,7 @@ function initMenuMusicAndPulse() {
     window.addEventListener('resize', resizeCanvas);
 
     // Создаем аудио элемент
-    window.menuMusic = new Audio('sound/BGmusic.mp3');
+    window.menuMusic = new Audio('sound/BGmusic.opus');
     window.menuMusic.loop = true;
     window.menuMusic.volume = userSettings.bgmVolume * 0.5; // Тише чем обычная музыка
 

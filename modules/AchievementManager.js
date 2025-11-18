@@ -151,7 +151,7 @@ export class AchievementManager {
     // Показать уведомление о достижении
     _showNotification(achievement) {
         // Проигрываем звук достижения поверх всех остальных
-        const achievementSound = new Audio('sound/steam-achievement.mp3');
+        const achievementSound = new Audio('sound/steam-achievement.opus');
         achievementSound.volume = 0.5;
         achievementSound.play().catch(e => console.log('Achievement sound blocked:', e));
 

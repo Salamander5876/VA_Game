@@ -34,7 +34,7 @@ audio.stopTyping();           // Остановка звука печати
 audio.playTransition();       // Звук перехода между сценами
 
 // Фоновая музыка
-audio.playBGM('sound/night.mp3');  // Воспроизведение BGM
+audio.playBGM('sound/night.opus');  // Воспроизведение BGM
 audio.pauseBGM();             // Пауза
 audio.resumeBGM();            // Возобновление
 audio.stopBGM();              // Остановка
@@ -42,6 +42,7 @@ audio.stopBGM();              // Остановка
 // Настройки
 audio.updateVolumes();        // Обновить громкость
 audio.updateSettings(newSettings); // Обновить все настройки
+audio.setTypingVolume(0.3);   // Установить громкость звука печати (0.0 - 1.0)
 audio.getCurrentBGM();        // Получить текущую музыку
 
 // Очистка
@@ -148,7 +149,7 @@ const loader = new ResourceLoader();
 
 // Загрузка
 await loader.load('images/sprite.png');
-await loader.loadMultiple(['image1.png', 'image2.png', 'sound.mp3']);
+await loader.loadMultiple(['image1.png', 'image2.png', 'sound.opus']);
 
 // Предзагрузка для игры
 await loader.preloadCritical();        // Критические ресурсы
@@ -377,7 +378,7 @@ await engine.preload();
 engine.start();
 
 // Доступ к менеджерам
-engine.audio.playBGM('sound/night.mp3');
+engine.audio.playBGM('sound/night.opus');
 engine.gameState.save();
 engine.achievements.unlock('first_choice');
 
@@ -411,7 +412,7 @@ const engine = new KamertonEngine({
 await engine.preload();
 
 // Использование
-engine.audio.playBGM('sound/night.mp3');
+engine.audio.playBGM('sound/night.opus');
 engine.gameState.save();
 ```
 

@@ -45,7 +45,7 @@ export class ResourceLoader {
     // Внутренняя функция загрузки
     _loadAsset(url) {
         return new Promise((resolve, reject) => {
-            if (url.endsWith('.mp3') || url.endsWith('.wav') || url.endsWith('.ogg')) {
+            if (url.endsWith('.opus') || url.endsWith('.wav') || url.endsWith('.ogg')) {
                 // Аудио
                 const audio = new Audio(url);
                 audio.oncanplaythrough = () => resolve(audio);
@@ -133,35 +133,35 @@ export class ResourceLoader {
         const allAssets = [
             // Звуки
             'sound/typing.mp3',
-            'sound/переход.mp3',
-            'sound/Menu_Click.mp3',
-            'sound/BGmusic.mp3',
-            'sound/night.mp3',
-            'sound/hint.mp3',
+            'sound/переход.opus',
+            'sound/Menu_Click.opus',
+            'sound/BGmusic.opus',
+            'sound/night.opus',
+            'sound/hint.opus',
 
             // Музыка для сцен
-            'sound/scene1/part1.mp3',
-            'sound/scene1/part2.mp3',
-            'sound/scene1/part3.mp3',
-            'sound/scene2/part1.mp3',
-            'sound/scene2/part2.mp3',
-            'sound/scene2/part3.mp3',
-            'sound/scene3/part1.mp3',
-            'sound/scene4/part1.mp3',
-            'sound/scene5/part1.mp3',
-            'sound/scene6/part1.mp3',
-            'sound/scene7/part1.mp3',
-            'sound/scene8/part1.mp3',
-            'sound/scene9/part1.mp3',
-            'sound/scene9/part2.mp3',
-            'sound/scene9/part3.mp3',
-            'sound/scene9/part4.mp3',
-            'sound/scene9/part5.mp3',
+            'sound/scene1/part1.opus',
+            'sound/scene1/part2.opus',
+            'sound/scene1/part3.opus',
+            'sound/scene2/part1.opus',
+            'sound/scene2/part2.opus',
+            'sound/scene2/part3.opus',
+            'sound/scene3/part1.opus',
+            'sound/scene4/part1.opus',
+            'sound/scene5/part1.opus',
+            'sound/scene6/part1.opus',
+            'sound/scene7/part1.opus',
+            'sound/scene8/part1.opus',
+            'sound/scene9/part1.opus',
+            'sound/scene9/part2.opus',
+            'sound/scene9/part3.opus',
+            'sound/scene9/part4.opus',
+            'sound/scene9/part5.opus',
 
             // Музыка для финала
-            'sound/sceneEnd/part1.mp3',
-            'sound/sceneEnd/part2.mp3',
-            'sound/sceneEnd/part3.mp3',
+            'sound/sceneEnd/part1.opus',
+            'sound/sceneEnd/part2.opus',
+            'sound/sceneEnd/part3.opus',
 
             // Фоны
             'images/background/night.webp',
