@@ -44,9 +44,11 @@ const els = {
     historyPanel: document.getElementById('history-panel'),
     sceneProgress: document.getElementById('scene-progress'),
     consequenceModal: document.getElementById('consequence-modal'),
+    consequenceContent: document.getElementById('consequence-content'),
     consequenceTitle: document.getElementById('consequence-title'),
     consequenceText: document.getElementById('consequence-text'),
-    consequenceContinueBtn: document.getElementById('consequence-continue-btn')
+    consequenceContinueBtn: document.getElementById('consequence-continue-btn'),
+    textBox: document.getElementById('text-box')
 };
 
 // Константы
@@ -212,6 +214,10 @@ async function showScene(sceneId) {
         return renderSceneContent(sceneId);
     }
 
+    // Сбрасываем скролл текстового поля к началу при переходе к новой сцене
+    els.storyText.scrollTop = 0;
+    els.storyText.scrollTo({ top: 0, behavior: 'instant' });
+
     // Убрали lazy loading - все ресурсы уже предзагружены
     if (sceneId !== gameState.currentSceneId) audio.playTransition();
 
@@ -225,6 +231,15 @@ async function showScene(sceneId) {
 function renderSceneContent(sceneId) {
     animation.stopAll();
     audio.stopTyping();
+
+    // Принудительно сбрасываем скролл всех текстовых контейнеров к позиции 0
+    els.storyText.scrollTop = 0;
+    els.storyText.scrollTo({ top: 0, behavior: 'instant' });
+
+    if (els.textBox) {
+        els.textBox.scrollTop = 0;
+        els.textBox.scrollTo({ top: 0, behavior: 'instant' });
+    }
 
     const scene = gameData[sceneId];
 
@@ -593,7 +608,16 @@ function showConsequenceModal(consequenceText) {
         .join('');
 
     els.consequenceText.innerHTML = formattedText;
+
     els.consequenceModal.classList.add('show');
+
+    // Принудительно сбрасываем скролл к позиции 0 после рендеринга
+    setTimeout(() => {
+        els.consequenceText.scrollTop = 0;
+        els.consequenceContent.scrollTop = 0;
+        els.consequenceText.scrollTo({ top: 0, behavior: 'instant' });
+        els.consequenceContent.scrollTo({ top: 0, behavior: 'instant' });
+    }, 0);
 
     // Обработчик кнопки "Продолжить"
     const handleContinue = () => {
